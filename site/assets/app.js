@@ -6,33 +6,33 @@ const cities = {
 };
 
 const categories = [
-  { key: "all", label: "전체" },
-  { key: "charge", label: "충전" },
-  { key: "restroom", label: "화장실" },
-  { key: "rest", label: "쉬기" },
-  { key: "korean", label: "한국어" },
-  { key: "caution", label: "응대 불편" }
+  { key: "all", label: "전체", emoji: "📍" },
+  { key: "charge", label: "충전", emoji: "🔌" },
+  { key: "restroom", label: "화장실", emoji: "🚻" },
+  { key: "rest", label: "쉬기", emoji: "🪑" },
+  { key: "korean", label: "한국어", emoji: "🇰🇷" },
+  { key: "caution", label: "응대 불편", emoji: "⚠️" }
 ];
 
 const scenarios = [
-  { key: "battery", label: "배터리 5%", filter: "charge", icon: "battery-low", hint: "콘센트와 허락 여부 먼저" },
-  { key: "toilet", label: "화장실 급함", filter: "restroom", icon: "toilet", hint: "단독 이용 가능성 확인" },
-  { key: "rain", label: "비 피하기", filter: "rest", icon: "cloud-rain", hint: "잠깐 머물기 좋은 곳" },
-  { key: "korean", label: "한국어 필요", filter: "korean", icon: "languages", hint: "한국어 대응 신호" },
-  { key: "caution", label: "응대 조심", filter: "caution", icon: "triangle-alert", hint: "불편 제보가 있는 곳" }
+  { key: "battery", label: "배터리 5%", filter: "charge", icon: "battery-low", emoji: "🔌", hint: "콘센트와 허락 여부 먼저" },
+  { key: "toilet", label: "화장실 급함", filter: "restroom", icon: "toilet", emoji: "🚻", hint: "단독 이용 가능성 확인" },
+  { key: "rain", label: "비 피하기", filter: "rest", icon: "cloud-rain", emoji: "☔", hint: "잠깐 머물기 좋은 곳" },
+  { key: "korean", label: "한국어 필요", filter: "korean", icon: "languages", emoji: "🇰🇷", hint: "한국어 대응 신호" },
+  { key: "caution", label: "응대 조심", filter: "caution", icon: "triangle-alert", emoji: "⚠️", hint: "불편 제보가 있는 곳" }
 ];
 
 const reportTags = [
-  { key: "charge", label: "충전 가능" },
-  { key: "permission", label: "직원 허락 필요" },
-  { key: "restroom", label: "화장실 가능" },
-  { key: "restroom-caution", label: "화장실만 이용 애매" },
-  { key: "rest", label: "잠깐 쉬기 좋음" },
-  { key: "long-stay", label: "장시간 비추천" },
-  { key: "wifi", label: "와이파이" },
-  { key: "korean", label: "한국어 대응" },
-  { key: "caution", label: "응대 불편", danger: true },
-  { key: "rain", label: "비 피하기 좋음" }
+  { key: "charge", label: "충전 가능", emoji: "🔌" },
+  { key: "permission", label: "직원 허락 필요", emoji: "🙋" },
+  { key: "restroom", label: "화장실 가능", emoji: "🚻" },
+  { key: "restroom-caution", label: "화장실만 이용 애매", emoji: "⚠️" },
+  { key: "rest", label: "잠깐 쉬기 좋음", emoji: "🪑" },
+  { key: "long-stay", label: "장시간 비추천", emoji: "⏱️" },
+  { key: "wifi", label: "와이파이", emoji: "📶" },
+  { key: "korean", label: "한국어 대응", emoji: "🇰🇷" },
+  { key: "caution", label: "응대 불편", emoji: "⚠️", danger: true },
+  { key: "rain", label: "비 피하기 좋음", emoji: "☔" }
 ];
 
 const allowedReportLabels = new Set(reportTags.map((tag) => tag.label));
@@ -464,7 +464,12 @@ function renderReport() {
         <h3>확인한 내용</h3>
         <p>해당되는 버튼만 눌러요. 응대 불편은 단정이 아니라 방문자 주의 신호로 바로 반영돼요.</p>
         <div class="report-grid">
-          ${reportTags.map((tag) => `<button type="button" class="chip ${tag.danger ? "danger" : ""}" data-report-tag="${tag.key}">${tag.label}</button>`).join("")}
+          ${reportTags.map((tag) => `
+            <button type="button" class="chip report-chip ${tag.danger ? "danger" : ""}" data-report-tag="${escapeAttr(tag.key)}" aria-label="${escapeAttr(tag.label)}">
+              <span class="report-emoji" aria-hidden="true">${tag.emoji}</span>
+              <span>${tag.label}</span>
+            </button>
+          `).join("")}
         </div>
       </div>
       <div class="form-section">
@@ -534,13 +539,13 @@ function renderPlaceDetail(place) {
     <section class="place-card is-selected">
       <div class="place-title-row">
         <div>
-          <h3>${place.name}</h3>
+          <h3><span class="place-title-emoji" aria-hidden="true">${categoryEmoji(place.category)}</span>${place.name}</h3>
           <p>${place.area} · ${place.kind}</p>
         </div>
         <span class="badge ${caution ? "caution" : reports.length ? "info" : "good"}">${getLiveTrust(place)}</span>
       </div>
       <div class="tag-row" aria-label="장소 태그">
-        ${tags.map((tag) => `<span class="badge ${tag === "응대 불편" ? "caution" : tag.includes("충전") || tag.includes("와이파이") ? "info" : tag.includes("비") || tag.includes("허락") ? "warn" : "good"}">${tag}</span>`).join("")}
+        ${tags.map((tag) => `<span class="badge ${tag === "응대 불편" ? "caution" : tag.includes("충전") || tag.includes("와이파이") ? "info" : tag.includes("비") || tag.includes("허락") ? "warn" : "good"}"><span class="badge-emoji" aria-hidden="true">${emojiForTag(tag)}</span>${tag}</span>`).join("")}
       </div>
       <div class="detail-actions">
         <button class="text-button" type="button" data-save="${place.id}">
@@ -606,8 +611,8 @@ function renderPlaceCard(place) {
     <button type="button" class="place-card ${place.id === state.selectedId ? "is-selected" : ""}" data-place-id="${place.id}">
       <div class="place-title-row">
         <div>
-          <h3>${place.name}</h3>
-          <p>${place.area} · ${getLiveTags(place).slice(0, 3).join(" · ")}</p>
+          <h3><span class="place-title-emoji" aria-hidden="true">${categoryEmoji(place.category)}</span>${place.name}</h3>
+          <p>${place.area} · ${getLiveTags(place).slice(0, 3).map((tag) => `${emojiForTag(tag)} ${tag}`).join(" · ")}</p>
           <small class="card-meta">${place.walk || "거리 확인"} · ${place.lastSeen || "최근 확인 필요"} · 신뢰 ${getTrustScore(place)}%</small>
         </div>
         <span class="badge ${caution ? "caution" : "info"}">${getLiveTrust(place)}</span>
@@ -635,7 +640,7 @@ function renderScenarioRail() {
     <div class="scenario-rail" aria-label="빠른 상황">
       ${scenarios.map((scenario) => `
         <button type="button" class="scenario-chip ${state.activeScenario === scenario.key ? "is-active" : ""}" data-scenario="${scenario.key}">
-          ${icon(scenario.icon)}
+          <span class="scenario-emoji" aria-hidden="true">${scenario.emoji}</span>
           <span>${scenario.label}</span>
           <small>${scenario.hint}</small>
         </button>
@@ -665,7 +670,7 @@ function renderReportFeed(reports) {
       ${reports.map((report) => `
         <article class="feed-item">
           <div>
-            <p>${report.tags.map(escapeHtml).join(" · ")}</p>
+            <p>${report.tags.map((tag) => `${emojiForTag(tag)} ${escapeHtml(tag)}`).join(" · ")}</p>
             <small>${formatRecency(report.recency)} · 동의 ${report.agrees} · 허위 의심 ${report.disputes}</small>
           </div>
           <div class="feed-actions">
@@ -679,7 +684,7 @@ function renderReportFeed(reports) {
 }
 
 function filterChip(item) {
-  return `<button type="button" class="chip ${state.filter === item.key ? "is-active" : ""}" data-filter="${item.key}">${item.label}</button>`;
+  return `<button type="button" class="chip ${state.filter === item.key ? "is-active" : ""}" data-filter="${item.key}"><span class="chip-emoji" aria-hidden="true">${item.emoji}</span><span>${item.label}</span></button>`;
 }
 
 function renderMarkers() {
@@ -734,7 +739,9 @@ function applyScenario(scenarioKey) {
 }
 
 function submitReport(form) {
-  const selected = [...form.querySelectorAll("[data-report-tag].is-selected")].map((button) => button.textContent.trim());
+  const selected = [...form.querySelectorAll("[data-report-tag].is-selected")]
+    .map((button) => labelForReportKey(button.dataset.reportTag))
+    .filter(Boolean);
   if (!selected.length) {
     showToast("확인한 내용을 하나 이상 선택해줘.");
     return;
@@ -840,13 +847,7 @@ function totalSignals(place) {
 }
 
 function markerLabel(category) {
-  return {
-    charge: "충",
-    restroom: "화",
-    rest: "쉼",
-    korean: "한",
-    caution: "!"
-  }[category] || "점";
+  return categoryEmoji(category);
 }
 
 function labelForFilter(filter) {
@@ -857,6 +858,28 @@ function labelForFilter(filter) {
     korean: "한국어",
     caution: "응대"
   }[filter] || "";
+}
+
+function categoryEmoji(category) {
+  return categories.find((item) => item.key === category)?.emoji || "📍";
+}
+
+function labelForReportKey(key) {
+  return reportTags.find((tag) => tag.key === key)?.label || "";
+}
+
+function emojiForTag(label) {
+  const reportTag = reportTags.find((tag) => tag.label === label);
+  if (reportTag) return reportTag.emoji;
+  if (label.includes("와이파이")) return "📶";
+  if (label.includes("충전")) return "🔌";
+  if (label.includes("화장실")) return "🚻";
+  if (label.includes("비")) return "☔";
+  if (label.includes("한국어")) return "🇰🇷";
+  if (label.includes("허락")) return "🙋";
+  if (label.includes("응대") || label.includes("비추천")) return "⚠️";
+  if (label.includes("쉬") || label.includes("대기") || label.includes("혼자")) return "🪑";
+  return "📍";
 }
 
 function icon(name) {
