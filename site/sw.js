@@ -1,8 +1,8 @@
-const CACHE_NAME = "sumimap-v9-emoji";
+const CACHE_NAME = "sumimap-v10-emergency";
 const LOCAL_ASSETS = [
   "/",
-  "/assets/styles.css?v=20260507-emoji",
-  "/assets/app.js?v=20260507-emoji",
+  "/assets/styles.css?v=20260507-emergency",
+  "/assets/app.js?v=20260507-emergency",
   "/assets/vendor/leaflet/leaflet.css",
   "/assets/vendor/leaflet/leaflet.js",
   "/assets/vendor/leaflet/images/layers.png",

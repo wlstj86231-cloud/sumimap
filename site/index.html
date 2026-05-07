@@ -10,9 +10,9 @@
     <link rel="icon" href="/assets/icon.svg" type="image/svg+xml">
     <link rel="preconnect" href="https://tile.openstreetmap.org">
     <link rel="preload" href="/assets/vendor/leaflet/leaflet.css" as="style">
-    <link rel="preload" href="/assets/styles.css?v=20260507-emoji" as="style">
+    <link rel="preload" href="/assets/styles.css?v=20260507-emergency" as="style">
     <link rel="stylesheet" href="/assets/vendor/leaflet/leaflet.css">
-    <link rel="stylesheet" href="/assets/styles.css?v=20260507-emoji">
+    <link rel="stylesheet" href="/assets/styles.css?v=20260507-emergency">
   </head>
   <body>
     <div class="app-shell">
@@ -26,9 +26,14 @@
             <small>일본 생활 제보 지도</small>
           </span>
         </a>
-        <button class="icon-button" id="searchToggle" type="button" aria-label="검색 열기">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m21 21-4.3-4.3"/><circle cx="11" cy="11" r="7"/></svg>
-        </button>
+        <div class="top-actions">
+          <button class="icon-button" id="locateButton" type="button" aria-label="현재 위치로 이동">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/></svg>
+          </button>
+          <button class="icon-button" id="searchToggle" type="button" aria-label="검색 열기">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m21 21-4.3-4.3"/><circle cx="11" cy="11" r="7"/></svg>
+          </button>
+        </div>
       </header>
 
       <section class="search-panel" id="searchPanel" hidden>
@@ -45,6 +50,7 @@
       </section>
 
       <aside class="status-pill" id="statusPill">도쿄 샘플 8곳</aside>
+      <div class="map-quick-rail" id="mapQuickRail" aria-label="긴급 상황 바로 보기"></div>
 
       <main class="bottom-sheet" id="sheet" aria-live="polite"></main>
 
@@ -75,6 +81,6 @@
     </div>
 
     <script src="/assets/vendor/leaflet/leaflet.js" defer></script>
-    <script src="/assets/app.js?v=20260507-emoji" type="module"></script>
+    <script src="/assets/app.js?v=20260507-emergency" type="module"></script>
   </body>
 </html>

@@ -136,6 +136,13 @@ a {
   font-size: 12px;
 }
 
+.top-actions {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex: 0 0 auto;
+}
+
 .icon-button,
 .nav-button,
 .chip,
@@ -153,6 +160,15 @@ a {
   color: var(--ink);
   background: var(--surface-soft);
   border: 1px solid var(--line);
+}
+
+.icon-button.is-loading {
+  color: #ffffff;
+  background: var(--green);
+}
+
+.icon-button.is-loading svg {
+  animation: pulseLocate 900ms ease-in-out infinite;
 }
 
 .icon-button svg,
@@ -246,6 +262,70 @@ a {
   font-size: 12px;
   font-weight: 800;
   pointer-events: none;
+}
+
+.map-quick-rail {
+  position: absolute;
+  z-index: 8;
+  top: calc(128px + env(safe-area-inset-top));
+  left: 12px;
+  right: 12px;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: max-content;
+  gap: 7px;
+  overflow-x: auto;
+  padding: 2px 2px 5px;
+  scrollbar-width: none;
+}
+
+.map-quick-rail::-webkit-scrollbar {
+  display: none;
+}
+
+.quick-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 38px;
+  padding: 0 11px;
+  border: 1px solid rgba(30, 37, 40, 0.1);
+  border-radius: 999px;
+  color: #27322f;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 8px 22px rgba(34, 42, 35, 0.1);
+  font-size: 12px;
+  font-weight: 900;
+  backdrop-filter: blur(14px);
+}
+
+.quick-chip span {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.quick-chip strong {
+  font-size: 12px;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.quick-chip.is-active {
+  border-color: rgba(19, 167, 122, 0.42);
+  color: #173f32;
+  background: rgba(233, 248, 242, 0.96);
+  box-shadow: 0 0 0 2px rgba(19, 167, 122, 0.12), 0 8px 22px rgba(34, 42, 35, 0.1);
+}
+
+@keyframes pulseLocate {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(0.86);
+  }
 }
 
 .bottom-sheet {
@@ -845,6 +925,12 @@ a {
 
   .status-pill {
     left: 24px;
+  }
+
+  .map-quick-rail {
+    left: 24px;
+    right: auto;
+    width: 420px;
   }
 
   .bottom-sheet {
@@ -1451,6 +1537,10 @@ a {
 
   .bottom-sheet,
   .bottom-nav {
+    width: 390px;
+  }
+
+  .map-quick-rail {
     width: 390px;
   }
 

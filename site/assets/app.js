@@ -225,12 +225,15 @@ const state = {
 const sheet = document.querySelector("#sheet");
 const toast = document.querySelector("#toast");
 const statusPill = document.querySelector("#statusPill");
+const mapQuickRail = document.querySelector("#mapQuickRail");
+const locateButton = document.querySelector("#locateButton");
 const searchPanel = document.querySelector("#searchPanel");
 const searchToggle = document.querySelector("#searchToggle");
 const placeSearch = document.querySelector("#placeSearch");
 
 let map;
 let markerLayer;
+let userLocationLayer;
 const markers = new Map();
 let started = false;
 
@@ -253,6 +256,7 @@ function startWhenReady() {
 function init() {
   bootMap();
   bindEvents();
+  renderMapQuickRail();
   renderSheet();
   renderMarkers();
   refreshStatus();
@@ -286,6 +290,14 @@ function bindEvents() {
   searchToggle.addEventListener("click", () => {
     searchPanel.hidden = !searchPanel.hidden;
     if (!searchPanel.hidden) placeSearch.focus();
+  });
+
+  locateButton.addEventListener("click", locateUser);
+
+  mapQuickRail.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-quick-scenario]");
+    if (!button) return;
+    applyScenario(button.dataset.quickScenario);
   });
 
   placeSearch.addEventListener("input", (event) => {
@@ -325,6 +337,7 @@ function bindEvents() {
       state.filter = filterButton.dataset.filter;
       state.activeScenario = "";
       syncSelectedWithFiltered();
+      renderMapQuickRail();
       renderSheet();
       renderMarkers();
       refreshStatus();
@@ -733,6 +746,7 @@ function applyScenario(scenarioKey) {
     map.setView([list[0].lat, list[0].lng], 14);
   }
   showToast(`${scenario.label} 상황으로 좁혔어.`);
+  renderMapQuickRail();
   renderSheet();
   renderMarkers();
   refreshStatus();
@@ -767,6 +781,7 @@ function submitReport(form) {
   state.query = "";
   placeSearch.value = "";
   searchPanel.hidden = true;
+  renderMapQuickRail();
   document.querySelectorAll(".nav-button").forEach((button) => {
     button.classList.toggle("is-active", button.dataset.action === "near");
   });
@@ -820,7 +835,7 @@ function syncSelectedWithFiltered() {
 
 function getFilteredPlaces() {
   const normalized = state.query.toLowerCase();
-  return places.filter((place) => {
+  const filtered = places.filter((place) => {
     const signals = getLiveSignals(place);
     const liveTags = getLiveTags(place);
     const threshold = filterThresholds[state.filter] || 1;
@@ -834,12 +849,13 @@ function getFilteredPlaces() {
       `${place.name} ${place.area} ${place.kind} ${liveTags.join(" ")}`.toLowerCase().includes(normalized);
     return filterMatch && queryMatch;
   });
+  return sortPlacesForContext(filtered);
 }
 
 function refreshStatus() {
   const visible = getFilteredPlaces();
   const scenario = scenarios.find((item) => item.key === state.activeScenario);
-  statusPill.textContent = scenario ? `${scenario.label} · ${visible.length}곳` : `${visible.length}곳 표시 · 바로 제보`;
+  statusPill.textContent = scenario ? `${scenario.emoji} ${scenario.label} · ${visible.length}곳` : `📍 ${visible.length}곳 표시 · 바로 제보`;
 }
 
 function totalSignals(place) {
@@ -858,6 +874,69 @@ function labelForFilter(filter) {
     korean: "한국어",
     caution: "응대"
   }[filter] || "";
+}
+
+function renderMapQuickRail() {
+  mapQuickRail.innerHTML = scenarios.map((scenario) => `
+    <button type="button" class="quick-chip ${state.activeScenario === scenario.key ? "is-active" : ""}" data-quick-scenario="${scenario.key}" aria-label="${escapeAttr(scenario.label)}">
+      <span aria-hidden="true">${scenario.emoji}</span>
+      <strong>${scenario.label}</strong>
+    </button>
+  `).join("");
+}
+
+function sortPlacesForContext(list) {
+  const key = state.activeScenario
+    ? scenarios.find((scenario) => scenario.key === state.activeScenario)?.filter
+    : state.filter !== "all" ? state.filter : "";
+
+  if (!key) {
+    return [...list].sort((a, b) => totalSignals(b) - totalSignals(a));
+  }
+
+  return [...list].sort((a, b) => {
+    const scoreDiff = scorePlaceForKey(b, key) - scorePlaceForKey(a, key);
+    if (scoreDiff) return scoreDiff;
+    return totalSignals(b) - totalSignals(a);
+  });
+}
+
+function scorePlaceForKey(place, key) {
+  const signals = getLiveSignals(place);
+  const directMatch = place.category === key ? 8 : 0;
+  const cautionPenalty = key !== "caution" ? Math.min(signals.caution, 4) : 0;
+  return (signals[key] || 0) + directMatch - cautionPenalty;
+}
+
+function locateUser() {
+  if (!navigator.geolocation) {
+    showToast("이 브라우저에서는 현재 위치를 사용할 수 없어.");
+    return;
+  }
+
+  locateButton.classList.add("is-loading");
+  navigator.geolocation.getCurrentPosition(
+    ({ coords }) => {
+      const position = [coords.latitude, coords.longitude];
+      if (userLocationLayer) map.removeLayer(userLocationLayer);
+      userLocationLayer = L.circleMarker(position, {
+        radius: 8,
+        color: "#ffffff",
+        weight: 3,
+        fillColor: "#13a77a",
+        fillOpacity: 0.95
+      }).addTo(map);
+      userLocationLayer.bindPopup("내 위치").openPopup();
+      map.setView(position, 15);
+      locateButton.classList.remove("is-loading");
+      showToast("현재 위치 기준으로 지도를 이동했어.");
+    },
+    () => {
+      locateButton.classList.remove("is-loading");
+      showToast("위치 권한을 허용하면 내 주변으로 바로 이동할 수 있어.");
+    },
+    { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 }
+  );
 }
 
 function categoryEmoji(category) {
