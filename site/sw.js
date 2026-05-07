@@ -1,4 +1,4 @@
-const CACHE_NAME = "sumimap-v16-speed";
+const CACHE_NAME = "sumimap-v17-domain";
 const LOCAL_ASSETS = [
   "/",
   "/assets/styles.css?v=20260508-speed",

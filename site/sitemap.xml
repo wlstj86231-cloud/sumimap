@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://sumimap.pages.dev/</loc></url>
-  <url><loc>https://sumimap.pages.dev/guide/</loc></url>
-  <url><loc>https://sumimap.pages.dev/about/</loc></url>
-  <url><loc>https://sumimap.pages.dev/policy/</loc></url>
-  <url><loc>https://sumimap.pages.dev/privacy/</loc></url>
-  <url><loc>https://sumimap.pages.dev/terms/</loc></url>
-  <url><loc>https://sumimap.pages.dev/contact/</loc></url>
+  <url><loc>https://sumimap.com/</loc><lastmod>2026-05-08</lastmod><changefreq>daily</changefreq><priority>1.0</priority></url>
+  <url><loc>https://sumimap.com/guide/</loc><lastmod>2026-05-08</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://sumimap.com/about/</loc><lastmod>2026-05-08</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://sumimap.com/policy/</loc><lastmod>2026-05-08</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://sumimap.com/privacy/</loc><lastmod>2026-05-08</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://sumimap.com/terms/</loc><lastmod>2026-05-08</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://sumimap.com/contact/</loc><lastmod>2026-05-08</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
 </urlset>
