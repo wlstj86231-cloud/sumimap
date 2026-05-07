@@ -1637,3 +1637,199 @@ a {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
+
+/* Readability pass */
+:root {
+  --ink: #111b20;
+  --muted: #53636c;
+  --line: #d6e0e2;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.bottom-sheet {
+  max-height: min(55dvh, 470px);
+  padding: 12px;
+}
+
+.sheet-head {
+  margin-bottom: 12px;
+}
+
+.sheet-head h1,
+.sheet-head h2 {
+  font-size: 19px;
+  line-height: 1.28;
+}
+
+.sheet-head p {
+  color: #516069;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.context-tools {
+  align-items: flex-start;
+  padding: 10px;
+}
+
+.context-tools span {
+  color: #263733;
+  line-height: 1.4;
+  white-space: normal;
+}
+
+.context-tools div {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.place-list {
+  gap: 11px;
+}
+
+.place-card {
+  padding: 13px;
+}
+
+.place-title-row {
+  gap: 9px;
+}
+
+.place-title-row > div {
+  min-width: 0;
+}
+
+.place-card h3 {
+  align-items: flex-start;
+  color: #101c21;
+  font-size: 16px;
+  line-height: 1.38;
+}
+
+.place-card p {
+  color: #52636b;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.card-meta {
+  color: #64737b;
+  font-size: 11.5px;
+  line-height: 1.5;
+}
+
+.badge {
+  line-height: 1.15;
+}
+
+.tag-row .badge {
+  min-height: 27px;
+  padding: 0 8px;
+  font-size: 11px;
+}
+
+.use-summary {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.use-summary div {
+  padding: 10px;
+}
+
+.use-summary span,
+.decision-card span {
+  color: #5d6d75;
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.use-summary strong,
+.decision-card strong {
+  margin-top: 5px;
+  font-size: 13px;
+  line-height: 1.35;
+  white-space: normal;
+}
+
+.decision-card {
+  grid-template-columns: 1fr;
+  gap: 7px;
+  padding: 11px;
+}
+
+.decision-card p {
+  color: #3f5057;
+  font-size: 12.5px;
+  line-height: 1.62;
+}
+
+.signal {
+  min-height: 56px;
+}
+
+.signal span {
+  color: #5d6d75;
+  font-size: 10.5px;
+  line-height: 1.35;
+}
+
+.note-list li {
+  color: #33444b;
+  font-size: 12.5px;
+  line-height: 1.58;
+}
+
+.feed-item p {
+  line-height: 1.55;
+}
+
+.feed-item small {
+  color: #64737b;
+  line-height: 1.45;
+}
+
+.text-button,
+.primary-button {
+  line-height: 1.2;
+}
+
+@media (min-width: 780px) {
+  .bottom-sheet {
+    max-height: min(60dvh, 590px);
+  }
+}
+
+@media (max-width: 390px) {
+  .bottom-sheet {
+    max-height: min(53dvh, 450px);
+    padding: 11px;
+  }
+
+  .sheet-head h1,
+  .sheet-head h2 {
+    font-size: 18px;
+  }
+
+  .sheet-head p,
+  .place-card p {
+    font-size: 12.5px;
+  }
+
+  .context-tools {
+    display: grid;
+    gap: 8px;
+  }
+
+  .context-tools div {
+    justify-content: flex-start;
+  }
+
+  .signal-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
