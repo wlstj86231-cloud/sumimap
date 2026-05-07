@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>스미맵 - 일본 생활 제보 지도</title>
+    <meta name="description" content="일본에서 사는 한국인을 위한 충전, 화장실, 쉬기 좋은 곳, 한국어 대응, 응대 불편 제보 지도.">
+    <meta name="theme-color" content="#f7f4ed">
+    <link rel="manifest" href="/manifest.webmanifest">
+    <link rel="icon" href="/assets/icon.svg" type="image/svg+xml">
+    <link rel="preconnect" href="https://tile.openstreetmap.org">
+    <link rel="preload" href="/assets/vendor/leaflet/leaflet.css" as="style">
+    <link rel="preload" href="/assets/styles.css?v=20260507-stable3" as="style">
+    <link rel="stylesheet" href="/assets/vendor/leaflet/leaflet.css">
+    <link rel="stylesheet" href="/assets/styles.css?v=20260507-stable3">
+  </head>
+  <body>
+    <div class="app-shell">
+      <div id="map" class="map-surface" aria-label="스미맵 지도"></div>
+
+      <header class="topbar" aria-label="상단 탐색">
+        <a class="brand" href="/" aria-label="스미맵 홈">
+          <span class="brand-mark">住</span>
+          <span>
+            <strong>스미맵</strong>
+            <small>일본 생활 제보 지도</small>
+          </span>
+        </a>
+        <button class="icon-button" id="searchToggle" type="button" aria-label="검색 열기">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m21 21-4.3-4.3"/><circle cx="11" cy="11" r="7"/></svg>
+        </button>
+      </header>
+
+      <section class="search-panel" id="searchPanel" hidden>
+        <label class="search-box">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m21 21-4.3-4.3"/><circle cx="11" cy="11" r="7"/></svg>
+          <input id="placeSearch" type="search" placeholder="지역, 상황, 태그 검색" autocomplete="off">
+        </label>
+        <div class="city-strip" aria-label="도시 빠른 이동">
+          <button type="button" data-city="tokyo">도쿄</button>
+          <button type="button" data-city="osaka">오사카</button>
+          <button type="button" data-city="fukuoka">후쿠오카</button>
+          <button type="button" data-city="kyoto">교토</button>
+        </div>
+      </section>
+
+      <aside class="status-pill" id="statusPill">도쿄 샘플 8곳</aside>
+
+      <main class="bottom-sheet" id="sheet" aria-live="polite"></main>
+
+      <nav class="bottom-nav" aria-label="주요 메뉴">
+        <button type="button" class="nav-button is-active" data-action="near">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s7-5.2 7-12a7 7 0 1 0-14 0c0 6.8 7 12 7 12Z"/><circle cx="12" cy="9" r="2.4"/></svg>
+          <span>근처</span>
+        </button>
+        <button type="button" class="nav-button" data-action="filters">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg>
+          <span>필터</span>
+        </button>
+        <button type="button" class="nav-button nav-report" data-action="report">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          <span>제보</span>
+        </button>
+        <button type="button" class="nav-button" data-action="saved">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h12v17l-6-3.5L6 21V4Z"/></svg>
+          <span>저장</span>
+        </button>
+        <button type="button" class="nav-button" data-action="guide">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5A3.5 3.5 0 0 1 7.5 2H20v17H7.5A3.5 3.5 0 0 0 4 22V5.5Z"/><path d="M4 5.5A3.5 3.5 0 0 1 7.5 2H20"/></svg>
+          <span>정보</span>
+        </button>
+      </nav>
+
+      <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    </div>
+
+    <script src="/assets/vendor/leaflet/leaflet.js" defer></script>
+    <script src="/assets/app.js?v=20260507-stable3" type="module"></script>
+  </body>
+</html>
