@@ -224,6 +224,14 @@ const state = {
   reports: normalizeReports(readJson("sumimap:reports", []))
 };
 
+const placesById = new Map(places.map((place) => [place.id, place]));
+const validPlaceIds = new Set(placesById.keys());
+const categoriesByKey = new Map(categories.map((category) => [category.key, category]));
+const categoryEmojis = new Map(categories.map((category) => [category.key, category.emoji]));
+const scenariosByKey = new Map(scenarios.map((scenario) => [scenario.key, scenario]));
+const reportTagsByKey = new Map(reportTags.map((tag) => [tag.key, tag]));
+const reportTagsByLabel = new Map(reportTags.map((tag) => [tag.label, tag]));
+
 const sheet = document.querySelector("#sheet");
 const toast = document.querySelector("#toast");
 const statusPill = document.querySelector("#statusPill");
@@ -238,6 +246,12 @@ let map;
 let markerLayer;
 let userLocationLayer;
 const markers = new Map();
+const markerClassNames = new Map();
+let reportVersion = 0;
+let visibleReportsCache = null;
+let derivedPlaceCache = new Map();
+let filteredPlacesCacheKey = "";
+let filteredPlacesCache = [];
 let started = false;
 
 startWhenReady();
@@ -271,15 +285,20 @@ function init() {
 function bootMap() {
   map = L.map("map", {
     zoomControl: false,
-    attributionControl: true
+    attributionControl: true,
+    fadeAnimation: false,
+    zoomAnimation: false,
+    markerZoomAnimation: false
   }).setView(cities.tokyo.center, cities.tokyo.zoom);
 
   L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 19,
-    attribution: "&copy; OpenStreetMap"
+    attribution: "&copy; OpenStreetMap",
+    updateWhenIdle: true,
+    updateWhenZooming: false,
+    keepBuffer: 1
   }).addTo(map);
 
-  L.control.zoom({ position: "topright" }).addTo(map);
   markerLayer = L.layerGroup().addTo(map);
 }
 
@@ -534,7 +553,7 @@ function renderReport() {
 function renderSaved() {
   const savedPlaces = places.filter((place) => state.saved.includes(place.id));
   const recentPlaces = state.recent
-    .map((id) => places.find((place) => place.id === id))
+    .map((id) => placesById.get(id))
     .filter((place) => place && !state.saved.includes(place.id))
     .slice(0, 6);
   return `
@@ -673,7 +692,7 @@ function renderPlaceCard(place) {
 }
 
 function renderEmptyState() {
-  const label = categories.find((item) => item.key === state.filter)?.label || "조건";
+  const label = categoriesByKey.get(state.filter)?.label || "조건";
   return `
     <section class="place-card empty-card">
       <h3>조건에 맞는 장소가 아직 없어요</h3>
@@ -739,24 +758,47 @@ function filterChip(item) {
 }
 
 function renderMarkers() {
-  markerLayer.clearLayers();
-  markers.clear();
+  const visiblePlaces = getFilteredPlaces();
+  const visibleIds = new Set(visiblePlaces.map((place) => place.id));
 
-  getFilteredPlaces().forEach((place) => {
+  markers.forEach((marker, placeId) => {
+    if (!visibleIds.has(placeId)) {
+      markerLayer.removeLayer(marker);
+      markers.delete(placeId);
+      markerClassNames.delete(placeId);
+    }
+  });
+
+  visiblePlaces.forEach((place) => {
+    const markerClassName = `sumimap-marker marker-${place.category} ${place.id === state.selectedId ? "is-selected" : ""}`;
+    const existing = markers.get(place.id);
+
+    if (existing) {
+      if (markerClassNames.get(place.id) !== markerClassName) {
+        existing.setIcon(L.divIcon({
+          className: markerClassName,
+          html: markerLabel(place.category)
+        }));
+        markerClassNames.set(place.id, markerClassName);
+      }
+      return;
+    }
+
     const marker = L.marker([place.lat, place.lng], {
       icon: L.divIcon({
-        className: `sumimap-marker marker-${place.category} ${place.id === state.selectedId ? "is-selected" : ""}`,
+        className: markerClassName,
         html: markerLabel(place.category)
       })
     });
     marker.on("click", () => selectPlace(place.id, false));
     marker.addTo(markerLayer);
     markers.set(place.id, marker);
+    markerClassNames.set(place.id, markerClassName);
   });
 }
 
 function selectPlace(placeId, moveMap) {
-  const place = places.find((item) => item.id === placeId);
+  const place = placesById.get(placeId);
   if (!place) return;
   state.selectedId = place.id;
   rememberPlace(place.id);
@@ -772,7 +814,7 @@ function selectPlace(placeId, moveMap) {
 }
 
 function applyScenario(scenarioKey) {
-  const scenario = scenarios.find((item) => item.key === scenarioKey);
+  const scenario = scenariosByKey.get(scenarioKey);
   if (!scenario) return;
 
   state.activeScenario = scenario.key;
@@ -813,6 +855,7 @@ function submitReport(form) {
   };
 
   state.reports.unshift(report);
+  invalidateReportCaches();
   writeJson("sumimap:reports", state.reports.slice(0, 100));
   state.selectedId = report.placeId;
   state.activePanel = "near";
@@ -844,6 +887,7 @@ function voteReport(reportId, vote) {
     showToast(isHiddenReport(report) ? "허위 의심이 누적되어 신호 계산에서 빠졌어." : "허위 의심을 반영했어.");
   }
 
+  invalidateReportCaches();
   writeJson("sumimap:reports", state.reports);
   renderSheet();
   renderMarkers();
@@ -863,7 +907,7 @@ function toggleSave(placeId) {
 }
 
 function getSelectedPlace() {
-  return places.find((item) => item.id === state.selectedId) || places[0];
+  return placesById.get(state.selectedId) || places[0];
 }
 
 function syncSelectedWithFiltered() {
@@ -875,6 +919,16 @@ function syncSelectedWithFiltered() {
 }
 
 function getFilteredPlaces() {
+  const cacheKey = [
+    state.filter,
+    state.query,
+    state.activeScenario,
+    state.userPosition ? `${state.userPosition.lat.toFixed(5)},${state.userPosition.lng.toFixed(5)}` : "",
+    reportVersion
+  ].join("|");
+
+  if (cacheKey === filteredPlacesCacheKey) return filteredPlacesCache;
+
   const normalized = state.query.toLowerCase();
   const filtered = places.filter((place) => {
     const signals = getLiveSignals(place);
@@ -890,12 +944,14 @@ function getFilteredPlaces() {
       `${place.name} ${place.area} ${place.kind} ${liveTags.join(" ")}`.toLowerCase().includes(normalized);
     return filterMatch && queryMatch;
   });
-  return sortPlacesForContext(filtered);
+  filteredPlacesCacheKey = cacheKey;
+  filteredPlacesCache = sortPlacesForContext(filtered);
+  return filteredPlacesCache;
 }
 
 function refreshStatus() {
   const visible = getFilteredPlaces();
-  const scenario = scenarios.find((item) => item.key === state.activeScenario);
+  const scenario = scenariosByKey.get(state.activeScenario);
   statusPill.textContent = scenario ? `${scenario.emoji} ${scenario.label} · ${visible.length}곳` : `📍 ${visible.length}곳 표시 · 바로 제보`;
   if (state.userPosition && !scenario) {
     statusPill.textContent = `📍 내 위치 기준 · ${visible.length}곳`;
@@ -904,8 +960,8 @@ function refreshStatus() {
 
 function renderContextTools() {
   const labels = [];
-  const scenario = scenarios.find((item) => item.key === state.activeScenario);
-  const filter = categories.find((item) => item.key === state.filter && item.key !== "all");
+  const scenario = scenariosByKey.get(state.activeScenario);
+  const filter = state.filter !== "all" ? categoriesByKey.get(state.filter) : null;
   if (scenario) labels.push(`${scenario.emoji} ${scenario.label}`);
   if (filter && !scenario) labels.push(`${filter.emoji} ${filter.label}`);
   if (state.query) labels.push(`검색 "${escapeHtml(state.query)}"`);
@@ -955,7 +1011,7 @@ function updateSearchClear() {
 }
 
 function totalSignals(place) {
-  return Object.values(getLiveSignals(place)).reduce((sum, value) => sum + value, 0);
+  return getPlaceDerived(place).totalSignals;
 }
 
 function markerLabel(category) {
@@ -983,7 +1039,7 @@ function renderMapQuickRail() {
 
 function sortPlacesForContext(list) {
   const key = state.activeScenario
-    ? scenarios.find((scenario) => scenario.key === state.activeScenario)?.filter
+    ? scenariosByKey.get(state.activeScenario)?.filter
     : state.filter !== "all" ? state.filter : "";
 
   if (!key) {
@@ -1078,15 +1134,15 @@ function formatDistance(meters) {
 }
 
 function categoryEmoji(category) {
-  return categories.find((item) => item.key === category)?.emoji || "📍";
+  return categoryEmojis.get(category) || "📍";
 }
 
 function labelForReportKey(key) {
-  return reportTags.find((tag) => tag.key === key)?.label || "";
+  return reportTagsByKey.get(key)?.label || "";
 }
 
 function emojiForTag(label) {
-  const reportTag = reportTags.find((tag) => tag.label === label);
+  const reportTag = reportTagsByLabel.get(label);
   if (reportTag) return reportTag.emoji;
   if (label.includes("와이파이")) return "📶";
   if (label.includes("충전")) return "🔌";
@@ -1118,44 +1174,77 @@ function icon(name) {
 }
 
 function getLiveSignals(place) {
+  return getPlaceDerived(place).signals;
+}
+
+function getLiveTags(place) {
+  return getPlaceDerived(place).tags;
+}
+
+function getLiveTrust(place) {
+  return getPlaceDerived(place).liveTrust;
+}
+
+function getTrustScore(place) {
+  return getPlaceDerived(place).trustScore;
+}
+
+function getVisibleReports() {
+  if (visibleReportsCache?.version === reportVersion) return visibleReportsCache.list;
+
+  const list = state.reports.filter((report) => !isHiddenReport(report));
+  const byPlace = new Map();
+  list.forEach((report) => {
+    const placeReports = byPlace.get(report.placeId) || [];
+    placeReports.push(report);
+    byPlace.set(report.placeId, placeReports);
+  });
+  visibleReportsCache = { version: reportVersion, list, byPlace };
+  return list;
+}
+
+function getVisibleReportsForPlace(placeId) {
+  getVisibleReports();
+  return visibleReportsCache.byPlace.get(placeId) || [];
+}
+
+function getPlaceDerived(place) {
+  const cached = derivedPlaceCache.get(place.id);
+  if (cached?.version === reportVersion) return cached;
+
+  const reports = getVisibleReportsForPlace(place.id);
   const signals = { ...place.signals };
-  getVisibleReportsForPlace(place.id).forEach((report) => {
+  const tags = new Set(place.tags);
+  reports.forEach((report) => {
     report.tags.forEach((tag) => {
+      tags.add(tag);
       const key = signalForReportTag[tag];
       if (key) signals[key] += 1;
     });
   });
-  return signals;
-}
 
-function getLiveTags(place) {
-  const tags = new Set(place.tags);
-  getVisibleReportsForPlace(place.id).forEach((report) => {
-    report.tags.forEach((tag) => tags.add(tag));
-  });
-  return [...tags].slice(0, 8);
-}
-
-function getLiveTrust(place) {
-  const reports = getVisibleReportsForPlace(place.id);
-  if (reports.length) return `${reports.length}건 즉시 반영`;
-  return place.trust;
-}
-
-function getTrustScore(place) {
-  const total = totalSignals(place);
-  const reports = getVisibleReportsForPlace(place.id);
+  const total = Object.values(signals).reduce((sum, value) => sum + value, 0);
   const disputes = reports.reduce((sum, report) => sum + report.disputes, 0);
   const agrees = reports.reduce((sum, report) => sum + report.agrees, 0);
-  return Math.max(48, Math.min(98, Math.round(62 + Math.min(total, 42) * 0.7 + agrees * 3 - disputes * 5)));
+  const derived = {
+    version: reportVersion,
+    reports,
+    signals,
+    tags: [...tags].slice(0, 8),
+    totalSignals: total,
+    liveTrust: reports.length ? `${reports.length}건 즉시 반영` : place.trust,
+    trustScore: Math.max(48, Math.min(98, Math.round(62 + Math.min(total, 42) * 0.7 + agrees * 3 - disputes * 5)))
+  };
+  derivedPlaceCache.set(place.id, derived);
+  return derived;
 }
 
-function getVisibleReports() {
-  return state.reports.filter((report) => !isHiddenReport(report));
-}
-
-function getVisibleReportsForPlace(placeId) {
-  return getVisibleReports().filter((report) => report.placeId === placeId);
+function invalidateReportCaches() {
+  reportVersion += 1;
+  visibleReportsCache = null;
+  derivedPlaceCache = new Map();
+  filteredPlacesCacheKey = "";
+  filteredPlacesCache = [];
 }
 
 function isHiddenReport(report) {
@@ -1190,7 +1279,7 @@ function normalizeRecent(ids) {
 }
 
 function rememberPlace(placeId) {
-  if (!places.some((place) => place.id === placeId)) return;
+  if (!validPlaceIds.has(placeId)) return;
   state.recent = [placeId, ...state.recent.filter((id) => id !== placeId)].slice(0, 8);
   writeJson("sumimap:recent", state.recent);
 }

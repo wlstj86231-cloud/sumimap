@@ -1,8 +1,8 @@
-const CACHE_NAME = "sumimap-v15-responsive";
+const CACHE_NAME = "sumimap-v16-speed";
 const LOCAL_ASSETS = [
   "/",
-  "/assets/styles.css?v=20260508-responsive",
-  "/assets/app.js?v=20260508-responsive",
+  "/assets/styles.css?v=20260508-speed",
+  "/assets/app.js?v=20260508-speed",
   "/assets/vendor/leaflet/leaflet.css",
   "/assets/vendor/leaflet/leaflet.js",
   "/assets/vendor/leaflet/images/layers.png",

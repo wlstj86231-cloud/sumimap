@@ -2488,3 +2488,46 @@ textarea:focus-visible {
     max-height: min(62dvh, 640px);
   }
 }
+
+/* Performance pass */
+.map-surface,
+.bottom-sheet,
+.bottom-nav,
+.topbar,
+.search-panel,
+.map-quick-rail {
+  contain: layout paint style;
+}
+
+.place-card,
+.scenario-chip,
+.feed-head,
+.feed-item,
+.signal,
+.use-summary div,
+.decision-card,
+.note-list li {
+  contain: layout paint;
+}
+
+.leaflet-tile {
+  filter: none;
+}
+
+.topbar,
+.search-panel,
+.bottom-sheet,
+.bottom-nav,
+.quick-chip {
+  backdrop-filter: blur(10px);
+}
+
+.place-list,
+.live-feed,
+.report-form {
+  contain: layout style;
+}
+
+.sumimap-marker {
+  will-change: transform;
+}
