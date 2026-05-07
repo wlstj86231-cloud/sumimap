@@ -218,6 +218,7 @@ const state = {
   selectedId: places[0].id,
   activePanel: "near",
   activeScenario: "",
+  userPosition: null,
   saved: normalizeSaved(readJson("sumimap:saved", [])),
   reports: normalizeReports(readJson("sumimap:reports", []))
 };
@@ -579,7 +580,7 @@ function renderPlaceDetail(place) {
       <div class="use-summary">
         <div>
           <span>거리감</span>
-          <strong>${place.walk || "도보 확인"}</strong>
+          <strong>${distanceLabel(place)}</strong>
         </div>
         <div>
           <span>최근 확인</span>
@@ -626,7 +627,7 @@ function renderPlaceCard(place) {
         <div>
           <h3><span class="place-title-emoji" aria-hidden="true">${categoryEmoji(place.category)}</span>${place.name}</h3>
           <p>${place.area} · ${getLiveTags(place).slice(0, 3).map((tag) => `${emojiForTag(tag)} ${tag}`).join(" · ")}</p>
-          <small class="card-meta">${place.walk || "거리 확인"} · ${place.lastSeen || "최근 확인 필요"} · 신뢰 ${getTrustScore(place)}%</small>
+          <small class="card-meta">${distanceLabel(place)} · ${place.lastSeen || "최근 확인 필요"} · 신뢰 ${getTrustScore(place)}%</small>
         </div>
         <span class="badge ${caution ? "caution" : "info"}">${getLiveTrust(place)}</span>
       </div>
@@ -741,7 +742,7 @@ function applyScenario(scenarioKey) {
   state.query = "";
   placeSearch.value = "";
   const list = getFilteredPlaces();
-  if (list.length && !list.some((place) => place.id === state.selectedId)) {
+  if (list.length) {
     state.selectedId = list[0].id;
     map.setView([list[0].lat, list[0].lng], 14);
   }
@@ -856,6 +857,9 @@ function refreshStatus() {
   const visible = getFilteredPlaces();
   const scenario = scenarios.find((item) => item.key === state.activeScenario);
   statusPill.textContent = scenario ? `${scenario.emoji} ${scenario.label} · ${visible.length}곳` : `📍 ${visible.length}곳 표시 · 바로 제보`;
+  if (state.userPosition && !scenario) {
+    statusPill.textContent = `📍 내 위치 기준 · ${visible.length}곳`;
+  }
 }
 
 function totalSignals(place) {
@@ -891,12 +895,18 @@ function sortPlacesForContext(list) {
     : state.filter !== "all" ? state.filter : "";
 
   if (!key) {
-    return [...list].sort((a, b) => totalSignals(b) - totalSignals(a));
+    return [...list].sort((a, b) => {
+      const distanceDiff = distanceScore(a) - distanceScore(b);
+      if (distanceDiff) return distanceDiff;
+      return totalSignals(b) - totalSignals(a);
+    });
   }
 
   return [...list].sort((a, b) => {
     const scoreDiff = scorePlaceForKey(b, key) - scorePlaceForKey(a, key);
     if (scoreDiff) return scoreDiff;
+    const distanceDiff = distanceScore(a) - distanceScore(b);
+    if (distanceDiff) return distanceDiff;
     return totalSignals(b) - totalSignals(a);
   });
 }
@@ -918,6 +928,7 @@ function locateUser() {
   navigator.geolocation.getCurrentPosition(
     ({ coords }) => {
       const position = [coords.latitude, coords.longitude];
+      state.userPosition = { lat: coords.latitude, lng: coords.longitude };
       if (userLocationLayer) map.removeLayer(userLocationLayer);
       userLocationLayer = L.circleMarker(position, {
         radius: 8,
@@ -929,6 +940,11 @@ function locateUser() {
       userLocationLayer.bindPopup("내 위치").openPopup();
       map.setView(position, 15);
       locateButton.classList.remove("is-loading");
+      const list = getFilteredPlaces();
+      if (list.length) state.selectedId = list[0].id;
+      renderSheet();
+      renderMarkers();
+      refreshStatus();
       showToast("현재 위치 기준으로 지도를 이동했어.");
     },
     () => {
@@ -937,6 +953,33 @@ function locateUser() {
     },
     { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 }
   );
+}
+
+function distanceScore(place) {
+  if (!state.userPosition) return 0;
+  return distanceInMeters(state.userPosition.lat, state.userPosition.lng, place.lat, place.lng);
+}
+
+function distanceLabel(place) {
+  if (!state.userPosition) return place.walk || "거리 확인";
+  return `${formatDistance(distanceScore(place))} · ${place.walk || "도보 확인"}`;
+}
+
+function distanceInMeters(lat1, lng1, lat2, lng2) {
+  const radius = 6371000;
+  const toRad = (value) => value * Math.PI / 180;
+  const dLat = toRad(lat2 - lat1);
+  const dLng = toRad(lng2 - lng1);
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
+  return radius * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+function formatDistance(meters) {
+  if (!Number.isFinite(meters)) return "거리 확인";
+  if (meters < 1000) return `${Math.max(10, Math.round(meters / 10) * 10)}m`;
+  return `${(meters / 1000).toFixed(meters < 10000 ? 1 : 0)}km`;
 }
 
 function categoryEmoji(category) {
