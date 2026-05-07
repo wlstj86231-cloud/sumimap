@@ -1833,3 +1833,355 @@ body {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+/* Finish polish pass */
+:root {
+  --paper: #f3f7f6;
+  --surface-soft: #f8fbfa;
+  --ink: #101a1f;
+  --muted: #56666f;
+  --line: #d3dedf;
+  --green: #0fa478;
+  --green-soft: #e8f7f1;
+  --shadow: 0 16px 42px rgba(16, 26, 31, 0.16);
+}
+
+.app-shell {
+  background: #e8f0ed;
+}
+
+.leaflet-container {
+  background: #dce8e4;
+}
+
+.topbar,
+.search-panel,
+.bottom-sheet,
+.bottom-nav {
+  border-color: rgba(16, 26, 31, 0.11);
+  background: rgba(255, 255, 255, 0.985);
+  box-shadow: var(--shadow);
+}
+
+.topbar {
+  padding: 8px 8px 8px 9px;
+}
+
+.brand-mark {
+  background: #0fa478;
+  box-shadow: inset 0 -9px 16px rgba(6, 96, 73, 0.22);
+}
+
+.brand strong {
+  color: #0f1b20;
+}
+
+.icon-button,
+.chip,
+.city-strip button,
+.context-tools button,
+.feed-actions button,
+.text-button,
+.primary-button,
+.place-card,
+.scenario-chip,
+.quick-chip,
+.nav-button {
+  transition: background-color 140ms ease, border-color 140ms ease, box-shadow 140ms ease, color 140ms ease, transform 140ms ease;
+}
+
+button:active {
+  transform: translateY(1px);
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid rgba(15, 164, 120, 0.48);
+  outline-offset: 2px;
+}
+
+.icon-button,
+.search-box,
+.city-strip button,
+.chip,
+.context-tools button,
+.feed-actions button,
+.text-button {
+  box-shadow: inset 0 -1px 0 rgba(16, 26, 31, 0.04);
+}
+
+.icon-button {
+  color: #15242a;
+  background: #ffffff;
+}
+
+.search-panel {
+  border-color: rgba(16, 26, 31, 0.1);
+}
+
+.search-box {
+  border-color: #cfdbdc;
+}
+
+.search-clear {
+  color: #35454c;
+  background: #eef4f3;
+}
+
+.city-strip button {
+  color: #1c2a30;
+  background: #ffffff;
+}
+
+.status-pill {
+  color: #17362c;
+  border-color: rgba(15, 164, 120, 0.22);
+  background: rgba(248, 251, 250, 0.96);
+  box-shadow: 0 9px 22px rgba(16, 26, 31, 0.12);
+}
+
+.map-quick-rail {
+  padding-bottom: 7px;
+}
+
+.quick-chip {
+  min-height: 36px;
+  border-color: rgba(16, 26, 31, 0.12);
+  color: #17272d;
+  background: rgba(255, 255, 255, 0.97);
+  box-shadow: 0 8px 20px rgba(16, 26, 31, 0.11);
+}
+
+.quick-chip.is-active {
+  border-color: rgba(15, 164, 120, 0.42);
+  color: #0d5d47;
+  background: #e8f7f1;
+  box-shadow: 0 0 0 2px rgba(15, 164, 120, 0.12), 0 8px 20px rgba(16, 26, 31, 0.11);
+}
+
+.bottom-sheet {
+  bottom: calc(var(--dock-height) + env(safe-area-inset-bottom) + 16px);
+  scrollbar-gutter: stable;
+}
+
+.bottom-sheet::-webkit-scrollbar {
+  width: 8px;
+}
+
+.bottom-sheet::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background: rgba(83, 99, 108, 0.32);
+  background-clip: padding-box;
+}
+
+.sheet-grip {
+  background: #c8d2d4;
+}
+
+.sheet-head h1,
+.sheet-head h2 {
+  color: #0f1a1f;
+}
+
+.compact-stat {
+  color: #0f5f48;
+  background: #e8f7f1;
+  box-shadow: inset 0 0 0 1px rgba(15, 164, 120, 0.1);
+}
+
+.context-tools {
+  border-color: #d8e3e4;
+  background: #f6faf9;
+}
+
+.context-tools button {
+  border-color: #d1dcdd;
+}
+
+.scenario-chip,
+.place-card,
+.feed-head,
+.feed-item,
+.signal,
+.use-summary div,
+.decision-card,
+.note-list li {
+  border-color: #d6e1e2;
+  box-shadow: 0 1px 0 rgba(16, 26, 31, 0.04);
+}
+
+.scenario-chip {
+  background: linear-gradient(180deg, #ffffff, #fbfdfc);
+}
+
+.scenario-chip.is-active {
+  border-color: rgba(15, 164, 120, 0.45);
+  background: linear-gradient(180deg, #f1fbf7, #ffffff);
+  box-shadow: inset 3px 0 0 rgba(15, 164, 120, 0.7), 0 1px 0 rgba(16, 26, 31, 0.04);
+}
+
+.place-card {
+  background: linear-gradient(180deg, #ffffff, #fbfdfc);
+}
+
+.place-card.is-selected {
+  border-color: rgba(15, 164, 120, 0.44);
+  background: linear-gradient(180deg, #ffffff, #f5fcf9);
+  box-shadow: inset 3px 0 0 rgba(15, 164, 120, 0.76), 0 8px 22px rgba(16, 26, 31, 0.08);
+}
+
+.place-card h3 {
+  font-weight: 950;
+}
+
+.place-title-emoji,
+.report-emoji,
+.scenario-emoji,
+.badge-emoji,
+.chip-emoji {
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+}
+
+.badge {
+  border: 1px solid rgba(16, 26, 31, 0.05);
+}
+
+.badge.good {
+  color: #0e5f48;
+}
+
+.badge.info {
+  color: #24577d;
+}
+
+.badge.warn {
+  color: #79500f;
+}
+
+.badge.caution {
+  color: #7a2d24;
+}
+
+.decision-card {
+  border-color: rgba(15, 164, 120, 0.2);
+  background: linear-gradient(180deg, #f2fbf7, #ffffff);
+}
+
+.decision-card.is-caution {
+  border-color: rgba(211, 95, 79, 0.22);
+  background: linear-gradient(180deg, #fff4f2, #ffffff);
+}
+
+.signal,
+.use-summary div,
+.note-list li {
+  background: #fbfdfc;
+}
+
+.primary-button,
+.nav-report {
+  background: #0fa478;
+  box-shadow: 0 8px 18px rgba(15, 164, 120, 0.24);
+}
+
+.primary-button:active,
+.nav-report:active {
+  box-shadow: 0 5px 12px rgba(15, 164, 120, 0.2);
+}
+
+.bottom-nav {
+  box-shadow: 0 12px 32px rgba(16, 26, 31, 0.18);
+}
+
+.nav-button {
+  color: #687780;
+}
+
+.nav-button.is-active {
+  color: #0b7054;
+  background: #e8f7f1;
+  box-shadow: inset 0 0 0 1px rgba(15, 164, 120, 0.08);
+}
+
+.toast {
+  color: #ffffff;
+  background: rgba(16, 26, 31, 0.94);
+  box-shadow: 0 10px 24px rgba(16, 26, 31, 0.2);
+}
+
+.sumimap-marker {
+  border-color: #ffffff;
+  box-shadow: 0 9px 18px rgba(16, 26, 31, 0.26);
+}
+
+.sumimap-marker.is-selected {
+  box-shadow: 0 0 0 5px rgba(15, 164, 120, 0.18), 0 12px 24px rgba(16, 26, 31, 0.3);
+}
+
+@media (hover: hover) {
+  .icon-button:hover,
+  .city-strip button:hover,
+  .chip:hover,
+  .context-tools button:hover,
+  .feed-actions button:hover,
+  .text-button:hover {
+    border-color: rgba(15, 164, 120, 0.28);
+    background: #f5fbf8;
+  }
+
+  .place-card:hover,
+  .scenario-chip:hover {
+    border-color: rgba(15, 164, 120, 0.24);
+    box-shadow: 0 8px 20px rgba(16, 26, 31, 0.08);
+  }
+
+  .nav-button:hover {
+    color: #0b7054;
+    background: #f1fbf7;
+  }
+}
+
+@media (min-width: 780px) {
+  .topbar,
+  .search-panel,
+  .status-pill,
+  .map-quick-rail,
+  .bottom-sheet,
+  .bottom-nav {
+    left: 24px;
+    right: auto;
+  }
+
+  .topbar,
+  .search-panel,
+  .map-quick-rail,
+  .bottom-sheet,
+  .bottom-nav {
+    width: 398px;
+  }
+
+  .bottom-sheet {
+    max-height: min(60dvh, 590px);
+  }
+}
+
+@media (max-width: 390px) {
+  .topbar,
+  .bottom-sheet,
+  .bottom-nav {
+    left: 7px;
+    right: 7px;
+  }
+
+  .quick-chip strong {
+    font-size: 11.5px;
+  }
+
+  .nav-button {
+    min-height: 51px;
+  }
+}
