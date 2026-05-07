@@ -229,6 +229,24 @@ a {
   background: transparent;
 }
 
+.search-clear {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  color: #566269;
+  background: #edf2f1;
+  font-size: 18px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.search-clear[hidden] {
+  display: none;
+}
+
 .city-strip {
   display: flex;
   gap: 8px;
@@ -434,10 +452,61 @@ a {
   background: var(--red-soft);
 }
 
+.context-tools {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 9px;
+  margin: 10px 0;
+  padding: 9px 10px;
+  border: 1px solid rgba(30, 37, 40, 0.08);
+  border-radius: 8px;
+  background: #f7fbf9;
+}
+
+.context-tools span {
+  min-width: 0;
+  overflow: hidden;
+  color: #2d3f3b;
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.context-tools div {
+  display: flex;
+  gap: 6px;
+  flex: 0 0 auto;
+}
+
+.context-tools button {
+  min-height: 30px;
+  padding: 0 9px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: #415057;
+  background: #ffffff;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.place-section-title {
+  margin: 14px 0 8px;
+  color: #445057;
+  font-size: 12px;
+  font-weight: 950;
+}
+
 .place-list {
   display: grid;
   gap: 10px;
   margin-top: 12px;
+}
+
+.compact-list {
+  margin-top: 0;
 }
 
 .place-card {

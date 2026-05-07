@@ -220,6 +220,7 @@ const state = {
   activeScenario: "",
   userPosition: null,
   saved: normalizeSaved(readJson("sumimap:saved", [])),
+  recent: normalizeRecent(readJson("sumimap:recent", [])),
   reports: normalizeReports(readJson("sumimap:reports", []))
 };
 
@@ -230,6 +231,7 @@ const mapQuickRail = document.querySelector("#mapQuickRail");
 const locateButton = document.querySelector("#locateButton");
 const searchPanel = document.querySelector("#searchPanel");
 const searchToggle = document.querySelector("#searchToggle");
+const searchClear = document.querySelector("#searchClear");
 const placeSearch = document.querySelector("#placeSearch");
 
 let map;
@@ -303,10 +305,22 @@ function bindEvents() {
 
   placeSearch.addEventListener("input", (event) => {
     state.query = event.target.value.trim();
+    updateSearchClear();
     syncSelectedWithFiltered();
     renderSheet();
     renderMarkers();
     refreshStatus();
+  });
+
+  searchClear.addEventListener("click", () => {
+    state.query = "";
+    placeSearch.value = "";
+    updateSearchClear();
+    syncSelectedWithFiltered();
+    renderSheet();
+    renderMarkers();
+    refreshStatus();
+    placeSearch.focus();
   });
 
   document.querySelectorAll("[data-city]").forEach((button) => {
@@ -348,6 +362,18 @@ function bindEvents() {
     const scenarioButton = event.target.closest("[data-scenario]");
     if (scenarioButton) {
       applyScenario(scenarioButton.dataset.scenario);
+      return;
+    }
+
+    const resetButton = event.target.closest("[data-reset-context]");
+    if (resetButton) {
+      resetContext();
+      return;
+    }
+
+    const locationClearButton = event.target.closest("[data-clear-location]");
+    if (locationClearButton) {
+      clearLocationContext();
       return;
     }
 
@@ -429,6 +455,7 @@ function renderNearby() {
     <div class="filter-row">
       ${categories.map((item) => filterChip(item)).join("")}
     </div>
+    ${renderContextTools()}
     ${place ? renderPlaceDetail(place) : renderEmptyState()}
     ${list.length ? `<div class="place-list">${list.map((item) => renderPlaceCard(item)).join("")}</div>` : ""}
   `;
@@ -447,6 +474,7 @@ function renderFilters() {
     <div class="filter-row">
       ${categories.map((item) => filterChip(item)).join("")}
     </div>
+    ${renderContextTools()}
     <ul class="note-list">
       <li>충전은 콘센트 위치와 직원 허락 여부를 같이 봐야 정확해요.</li>
       <li>화장실은 단독 이용 가능 여부가 장소마다 달라요.</li>
@@ -505,17 +533,26 @@ function renderReport() {
 
 function renderSaved() {
   const savedPlaces = places.filter((place) => state.saved.includes(place.id));
+  const recentPlaces = state.recent
+    .map((id) => places.find((place) => place.id === id))
+    .filter((place) => place && !state.saved.includes(place.id))
+    .slice(0, 6);
   return `
     <div class="sheet-grip"></div>
     <div class="sheet-head">
       <div>
         <h2>저장한 곳</h2>
-        <p>도쿄, 오사카, 후쿠오카에서 다시 볼 장소를 모아둬요.</p>
+        <p>저장한 곳과 방금 확인한 곳을 빠르게 다시 열어요.</p>
       </div>
       <span class="compact-stat">${savedPlaces.length}곳</span>
     </div>
-    <div class="place-list">
+    <div class="place-section-title">저장한 곳</div>
+    <div class="place-list compact-list">
       ${savedPlaces.length ? savedPlaces.map((item) => renderPlaceCard(item)).join("") : `<div class="place-card"><h3>아직 저장한 장소가 없어요</h3><p>장소 상세에서 저장을 누르면 여기에 모여요.</p></div>`}
+    </div>
+    <div class="place-section-title">최근 본 곳</div>
+    <div class="place-list compact-list">
+      ${recentPlaces.length ? recentPlaces.map((item) => renderPlaceCard(item)).join("") : `<div class="place-card"><h3>최근 확인한 장소가 없어요</h3><p>지도를 누르거나 장소 카드를 열면 자동으로 기록돼요.</p></div>`}
     </div>
   `;
 }
@@ -722,6 +759,7 @@ function selectPlace(placeId, moveMap) {
   const place = places.find((item) => item.id === placeId);
   if (!place) return;
   state.selectedId = place.id;
+  rememberPlace(place.id);
   state.activePanel = "near";
   document.querySelectorAll(".nav-button").forEach((button) => {
     button.classList.toggle("is-active", button.dataset.action === "near");
@@ -744,6 +782,7 @@ function applyScenario(scenarioKey) {
   const list = getFilteredPlaces();
   if (list.length) {
     state.selectedId = list[0].id;
+    rememberPlace(list[0].id);
     map.setView([list[0].lat, list[0].lng], 14);
   }
   showToast(`${scenario.label} 상황으로 좁혔어.`);
@@ -781,6 +820,7 @@ function submitReport(form) {
   state.filter = "all";
   state.query = "";
   placeSearch.value = "";
+  updateSearchClear();
   searchPanel.hidden = true;
   renderMapQuickRail();
   document.querySelectorAll(".nav-button").forEach((button) => {
@@ -862,6 +902,58 @@ function refreshStatus() {
   }
 }
 
+function renderContextTools() {
+  const labels = [];
+  const scenario = scenarios.find((item) => item.key === state.activeScenario);
+  const filter = categories.find((item) => item.key === state.filter && item.key !== "all");
+  if (scenario) labels.push(`${scenario.emoji} ${scenario.label}`);
+  if (filter && !scenario) labels.push(`${filter.emoji} ${filter.label}`);
+  if (state.query) labels.push(`검색 "${escapeHtml(state.query)}"`);
+  if (state.userPosition) labels.push("내 위치 기준");
+  if (!labels.length) return "";
+
+  return `
+    <div class="context-tools" aria-label="현재 보기 조건">
+      <span>${labels.join(" · ")}</span>
+      <div>
+        ${(state.filter !== "all" || state.query || state.activeScenario) ? `<button type="button" data-reset-context>조건 해제</button>` : ""}
+        ${state.userPosition ? `<button type="button" data-clear-location>위치 해제</button>` : ""}
+      </div>
+    </div>
+  `;
+}
+
+function resetContext() {
+  state.filter = "all";
+  state.query = "";
+  state.activeScenario = "";
+  placeSearch.value = "";
+  updateSearchClear();
+  syncSelectedWithFiltered();
+  renderMapQuickRail();
+  renderSheet();
+  renderMarkers();
+  refreshStatus();
+  showToast("검색과 필터를 해제했어.");
+}
+
+function clearLocationContext() {
+  state.userPosition = null;
+  if (userLocationLayer) {
+    map.removeLayer(userLocationLayer);
+    userLocationLayer = null;
+  }
+  syncSelectedWithFiltered();
+  renderSheet();
+  renderMarkers();
+  refreshStatus();
+  showToast("내 위치 기준을 해제했어.");
+}
+
+function updateSearchClear() {
+  searchClear.hidden = !state.query;
+}
+
 function totalSignals(place) {
   return Object.values(getLiveSignals(place)).reduce((sum, value) => sum + value, 0);
 }
@@ -941,7 +1033,10 @@ function locateUser() {
       map.setView(position, 15);
       locateButton.classList.remove("is-loading");
       const list = getFilteredPlaces();
-      if (list.length) state.selectedId = list[0].id;
+      if (list.length) {
+        state.selectedId = list[0].id;
+        rememberPlace(list[0].id);
+      }
       renderSheet();
       renderMarkers();
       refreshStatus();
@@ -1088,6 +1183,16 @@ function normalizeSaved(ids) {
   if (!Array.isArray(ids)) return [];
   const validPlaceIds = new Set(places.map((place) => place.id));
   return [...new Set(ids.filter((id) => validPlaceIds.has(id)))];
+}
+
+function normalizeRecent(ids) {
+  return normalizeSaved(ids).slice(0, 8);
+}
+
+function rememberPlace(placeId) {
+  if (!places.some((place) => place.id === placeId)) return;
+  state.recent = [placeId, ...state.recent.filter((id) => id !== placeId)].slice(0, 8);
+  writeJson("sumimap:recent", state.recent);
 }
 
 function safeId(value, fallback) {
