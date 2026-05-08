@@ -28,6 +28,13 @@
       <description>City-level context for Tokyo, Osaka, Fukuoka, and Kyoto living spot signals.</description>
     </item>
     <item>
+      <title>Situation Entry Routes</title>
+      <link>https://sumimap.com/routes/</link>
+      <guid>https://sumimap.com/routes/</guid>
+      <pubDate>Fri, 08 May 2026 00:00:00 +0900</pubDate>
+      <description>Situation-based entry links for battery, restroom, rain shelter, and Korean support needs in Japan.</description>
+    </item>
+    <item>
       <title>About Sumimap</title>
       <link>https://sumimap.com/about/</link>
       <guid>https://sumimap.com/about/</guid>

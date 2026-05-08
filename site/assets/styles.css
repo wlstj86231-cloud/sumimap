@@ -2601,6 +2601,7 @@ textarea:focus-visible {
   .bottom-sheet.is-collapsed .context-tools,
   .bottom-sheet.is-collapsed .routine-card,
   .bottom-sheet.is-collapsed .route-card,
+  .bottom-sheet.is-collapsed .entry-share-card,
   .bottom-sheet.is-collapsed .travel-brief-card,
   .bottom-sheet.is-collapsed .saved-compare,
   .bottom-sheet.is-collapsed .playbook-strip,
@@ -3169,7 +3170,8 @@ html {
 }
 
 .route-card,
-.saved-compare {
+.saved-compare,
+.entry-share-card {
   display: grid;
   gap: 12px;
   padding: 14px;
@@ -3179,7 +3181,8 @@ html {
 }
 
 .route-head,
-.compare-head {
+.compare-head,
+.entry-share-head {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
@@ -3188,7 +3191,8 @@ html {
 
 .route-head span:first-child,
 .compare-head span,
-.saved-compare > div > span {
+.saved-compare > div > span,
+.entry-share-head span {
   display: block;
   color: var(--blue);
   font-size: 12px;
@@ -3197,7 +3201,8 @@ html {
 
 .route-head strong,
 .compare-head strong,
-.saved-compare > div > strong {
+.saved-compare > div > strong,
+.entry-share-head strong {
   display: block;
   margin-top: 3px;
   color: var(--ink);
@@ -3206,7 +3211,8 @@ html {
 }
 
 .route-head p,
-.saved-compare p {
+.saved-compare p,
+.entry-share-head p {
   margin: 5px 0 0;
   color: var(--muted);
   font-size: 12px;
@@ -3304,6 +3310,62 @@ html {
   flex: 1 1 auto;
 }
 
+.entry-share-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.entry-share-grid button {
+  display: grid;
+  gap: 6px;
+  place-items: center;
+  min-height: 58px;
+  padding: 9px 7px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--ink);
+  background: #ffffff;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.entry-share-grid button:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+}
+
+.static-link-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 12px;
+}
+
+.static-route-card {
+  display: grid;
+  gap: 8px;
+  min-height: 148px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface-soft);
+}
+
+.static-route-card strong {
+  color: var(--ink);
+  font-size: 18px;
+}
+
+.static-route-card p {
+  margin: 0;
+}
+
+.static-route-card a {
+  align-self: end;
+  color: var(--green);
+  font-weight: 900;
+}
+
 @media (max-width: 779px) {
   .bottom-sheet.is-collapsed .sheet-mini-action {
     display: none;
@@ -3319,6 +3381,7 @@ html {
 
   .routine-card,
   .route-card,
+  .entry-share-card,
   .travel-brief-card,
   .saved-compare {
     padding: 12px;

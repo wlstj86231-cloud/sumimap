@@ -78,6 +78,14 @@ const supportedLanguages = new Set(["ko", "ja"]);
 let currentLanguage = readLanguagePreference();
 
 const jaText = {
+  "바로 공유": "すぐ共有",
+  "현재 보기": "現在の表示",
+  "미니 동선": "ミニ動線",
+  "제보 입구": "投稿入口",
+  "링크를 복사했어.": "リンクをコピーしました。",
+  "공유가 막혀서 링크를 복사했어.": "共有できなかったためリンクをコピーしました。",
+  "스미맵에서 바로 확인": "スミマップですぐ確認",
+  "지금 보는 조건을 그대로 열 수 있게 공유해요.": "今の条件をそのまま開けるリンクで共有します。",
   "오늘 미니 동선": "今日のミニ動線",
   "급한 일 3곳으로 압축": "急ぎの用事を3か所に圧縮",
   "가까운 후보를 묶어두면 다시 검색하지 않아도 돼요.": "近い候補をまとめると再検索せずに見返せます。",
@@ -1040,6 +1048,7 @@ function init() {
   bootMap();
   bindEvents();
   applyStaticLanguage();
+  applyEntryParams();
   renderMapQuickRail();
   renderAddressResults();
   renderSheet();
@@ -1283,6 +1292,12 @@ function bindEvents() {
       return;
     }
 
+    const shareEntryButton = event.target.closest("[data-share-entry]");
+    if (shareEntryButton) {
+      shareEntryLink(shareEntryButton.dataset.shareEntry);
+      return;
+    }
+
     const dailyCheckButton = event.target.closest("[data-daily-check]");
     if (dailyCheckButton) {
       toggleDailyCheck(dailyCheckButton.dataset.dailyCheck);
@@ -1424,6 +1439,46 @@ function applyStaticLanguage() {
   });
 }
 
+function applyEntryParams() {
+  const params = new URLSearchParams(window.location.search);
+  const cityKey = params.get("city");
+  const scenarioKey = params.get("case") || params.get("scenario");
+  const filterKey = params.get("filter");
+  const placeId = params.get("place");
+  const panel = params.get("panel");
+
+  if (cities[cityKey]) {
+    map.setView(cities[cityKey].center, cities[cityKey].zoom);
+  }
+
+  if (scenariosByKey.has(scenarioKey)) {
+    const scenario = scenariosByKey.get(scenarioKey);
+    state.activeScenario = scenario.key;
+    state.filter = scenario.filter;
+    state.sheetMode = "collapsed";
+  } else if (categoriesByKey.has(filterKey)) {
+    state.filter = filterKey;
+  }
+
+  if (validPlaceIds.has(placeId)) {
+    const place = placesById.get(placeId);
+    state.selectedId = place.id;
+    state.activePanel = "near";
+    state.sheetMode = "expanded";
+    map.setView([place.lat, place.lng], 15);
+    rememberPlace(place.id);
+  } else {
+    syncSelectedWithFiltered();
+  }
+
+  if (panel === "report") {
+    state.activePanel = "report";
+    state.sheetMode = "expanded";
+  }
+
+  setActiveNav(state.activePanel);
+}
+
 function renderSheet() {
   if (state.activePanel === "filters") {
     sheet.innerHTML = renderFilters();
@@ -1462,6 +1517,7 @@ function renderNearby() {
     ${renderContextTools()}
     ${renderDailyRoutine(list, place)}
     ${renderMiniRoute(list, place)}
+    ${renderEntryShareCard(list, place)}
     ${place ? renderPlaceDetail(place) : renderEmptyState()}
     ${list.length ? `<div class="place-list">${list.map((item) => renderPlaceCard(item)).join("")}</div>` : ""}
   `;
@@ -1726,6 +1782,26 @@ function renderMiniRoute(list, selected) {
       <div class="detail-actions compact-actions">
         <button class="primary-button route-save" type="button" data-save-route>${icon("bookmark-check")}${t("코스 저장")}</button>
         <button class="text-button" type="button" data-open-panel="saved">${icon("bookmark")}${t("저장 보기")}</button>
+      </div>
+    </section>
+  `;
+}
+
+function renderEntryShareCard(list, selected) {
+  const route = getRouteCandidates(list, selected);
+  return `
+    <section class="entry-share-card">
+      <div class="entry-share-head">
+        <div>
+          <span>${t("바로 공유")}</span>
+          <strong>${t("스미맵에서 바로 확인")}</strong>
+          <p>${t("지금 보는 조건을 그대로 열 수 있게 공유해요.")}</p>
+        </div>
+      </div>
+      <div class="entry-share-grid">
+        <button type="button" data-share-entry="view">${icon("share-2")}<span>${t("현재 보기")}</span></button>
+        <button type="button" data-share-entry="route" ${route.length < 2 ? "disabled" : ""}>${icon("map")}<span>${t("미니 동선")}</span></button>
+        <button type="button" data-share-entry="report">${icon("plus")}<span>${t("제보 입구")}</span></button>
       </div>
     </section>
   `;
@@ -2194,6 +2270,50 @@ async function copyText(text) {
   const ok = document.execCommand("copy");
   textarea.remove();
   if (!ok) throw new Error("copy failed");
+}
+
+async function shareEntryLink(kind = "view") {
+  const url = entryLink(kind);
+  const title = t("스미맵에서 바로 확인");
+  try {
+    if (navigator.share) {
+      await navigator.share({ title, url });
+      return;
+    }
+    await copyText(url);
+    showToast("링크를 복사했어.");
+  } catch {
+    await copyText(url);
+    showToast("공유가 막혀서 링크를 복사했어.");
+  }
+}
+
+function entryLink(kind = "view") {
+  const url = new URL("/", window.location.origin);
+  const place = getSelectedPlace();
+  const center = map?.getCenter?.();
+  const city = center ? nearestCityKey(center.lat, center.lng) : place.city;
+  const params = url.searchParams;
+  params.set("city", city);
+
+  if (kind === "report") {
+    params.set("panel", "report");
+    params.set("place", place.id);
+  } else if (kind === "route") {
+    const route = getRouteCandidates(getFilteredPlaces(), place);
+    params.set("place", route[0]?.id || place.id);
+    params.set("filter", state.filter);
+    if (state.activeScenario) params.set("case", state.activeScenario);
+  } else {
+    params.set("place", place.id);
+    if (state.activeScenario) params.set("case", state.activeScenario);
+    else if (state.filter !== "all") params.set("filter", state.filter);
+  }
+
+  params.set("utm_source", "sumimap");
+  params.set("utm_medium", "share");
+  params.set("utm_campaign", `entry_${kind}`);
+  return url.toString();
 }
 
 function getRouteCandidates(list, selected) {
@@ -2876,6 +2996,7 @@ function icon(name) {
     languages: `<path d="M5 8h8"/><path d="M9 4v4c0 4-2 7-5 9"/><path d="M7 12c1 2 3 4 6 5"/><path d="M15 21l4-9 4 9"/><path d="M17 17h4"/>`,
     "triangle-alert": `<path d="M12 3 2 21h20L12 3Z"/><path d="M12 9v5M12 17h.01"/>`,
     search: `<path d="m21 21-4.3-4.3"/><circle cx="11" cy="11" r="7"/>`,
+    "share-2": `<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 10.7 6.8-4.4M8.6 13.3l6.8 4.4"/>`,
     copy: `<rect x="9" y="9" width="13" height="13" rx="2"/><rect x="2" y="2" width="13" height="13" rx="2"/>`,
     map: `<path d="M9 18 3 21V6l6-3 6 3 6-3v15l-6 3-6-3Z"/><path d="M9 3v15M15 6v15"/>`,
     crosshair: `<circle cx="12" cy="12" r="6"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/>`,
