@@ -82,6 +82,7 @@ const jaText = {
   "현재 보기": "現在の表示",
   "미니 동선": "ミニ動線",
   "제보 입구": "投稿入口",
+  "상황 가이드": "状況ガイド",
   "링크를 복사했어.": "リンクをコピーしました。",
   "공유가 막혀서 링크를 복사했어.": "共有できなかったためリンクをコピーしました。",
   "스미맵에서 바로 확인": "スミマップですぐ確認",
@@ -1802,6 +1803,7 @@ function renderEntryShareCard(list, selected) {
         <button type="button" data-share-entry="view">${icon("share-2")}<span>${t("현재 보기")}</span></button>
         <button type="button" data-share-entry="route" ${route.length < 2 ? "disabled" : ""}>${icon("map")}<span>${t("미니 동선")}</span></button>
         <button type="button" data-share-entry="report">${icon("plus")}<span>${t("제보 입구")}</span></button>
+        <a href="/routes/${activeCaseSlug()}/">${icon("book-open")}<span>${t("상황 가이드")}</span></a>
       </div>
     </section>
   `;
@@ -2314,6 +2316,24 @@ function entryLink(kind = "view") {
   params.set("utm_medium", "share");
   params.set("utm_campaign", `entry_${kind}`);
   return url.toString();
+}
+
+function activeCaseSlug() {
+  const scenarioMap = {
+    battery: "battery",
+    toilet: "restroom",
+    rain: "rain",
+    korean: "korean",
+    caution: "korean"
+  };
+  const filterMap = {
+    charge: "battery",
+    restroom: "restroom",
+    rest: "rain",
+    korean: "korean",
+    caution: "korean"
+  };
+  return scenarioMap[state.activeScenario] || filterMap[state.filter] || "battery";
 }
 
 function getRouteCandidates(list, selected) {

@@ -35,6 +35,34 @@
       <description>Situation-based entry links for battery, restroom, rain shelter, and Korean support needs in Japan.</description>
     </item>
     <item>
+      <title>Battery and Charging Guide</title>
+      <link>https://sumimap.com/routes/battery/</link>
+      <guid>https://sumimap.com/routes/battery/</guid>
+      <pubDate>Fri, 08 May 2026 00:00:00 +0900</pubDate>
+      <description>Guide for finding charging-friendly living spots in Japan.</description>
+    </item>
+    <item>
+      <title>Restroom Situation Guide</title>
+      <link>https://sumimap.com/routes/restroom/</link>
+      <guid>https://sumimap.com/routes/restroom/</guid>
+      <pubDate>Fri, 08 May 2026 00:00:00 +0900</pubDate>
+      <description>Guide for restroom and facility-use signals in Japan.</description>
+    </item>
+    <item>
+      <title>Rain Shelter Guide</title>
+      <link>https://sumimap.com/routes/rain/</link>
+      <guid>https://sumimap.com/routes/rain/</guid>
+      <pubDate>Fri, 08 May 2026 00:00:00 +0900</pubDate>
+      <description>Guide for finding indoor waiting and rain shelter spots in Japan.</description>
+    </item>
+    <item>
+      <title>Korean Support Guide</title>
+      <link>https://sumimap.com/routes/korean/</link>
+      <guid>https://sumimap.com/routes/korean/</guid>
+      <pubDate>Fri, 08 May 2026 00:00:00 +0900</pubDate>
+      <description>Guide for Korean-language support and response signals in Japan.</description>
+    </item>
+    <item>
       <title>About Sumimap</title>
       <link>https://sumimap.com/about/</link>
       <guid>https://sumimap.com/about/</guid>

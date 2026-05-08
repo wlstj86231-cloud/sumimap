@@ -3316,7 +3316,8 @@ html {
   gap: 8px;
 }
 
-.entry-share-grid button {
+.entry-share-grid button,
+.entry-share-grid a {
   display: grid;
   gap: 6px;
   place-items: center;
@@ -3364,6 +3365,12 @@ html {
   align-self: end;
   color: var(--green);
   font-weight: 900;
+}
+
+.static-route-card a + a {
+  align-self: start;
+  color: var(--blue);
+  font-size: 14px;
 }
 
 @media (max-width: 779px) {

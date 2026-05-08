@@ -4,6 +4,10 @@
   <url><loc>https://sumimap.com/guide/</loc><lastmod>2026-05-08</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://sumimap.com/cities/</loc><lastmod>2026-05-08</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://sumimap.com/routes/</loc><lastmod>2026-05-08</lastmod><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://sumimap.com/routes/battery/</loc><lastmod>2026-05-08</lastmod><changefreq>weekly</changefreq><priority>0.82</priority></url>
+  <url><loc>https://sumimap.com/routes/restroom/</loc><lastmod>2026-05-08</lastmod><changefreq>weekly</changefreq><priority>0.82</priority></url>
+  <url><loc>https://sumimap.com/routes/rain/</loc><lastmod>2026-05-08</lastmod><changefreq>weekly</changefreq><priority>0.82</priority></url>
+  <url><loc>https://sumimap.com/routes/korean/</loc><lastmod>2026-05-08</lastmod><changefreq>weekly</changefreq><priority>0.82</priority></url>
   <url><loc>https://sumimap.com/about/</loc><lastmod>2026-05-08</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://sumimap.com/policy/</loc><lastmod>2026-05-08</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://sumimap.com/privacy/</loc><lastmod>2026-05-08</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
