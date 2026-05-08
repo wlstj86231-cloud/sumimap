@@ -66,6 +66,7 @@ const filterThresholds = {
 
 const geocodeSearchUrl = "https://nominatim.openstreetmap.org/search";
 const reverseGeocodeUrl = "https://nominatim.openstreetmap.org/reverse";
+const vectorMapStyleUrl = "https://tiles.openfreemap.org/styles/positron";
 const japanBounds = {
   minLat: 24,
   maxLat: 46,
@@ -78,6 +79,14 @@ const supportedLanguages = new Set(["ko", "ja"]);
 let currentLanguage = readLanguagePreference();
 
 const jaText = {
+  "지도 언어를 바꾸는 중...": "地図の言語を切り替えています...",
+  "지도 언어를 바꿨어.": "地図の言語を切り替えました。",
+  "지도 언어 전환이 불안정해서 기본 지도로 보여줄게.": "地図の言語切替が不安定なため、基本地図で表示します。",
+  "한국어 지도": "韓国語地図",
+  "일본어 지도": "日本語地図",
+  "후보 목록": "候補一覧",
+  "다른 후보 보기": "別の候補を見る",
+  "한국어 주소·역 이름 검색": "住所・駅名検索",
   "바로 공유": "すぐ共有",
   "현재 보기": "現在の表示",
   "미니 동선": "ミニ動線",
@@ -1016,11 +1025,14 @@ const addressResults = document.querySelector("#addressResults");
 let map;
 let markerLayer;
 let userLocationLayer;
+let baseMapLayer;
+let baseMapSeq = 0;
 const markers = new Map();
 const markerClassNames = new Map();
 let reportVersion = 0;
 let visibleReportsCache = null;
 let derivedPlaceCache = new Map();
+const vectorStyleCache = new Map();
 let filteredPlacesCacheKey = "";
 let filteredPlacesCache = [];
 let started = false;
@@ -1070,13 +1082,7 @@ function bootMap() {
     markerZoomAnimation: false
   }).setView(cities.tokyo.center, cities.tokyo.zoom);
 
-  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    maxZoom: 19,
-    attribution: "&copy; OpenStreetMap",
-    updateWhenIdle: true,
-    updateWhenZooming: false,
-    keepBuffer: 1
-  }).addTo(map);
+  setBaseMapLanguage(state.language, false);
 
   markerLayer = L.layerGroup().addTo(map);
   map.on("contextmenu", selectHeldMapPointForReport);
@@ -1086,6 +1092,80 @@ function bootMap() {
       setSheetMode("collapsed");
     }
   });
+}
+
+async function setBaseMapLanguage(language, notify = true) {
+  const seq = baseMapSeq + 1;
+  baseMapSeq = seq;
+  const mapLanguage = language === "ja" ? "ja" : "ko";
+  if (notify) showToast("지도 언어를 바꾸는 중...");
+
+  try {
+    if (!window.maplibregl || !L.maplibreGL) throw new Error("vector map unavailable");
+    const style = await localizedVectorStyle(mapLanguage);
+    if (seq !== baseMapSeq || !map) return;
+    const nextLayer = L.maplibreGL({
+      style,
+      interactive: false
+    });
+    replaceBaseMap(nextLayer);
+    if (notify) showToast("지도 언어를 바꿨어.");
+  } catch {
+    if (seq !== baseMapSeq || !map) return;
+    replaceBaseMap(rasterBaseMap());
+    if (notify) showToast("지도 언어 전환이 불안정해서 기본 지도로 보여줄게.");
+  }
+}
+
+function replaceBaseMap(nextLayer) {
+  if (baseMapLayer) {
+    map.removeLayer(baseMapLayer);
+  }
+  baseMapLayer = nextLayer.addTo(map);
+  markerLayer?.eachLayer((layer) => layer.bringToFront?.());
+}
+
+function rasterBaseMap() {
+  return L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 19,
+    attribution: "&copy; OpenStreetMap",
+    updateWhenIdle: true,
+    updateWhenZooming: false,
+    keepBuffer: 1
+  });
+}
+
+async function localizedVectorStyle(language) {
+  if (vectorStyleCache.has(language)) return cloneJson(vectorStyleCache.get(language));
+  const response = await fetch(vectorMapStyleUrl, { headers: { Accept: "application/json" } });
+  if (!response.ok) throw new Error(`map style ${response.status}`);
+  const style = await response.json();
+  const labelExpression = mapLabelExpression(language);
+
+  style.layers = style.layers.map((layer) => {
+    if (layer.type !== "symbol" || !layer.layout?.["text-field"]) return layer;
+    return {
+      ...layer,
+      layout: {
+        ...layer.layout,
+        "text-field": labelExpression
+      }
+    };
+  });
+
+  vectorStyleCache.set(language, style);
+  return cloneJson(style);
+}
+
+function mapLabelExpression(language) {
+  const fields = language === "ja"
+    ? ["name:ja_kana", "name:ja", "name:nonlatin", "name", "name:latin", "name_en"]
+    : ["name:ko", "name_ko", "name:en", "name_en", "name:latin", "name"];
+  return ["coalesce", ...fields.map((field) => ["get", field])];
+}
+
+function cloneJson(value) {
+  return JSON.parse(JSON.stringify(value));
 }
 
 function bindEvents() {
@@ -1250,6 +1330,12 @@ function bindEvents() {
       return;
     }
 
+    const focusListButton = event.target.closest("[data-focus-list]");
+    if (focusListButton) {
+      focusCandidateList();
+      return;
+    }
+
     const focusAddressButton = event.target.closest("[data-focus-address-search]");
     if (focusAddressButton) {
       setSearchPanel(true, true);
@@ -1390,13 +1476,15 @@ function toggleLanguage() {
   currentLanguage = state.language;
   writeJson(languageStorageKey, state.language);
   filteredPlacesCacheKey = "";
+  setBaseMapLanguage(state.language);
+  localizeCustomPlacesForLanguage(state.language);
   applyStaticLanguage();
   renderMapQuickRail();
   renderAddressResults();
   renderSheet();
   renderMarkers();
   refreshStatus();
-  showToast(state.language === "ja" ? "일본어로 전환했어." : "한국어로 전환했어.");
+  showToast(state.language === "ja" ? "일본어 지도와 문장으로 바꿨어." : "한국어 지도와 문장으로 바꿨어.");
 }
 
 function applyStaticLanguage() {
@@ -1423,7 +1511,7 @@ function applyStaticLanguage() {
   const languageCode = languageToggle?.querySelector(".language-code");
   if (languageCode) languageCode.textContent = japanese ? "한" : "日";
 
-  if (placeSearch) placeSearch.placeholder = t("주소·지명 검색 또는 태그 검색");
+  if (placeSearch) placeSearch.placeholder = t("한국어 주소·역 이름 검색");
   searchClear?.setAttribute("aria-label", t("검색어 지우기"));
   if (addressSearchButton) addressSearchButton.textContent = t("주소검색");
   document.querySelector(".city-strip")?.setAttribute("aria-label", t("도시 빠른 이동"));
@@ -1939,6 +2027,16 @@ function renderPlaceDetail(place) {
         <button class="primary-button" type="button" data-open-report>
           ${icon("plus")}
           ${t("이 장소 바로 제보")}
+        </button>
+      </div>
+      <div class="detail-actions return-actions">
+        <button class="text-button" type="button" data-sheet-collapse>
+          ${icon("map")}
+          ${t("지도 크게")}
+        </button>
+        <button class="text-button" type="button" data-focus-list>
+          ${icon("list")}
+          ${t("다른 후보 보기")}
         </button>
       </div>
       <div class="use-summary">
@@ -2524,6 +2622,16 @@ function clearLocationContext() {
   showToast("내 위치 기준을 해제했어.");
 }
 
+function focusCandidateList() {
+  const list = sheet.querySelector(".place-list");
+  if (!list) {
+    showToast("후보 목록을 다시 불러올게.");
+    renderSheet();
+    return;
+  }
+  list.scrollIntoView({ block: "start", behavior: "smooth" });
+}
+
 async function searchAddressFromInput() {
   const query = placeSearch.value.trim();
   if (query.length < 2) {
@@ -2645,6 +2753,7 @@ function normalizeAddressCandidate(item) {
     id: safeId(`addr-${item?.osm_type || "point"}-${item?.osm_id || `${lat.toFixed(5)}-${lng.toFixed(5)}`}`, createId()),
     title: String(title).trim(),
     address: address || `${lat.toFixed(5)}, ${lng.toFixed(5)}`,
+    language: state.language,
     lat,
     lng
   };
@@ -2794,16 +2903,19 @@ function upsertCustomPlace(candidate) {
   if (existing) {
     existing.name = candidate.title;
     existing.area = candidate.address;
+    assignLocalizedAddress(existing, candidate);
     existing.lat = candidate.lat;
     existing.lng = candidate.lng;
     persistCustomPlaces();
     return existing;
   }
 
+  const localized = localizedAddressFields(candidate);
   const place = {
     id: candidate.id,
     name: candidate.title,
     area: candidate.address,
+    ...localized,
     city: nearestCityKey(candidate.lat, candidate.lng),
     kind: "주소 검색",
     lat: candidate.lat,
@@ -2827,6 +2939,35 @@ function upsertCustomPlace(candidate) {
   persistCustomPlaces();
   invalidateReportCaches();
   return place;
+}
+
+function assignLocalizedAddress(place, candidate) {
+  Object.assign(place, localizedAddressFields(candidate));
+}
+
+function localizedAddressFields(candidate) {
+  const suffix = candidate.language === "ja" ? "Ja" : "Ko";
+  return {
+    [`name${suffix}`]: candidate.title,
+    [`area${suffix}`]: candidate.address
+  };
+}
+
+async function localizeCustomPlacesForLanguage(language) {
+  const suffix = language === "ja" ? "Ja" : "Ko";
+  const targets = getFilteredPlaces()
+    .filter((place) => place.custom && (!place[`name${suffix}`] || !place[`area${suffix}`]))
+    .slice(0, 4);
+  if (!targets.length) return;
+
+  await Promise.allSettled(targets.map(async (place) => {
+    const candidate = await reverseGeocodePoint(place.lat, place.lng);
+    assignLocalizedAddress(place, { ...candidate, language });
+  }));
+  persistCustomPlaces();
+  filteredPlacesCacheKey = "";
+  renderSheet();
+  renderMarkers();
 }
 
 function persistCustomPlaces() {
@@ -3018,6 +3159,7 @@ function icon(name) {
     search: `<path d="m21 21-4.3-4.3"/><circle cx="11" cy="11" r="7"/>`,
     "share-2": `<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 10.7 6.8-4.4M8.6 13.3l6.8 4.4"/>`,
     copy: `<rect x="9" y="9" width="13" height="13" rx="2"/><rect x="2" y="2" width="13" height="13" rx="2"/>`,
+    list: `<path d="M8 6h13M8 12h13M8 18h13"/><path d="M3 6h.01M3 12h.01M3 18h.01"/>`,
     map: `<path d="M9 18 3 21V6l6-3 6 3 6-3v15l-6 3-6-3Z"/><path d="M9 3v15M15 6v15"/>`,
     crosshair: `<circle cx="12" cy="12" r="6"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/>`,
     "locate-fixed": `<line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="3"/>`
@@ -3115,6 +3257,10 @@ function normalizeCustomPlaces(customPlaces) {
         id: safeId(place?.id, `addr-legacy-${index}`),
         name: String(place?.name || "검색한 위치").slice(0, 80),
         area: String(place?.area || `${lat.toFixed(5)}, ${lng.toFixed(5)}`).slice(0, 160),
+        nameKo: typeof place?.nameKo === "string" ? place.nameKo.slice(0, 80) : "",
+        areaKo: typeof place?.areaKo === "string" ? place.areaKo.slice(0, 160) : "",
+        nameJa: typeof place?.nameJa === "string" ? place.nameJa.slice(0, 80) : "",
+        areaJa: typeof place?.areaJa === "string" ? place.areaJa.slice(0, 160) : "",
         city: cities[place?.city] ? place.city : nearestCityKey(lat, lng),
         kind: "주소 검색",
         lat,
@@ -3237,6 +3383,11 @@ function t(value) {
 }
 
 function placeText(place, field) {
+  if (place?.custom && (field === "name" || field === "area")) {
+    const suffix = isJapanese() ? "Ja" : "Ko";
+    const localized = place[`${field}${suffix}`];
+    if (typeof localized === "string" && localized.trim()) return localized;
+  }
   const text = String(place?.[field] || "");
   if (!isJapanese()) return text;
   const translated = placeJapanese[place?.id]?.[field];

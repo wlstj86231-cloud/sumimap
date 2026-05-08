@@ -22,14 +22,19 @@
     <link rel="manifest" href="/manifest.webmanifest">
     <link rel="icon" href="/assets/icon.svg" type="image/svg+xml">
     <link rel="preconnect" href="https://tile.openstreetmap.org">
+    <link rel="preconnect" href="https://tiles.openfreemap.org">
+    <link rel="preconnect" href="https://unpkg.com">
     <link rel="dns-prefetch" href="https://tile.openstreetmap.org">
+    <link rel="dns-prefetch" href="https://tiles.openfreemap.org">
+    <link rel="dns-prefetch" href="https://unpkg.com">
     <link rel="dns-prefetch" href="https://nominatim.openstreetmap.org">
     <link rel="preload" href="/assets/vendor/leaflet/leaflet.css" as="style">
-    <link rel="preload" href="/assets/styles.css?v=20260508-rpm4" as="style">
+    <link rel="preload" href="/assets/styles.css?v=20260508-maplang" as="style">
     <link rel="preload" href="/assets/vendor/leaflet/leaflet.js" as="script">
-    <link rel="modulepreload" href="/assets/app.js?v=20260508-rpm4">
+    <link rel="modulepreload" href="/assets/app.js?v=20260508-maplang">
     <link rel="stylesheet" href="/assets/vendor/leaflet/leaflet.css">
-    <link rel="stylesheet" href="/assets/styles.css?v=20260508-rpm4">
+    <link href="https://unpkg.com/maplibre-gl@5.24.0/dist/maplibre-gl.css" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/styles.css?v=20260508-maplang">
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
@@ -72,7 +77,7 @@
       <section class="search-panel" id="searchPanel" hidden>
         <div class="search-box">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m21 21-4.3-4.3"/><circle cx="11" cy="11" r="7"/></svg>
-          <input id="placeSearch" type="search" placeholder="주소·지명 검색 또는 태그 검색" autocomplete="off">
+          <input id="placeSearch" type="search" placeholder="한국어 주소·역 이름 검색" autocomplete="off">
           <button class="search-clear" id="searchClear" type="button" aria-label="검색어 지우기" hidden>×</button>
           <button class="address-search-button" id="addressSearchButton" type="button">주소검색</button>
         </div>
@@ -162,6 +167,8 @@
     </noscript>
 
     <script src="/assets/vendor/leaflet/leaflet.js" defer></script>
-    <script src="/assets/app.js?v=20260508-rpm4" type="module"></script>
+    <script src="https://unpkg.com/maplibre-gl@5.24.0/dist/maplibre-gl.js" defer></script>
+    <script src="https://unpkg.com/@maplibre/maplibre-gl-leaflet/leaflet-maplibre-gl.js" defer></script>
+    <script src="/assets/app.js?v=20260508-maplang" type="module"></script>
   </body>
 </html>

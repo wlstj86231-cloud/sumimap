@@ -3312,7 +3312,7 @@ html {
 
 .entry-share-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
 }
 
@@ -3334,6 +3334,15 @@ html {
 .entry-share-grid button:disabled {
   cursor: not-allowed;
   opacity: 0.48;
+}
+
+.return-actions .text-button {
+  flex: 1 1 0;
+}
+
+.maplibregl-ctrl-bottom-left,
+.maplibregl-ctrl-bottom-right {
+  display: none;
 }
 
 .static-link-grid {
