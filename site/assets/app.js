@@ -217,6 +217,7 @@ const state = {
   query: "",
   selectedId: places[0].id,
   activePanel: "near",
+  sheetMode: "collapsed",
   activeScenario: "",
   userPosition: null,
   saved: normalizeSaved(readJson("sumimap:saved", [])),
@@ -253,6 +254,8 @@ let derivedPlaceCache = new Map();
 let filteredPlacesCacheKey = "";
 let filteredPlacesCache = [];
 let started = false;
+let sheetPointerStartY = null;
+let ignoreNextSheetToggleClick = false;
 
 startWhenReady();
 
@@ -322,6 +325,29 @@ function bindEvents() {
     applyScenario(button.dataset.quickScenario);
   });
 
+  sheet.addEventListener("pointerdown", (event) => {
+    if (!event.target.closest("[data-sheet-toggle]")) return;
+    sheetPointerStartY = event.clientY;
+  });
+
+  sheet.addEventListener("pointerup", (event) => {
+    if (sheetPointerStartY === null) return;
+
+    const deltaY = event.clientY - sheetPointerStartY;
+    sheetPointerStartY = null;
+    if (Math.abs(deltaY) < 28) return;
+
+    setSheetMode(deltaY > 0 ? "collapsed" : "expanded");
+    ignoreNextSheetToggleClick = true;
+    window.setTimeout(() => {
+      ignoreNextSheetToggleClick = false;
+    }, 0);
+  });
+
+  sheet.addEventListener("pointercancel", () => {
+    sheetPointerStartY = null;
+  });
+
   placeSearch.addEventListener("input", (event) => {
     state.query = event.target.value.trim();
     updateSearchClear();
@@ -360,6 +386,13 @@ function bindEvents() {
   });
 
   sheet.addEventListener("click", (event) => {
+    const sheetToggle = event.target.closest("[data-sheet-toggle]");
+    if (sheetToggle) {
+      if (!ignoreNextSheetToggleClick) toggleSheetMode();
+      ignoreNextSheetToggleClick = false;
+      return;
+    }
+
     const placeButton = event.target.closest("[data-place-id]");
     if (placeButton) {
       selectPlace(placeButton.dataset.placeId, true);
@@ -431,6 +464,7 @@ function bindEvents() {
 
 function setPanel(panel) {
   state.activePanel = panel;
+  state.sheetMode = panel === "near" ? "collapsed" : "expanded";
   document.querySelectorAll(".nav-button").forEach((button) => {
     button.classList.toggle("is-active", button.dataset.action === panel);
   });
@@ -441,6 +475,24 @@ function setPanel(panel) {
   }
 
   renderSheet();
+}
+
+function toggleSheetMode() {
+  setSheetMode(state.sheetMode === "collapsed" ? "expanded" : "collapsed");
+}
+
+function setSheetMode(mode) {
+  state.sheetMode = mode === "collapsed" ? "collapsed" : "expanded";
+  syncSheetMode();
+  if (map) {
+    window.setTimeout(() => map.invalidateSize(), 220);
+  }
+}
+
+function syncSheetMode() {
+  const isCollapsed = state.activePanel === "near" && state.sheetMode === "collapsed";
+  sheet.classList.toggle("is-collapsed", isCollapsed);
+  sheet.classList.toggle("is-expanded", !isCollapsed);
 }
 
 function renderSheet() {
@@ -455,6 +507,7 @@ function renderSheet() {
   } else {
     sheet.innerHTML = renderNearby();
   }
+  syncSheetMode();
 }
 
 function renderNearby() {
@@ -462,8 +515,8 @@ function renderNearby() {
   const place = list.find((item) => item.id === state.selectedId) || null;
 
   return `
-    <div class="sheet-grip"></div>
-    <div class="sheet-head">
+    <button class="sheet-grip" type="button" data-sheet-toggle aria-label="Toggle panel"></button>
+    <div class="sheet-head" data-sheet-toggle>
       <div>
         <h1>지금 확인할 생활 스팟</h1>
         <p>충전, 화장실, 쉬기, 한국어 대응, 응대 불편 신호를 한 번에 봐요.</p>
@@ -482,8 +535,8 @@ function renderNearby() {
 
 function renderFilters() {
   return `
-    <div class="sheet-grip"></div>
-    <div class="sheet-head">
+    <button class="sheet-grip" type="button" data-sheet-toggle aria-label="Toggle panel"></button>
+    <div class="sheet-head" data-sheet-toggle>
       <div>
         <h2>필터</h2>
         <p>상황별로 빠르게 좁혀요. 응대 불편은 낙인이 아니라 최근 제보 신호로만 봐요.</p>
@@ -506,8 +559,8 @@ function renderReport() {
   const place = getSelectedPlace();
   const visibleReports = getVisibleReports();
   return `
-    <div class="sheet-grip"></div>
-    <div class="sheet-head">
+    <button class="sheet-grip" type="button" data-sheet-toggle aria-label="Toggle panel"></button>
+    <div class="sheet-head" data-sheet-toggle>
       <div>
         <h2>제보하기</h2>
         <p>제보는 바로 지도에 반영돼요. 허위로 보이면 다른 사람이 허위 의심을 눌러 신호를 밀어낼 수 있어요.</p>
@@ -557,8 +610,8 @@ function renderSaved() {
     .filter((place) => place && !state.saved.includes(place.id))
     .slice(0, 6);
   return `
-    <div class="sheet-grip"></div>
-    <div class="sheet-head">
+    <button class="sheet-grip" type="button" data-sheet-toggle aria-label="Toggle panel"></button>
+    <div class="sheet-head" data-sheet-toggle>
       <div>
         <h2>저장한 곳</h2>
         <p>저장한 곳과 방금 확인한 곳을 빠르게 다시 열어요.</p>
@@ -578,8 +631,8 @@ function renderSaved() {
 
 function renderGuide() {
   return `
-    <div class="sheet-grip"></div>
-    <div class="sheet-head">
+    <button class="sheet-grip" type="button" data-sheet-toggle aria-label="Toggle panel"></button>
+    <div class="sheet-head" data-sheet-toggle>
       <div>
         <h2>스미맵 기준</h2>
         <p>일본 생활 중 곤란한 순간을 빠르게 피하기 위한 한국어 지도예요.</p>
@@ -803,6 +856,7 @@ function selectPlace(placeId, moveMap) {
   state.selectedId = place.id;
   rememberPlace(place.id);
   state.activePanel = "near";
+  state.sheetMode = "expanded";
   document.querySelectorAll(".nav-button").forEach((button) => {
     button.classList.toggle("is-active", button.dataset.action === "near");
   });
@@ -818,6 +872,7 @@ function applyScenario(scenarioKey) {
   if (!scenario) return;
 
   state.activeScenario = scenario.key;
+  state.sheetMode = "collapsed";
   state.filter = scenario.filter;
   state.query = "";
   placeSearch.value = "";
@@ -859,6 +914,7 @@ function submitReport(form) {
   writeJson("sumimap:reports", state.reports.slice(0, 100));
   state.selectedId = report.placeId;
   state.activePanel = "near";
+  state.sheetMode = "expanded";
   state.activeScenario = "";
   state.filter = "all";
   state.query = "";

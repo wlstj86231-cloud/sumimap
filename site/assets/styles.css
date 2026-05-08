@@ -2531,3 +2531,72 @@ textarea:focus-visible {
 .sumimap-marker {
   will-change: transform;
 }
+
+/* Mobile sheet control */
+.sheet-grip {
+  display: block;
+  padding: 0;
+  border: 0;
+  appearance: none;
+  cursor: pointer;
+  touch-action: none;
+}
+
+.sheet-head[data-sheet-toggle] {
+  cursor: pointer;
+}
+
+@media (max-width: 779px) {
+  .bottom-sheet {
+    transition: max-height 0.22s ease, padding 0.22s ease, transform 0.22s ease;
+    overscroll-behavior: contain;
+    touch-action: pan-y;
+  }
+
+  .bottom-sheet.is-collapsed {
+    max-height: 96px !important;
+    overflow: hidden;
+    padding: 10px 14px 12px !important;
+  }
+
+  .bottom-sheet.is-collapsed .sheet-grip {
+    margin-bottom: 8px;
+  }
+
+  .bottom-sheet.is-collapsed .sheet-head {
+    align-items: center;
+    margin-bottom: 0;
+  }
+
+  .bottom-sheet.is-collapsed .sheet-head h1,
+  .bottom-sheet.is-collapsed .sheet-head h2 {
+    font-size: 18px;
+    line-height: 1.18;
+  }
+
+  .bottom-sheet.is-collapsed .sheet-head p,
+  .bottom-sheet.is-collapsed .scenario-rail,
+  .bottom-sheet.is-collapsed .filter-row,
+  .bottom-sheet.is-collapsed .context-tools,
+  .bottom-sheet.is-collapsed .place-card,
+  .bottom-sheet.is-collapsed .place-list,
+  .bottom-sheet.is-collapsed .note-list,
+  .bottom-sheet.is-collapsed .report-form,
+  .bottom-sheet.is-collapsed .live-feed {
+    display: none !important;
+  }
+
+  .bottom-sheet.is-expanded {
+    max-height: min(45dvh, 410px) !important;
+  }
+}
+
+@media (max-width: 390px) {
+  .bottom-sheet.is-collapsed {
+    max-height: 90px !important;
+  }
+
+  .bottom-sheet.is-expanded {
+    max-height: min(43dvh, 390px) !important;
+  }
+}
