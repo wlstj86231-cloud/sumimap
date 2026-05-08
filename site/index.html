@@ -25,11 +25,11 @@
     <link rel="dns-prefetch" href="https://tile.openstreetmap.org">
     <link rel="dns-prefetch" href="https://nominatim.openstreetmap.org">
     <link rel="preload" href="/assets/vendor/leaflet/leaflet.css" as="style">
-    <link rel="preload" href="/assets/styles.css?v=20260508-flow" as="style">
+    <link rel="preload" href="/assets/styles.css?v=20260508-ready" as="style">
     <link rel="preload" href="/assets/vendor/leaflet/leaflet.js" as="script">
-    <link rel="modulepreload" href="/assets/app.js?v=20260508-flow">
+    <link rel="modulepreload" href="/assets/app.js?v=20260508-ready">
     <link rel="stylesheet" href="/assets/vendor/leaflet/leaflet.css">
-    <link rel="stylesheet" href="/assets/styles.css?v=20260508-flow">
+    <link rel="stylesheet" href="/assets/styles.css?v=20260508-ready">
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
@@ -59,7 +59,7 @@
           <button class="icon-button" id="locateButton" type="button" aria-label="현재 위치로 이동">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/></svg>
           </button>
-          <button class="icon-button" id="searchToggle" type="button" aria-label="검색 열기">
+          <button class="icon-button" id="searchToggle" type="button" aria-label="검색 열기" aria-controls="searchPanel" aria-expanded="false">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m21 21-4.3-4.3"/><circle cx="11" cy="11" r="7"/></svg>
           </button>
         </div>
@@ -158,6 +158,6 @@
     </noscript>
 
     <script src="/assets/vendor/leaflet/leaflet.js" defer></script>
-    <script src="/assets/app.js?v=20260508-flow" type="module"></script>
+    <script src="/assets/app.js?v=20260508-ready" type="module"></script>
   </body>
 </html>

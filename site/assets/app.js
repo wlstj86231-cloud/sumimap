@@ -548,6 +548,7 @@ function init() {
   renderSheet();
   renderMarkers();
   refreshStatus();
+  setSearchPanel(false);
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("/sw.js").catch(() => {});
   }
@@ -582,8 +583,7 @@ function bindEvents() {
   });
 
   searchToggle.addEventListener("click", () => {
-    searchPanel.hidden = !searchPanel.hidden;
-    if (!searchPanel.hidden) placeSearch.focus();
+    setSearchPanel(searchPanel.hidden, true);
   });
 
   addressSearchButton.addEventListener("click", () => {
@@ -591,6 +591,12 @@ function bindEvents() {
   });
 
   locateButton.addEventListener("click", locateUser);
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key !== "Escape" || searchPanel.hidden) return;
+    setSearchPanel(false);
+    searchToggle.focus();
+  });
 
   mapQuickRail.addEventListener("click", (event) => {
     const button = event.target.closest("[data-quick-scenario]");
@@ -643,17 +649,11 @@ function bindEvents() {
   });
 
   searchClear.addEventListener("click", () => {
-    state.query = "";
-    state.addressCandidates = [];
-    state.addressMessage = "";
-    placeSearch.value = "";
-    updateSearchClear();
-    renderAddressResults();
+    clearSearchState({ focus: true });
     syncSelectedWithFiltered();
     renderSheet();
     renderMarkers();
     refreshStatus();
-    placeSearch.focus();
   });
 
   addressResults.addEventListener("click", (event) => {
@@ -668,7 +668,7 @@ function bindEvents() {
       if (!city) return;
       map.setView(city.center, city.zoom);
       showToast(`${city.label} 중심으로 이동했어.`);
-      searchPanel.hidden = true;
+      setSearchPanel(false);
     });
   });
 
@@ -737,8 +737,7 @@ function bindEvents() {
 
     const focusAddressButton = event.target.closest("[data-focus-address-search]");
     if (focusAddressButton) {
-      searchPanel.hidden = false;
-      placeSearch.focus();
+      setSearchPanel(true, true);
       showToast("주소나 지명을 검색하면 그 위치로 바로 제보할 수 있어.");
       return;
     }
@@ -757,8 +756,11 @@ function bindEvents() {
 
     const reportPlaceButton = event.target.closest("[data-report-place]");
     if (reportPlaceButton) {
-      state.selectedId = reportPlaceButton.dataset.reportPlace;
+      const place = placesById.get(reportPlaceButton.dataset.reportPlace);
+      if (!place) return;
+      state.selectedId = place.id;
       rememberPlace(state.selectedId);
+      map.setView([place.lat, place.lng], 15);
       renderSheet();
       renderMarkers();
       return;
@@ -773,6 +775,7 @@ function bindEvents() {
     const reportChip = event.target.closest("[data-report-tag]");
     if (reportChip) {
       reportChip.classList.toggle("is-selected");
+      reportChip.setAttribute("aria-pressed", String(reportChip.classList.contains("is-selected")));
       return;
     }
 
@@ -808,6 +811,14 @@ function setActiveNav(panel) {
   document.querySelectorAll(".nav-button").forEach((button) => {
     button.classList.toggle("is-active", button.dataset.action === panel);
   });
+}
+
+function setSearchPanel(open, focus = false) {
+  searchPanel.hidden = !open;
+  searchToggle.setAttribute("aria-expanded", String(open));
+  if (open && focus) {
+    window.requestAnimationFrame(() => placeSearch.focus());
+  }
 }
 
 function toggleSheetMode() {
@@ -925,7 +936,7 @@ function renderReport() {
         ${nearbyChoices.length ? `
           <div class="quick-place-row" aria-label="빠른 장소 선택">
             ${nearbyChoices.map((item) => `
-              <button type="button" class="${item.id === place?.id ? "is-active" : ""}" data-report-place="${escapeAttr(item.id)}">
+              <button type="button" class="${item.id === place?.id ? "is-active" : ""}" data-report-place="${escapeAttr(item.id)}" aria-pressed="${item.id === place?.id ? "true" : "false"}">
                 <span aria-hidden="true">${categoryEmoji(item.category)}</span>${escapeHtml(shortPlaceName(item.name))}
               </button>
             `).join("")}
@@ -937,7 +948,7 @@ function renderReport() {
         <p>한두 개만 눌러도 충분해요. 응대 불편은 낙인이 아니라 방문 전 주의 신호로만 써요.</p>
         <div class="report-grid">
           ${mainTags.map((key) => reportTagsByKey.get(key)).filter(Boolean).map((tag) => `
-            <button type="button" class="chip report-chip ${tag.danger ? "danger" : ""}" data-report-tag="${escapeAttr(tag.key)}" aria-label="${escapeAttr(tag.label)}">
+            <button type="button" class="chip report-chip ${tag.danger ? "danger" : ""}" data-report-tag="${escapeAttr(tag.key)}" aria-label="${escapeAttr(tag.label)}" aria-pressed="false">
               <span class="report-emoji" aria-hidden="true">${tag.emoji}</span>
               <span>${tag.label}</span>
             </button>
@@ -947,7 +958,7 @@ function renderReport() {
           <summary>추가 옵션</summary>
           <div class="report-grid is-extra">
             ${extraTags.map((tag) => `
-              <button type="button" class="chip report-chip ${tag.danger ? "danger" : ""}" data-report-tag="${escapeAttr(tag.key)}" aria-label="${escapeAttr(tag.label)}">
+              <button type="button" class="chip report-chip ${tag.danger ? "danger" : ""}" data-report-tag="${escapeAttr(tag.key)}" aria-label="${escapeAttr(tag.label)}" aria-pressed="false">
                 <span class="report-emoji" aria-hidden="true">${tag.emoji}</span>
                 <span>${tag.label}</span>
               </button>
@@ -1243,8 +1254,7 @@ function applyScenario(scenarioKey) {
   state.activeScenario = scenario.key;
   state.sheetMode = "collapsed";
   state.filter = scenario.filter;
-  state.query = "";
-  placeSearch.value = "";
+  clearSearchState();
   const list = getFilteredPlaces();
   if (list.length) {
     state.selectedId = list[0].id;
@@ -1292,14 +1302,10 @@ function submitReport(form) {
   state.sheetMode = "expanded";
   state.activeScenario = "";
   state.filter = "all";
-  state.query = "";
-  placeSearch.value = "";
-  updateSearchClear();
-  searchPanel.hidden = true;
+  clearSearchState();
+  setSearchPanel(false);
   renderMapQuickRail();
-  document.querySelectorAll(".nav-button").forEach((button) => {
-    button.classList.toggle("is-active", button.dataset.action === "near");
-  });
+  setActiveNav("near");
   showToast("제보가 바로 반영됐어. 허위면 다른 사람들이 허위 의심으로 밀어낼 수 있어.");
   renderSheet();
   renderMarkers();
@@ -1516,6 +1522,21 @@ function renderAddressResults() {
   `;
 }
 
+function clearSearchState({ focus = false } = {}) {
+  addressSearchSeq += 1;
+  state.query = "";
+  state.addressCandidates = [];
+  state.addressLoading = false;
+  state.addressMessage = "";
+  addressSearchButton.disabled = false;
+  placeSearch.value = "";
+  updateSearchClear();
+  renderAddressResults();
+  if (focus) {
+    window.requestAnimationFrame(() => placeSearch.focus());
+  }
+}
+
 function normalizeAddressCandidate(item) {
   const lat = Number(item?.lat);
   const lng = Number(item?.lon);
@@ -1562,7 +1583,7 @@ function activateReportPlace(place, zoom = 16, message = "") {
   state.activeScenario = "";
   rememberPlace(place.id);
   map.setView([place.lat, place.lng], zoom);
-  searchPanel.hidden = true;
+  setSearchPanel(false);
   setActiveNav("report");
   renderMapQuickRail();
   renderSheet();
