@@ -2599,6 +2599,10 @@ textarea:focus-visible {
   .bottom-sheet.is-collapsed .scenario-rail,
   .bottom-sheet.is-collapsed .filter-row,
   .bottom-sheet.is-collapsed .context-tools,
+  .bottom-sheet.is-collapsed .routine-card,
+  .bottom-sheet.is-collapsed .travel-brief-card,
+  .bottom-sheet.is-collapsed .playbook-strip,
+  .bottom-sheet.is-collapsed .related-block,
   .bottom-sheet.is-collapsed .place-card,
   .bottom-sheet.is-collapsed .place-list,
   .bottom-sheet.is-collapsed .note-list,
@@ -2923,6 +2927,245 @@ html {
   white-space: nowrap;
 }
 
+.routine-card,
+.travel-brief-card {
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid rgba(79, 159, 121, 0.22);
+  border-radius: 8px;
+  background: linear-gradient(180deg, #ffffff 0%, rgba(246, 251, 248, 0.96) 100%);
+}
+
+.routine-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 92px;
+  gap: 12px;
+}
+
+.routine-head span,
+.travel-brief-card span,
+.playbook-head span,
+.related-title {
+  display: block;
+  color: var(--green);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.routine-head strong,
+.travel-brief-card strong,
+.playbook-head strong {
+  display: block;
+  margin-top: 3px;
+  color: var(--ink);
+  font-size: 17px;
+  line-height: 1.25;
+}
+
+.routine-head p,
+.travel-brief-card p {
+  margin: 5px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.routine-progress {
+  align-self: center;
+  height: 9px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(79, 159, 121, 0.13);
+}
+
+.routine-progress span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--green);
+}
+
+.check-list {
+  display: grid;
+  gap: 8px;
+}
+
+.check-row {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  min-height: 52px;
+  padding: 9px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--ink);
+  background: #ffffff;
+  text-align: left;
+}
+
+.check-row.is-done {
+  border-color: rgba(79, 159, 121, 0.5);
+  background: var(--green-soft);
+}
+
+.check-emoji {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(79, 159, 121, 0.12);
+  font-size: 18px;
+}
+
+.check-row strong,
+.mini-place strong {
+  display: block;
+  overflow: hidden;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 900;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.check-row small,
+.mini-place small {
+  display: block;
+  overflow: hidden;
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.check-row em {
+  padding: 6px 8px;
+  border-radius: 999px;
+  color: var(--green);
+  background: rgba(79, 159, 121, 0.12);
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 900;
+}
+
+.related-inline,
+.related-block {
+  display: grid;
+  gap: 8px;
+}
+
+.mini-place-row {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  scroll-snap-type: x proximity;
+}
+
+.mini-place-row::-webkit-scrollbar {
+  display: none;
+}
+
+.mini-place {
+  display: grid;
+  flex: 0 0 176px;
+  grid-template-columns: 28px minmax(0, 1fr);
+  column-gap: 8px;
+  align-items: center;
+  padding: 9px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--ink);
+  background: #ffffff;
+  scroll-snap-align: start;
+  text-align: left;
+}
+
+.mini-place > span {
+  display: grid;
+  grid-row: span 2;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--surface-soft);
+  font-size: 16px;
+}
+
+.travel-brief-card {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+}
+
+.travel-brief-card .text-button {
+  align-self: center;
+  min-width: 116px;
+}
+
+.text-button:disabled,
+.primary-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+}
+
+.playbook-strip {
+  display: grid;
+  gap: 10px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(21, 32, 38, 0.08);
+}
+
+.playbook-list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.playbook-list li {
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr);
+  gap: 9px;
+  align-items: start;
+}
+
+.playbook-list li > span {
+  display: grid;
+  width: 26px;
+  height: 26px;
+  place-items: center;
+  border-radius: 50%;
+  color: #ffffff;
+  background: var(--green);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.playbook-list strong {
+  display: block;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.playbook-list p {
+  margin: 3px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.compact-actions {
+  margin-top: -2px;
+}
+
 @media (max-width: 779px) {
   .bottom-sheet.is-collapsed .sheet-mini-action {
     display: none;
@@ -2934,6 +3177,24 @@ html {
 
   .sheet-head-actions {
     gap: 6px;
+  }
+
+  .routine-card,
+  .travel-brief-card {
+    padding: 12px;
+  }
+
+  .routine-head,
+  .travel-brief-card {
+    grid-template-columns: 1fr;
+  }
+
+  .routine-progress {
+    width: 100%;
+  }
+
+  .mini-place {
+    flex-basis: 162px;
   }
 }
 
@@ -2950,6 +3211,15 @@ html {
 
   .report-grid {
     grid-template-columns: 1fr;
+  }
+
+  .check-row {
+    grid-template-columns: 30px minmax(0, 1fr);
+  }
+
+  .check-row em {
+    grid-column: 2;
+    width: fit-content;
   }
 }
 

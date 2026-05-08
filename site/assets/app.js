@@ -35,6 +35,13 @@ const reportTags = [
   { key: "rain", label: "비 피하기 좋음", emoji: "☔" }
 ];
 
+const dailyChecks = [
+  { key: "charge", label: "충전 후보 저장", hint: "배터리 20% 전에 가까운 곳 하나를 잡아둬요.", filter: "charge", emoji: "🔌" },
+  { key: "restroom", label: "화장실 후보 확인", hint: "역·상업시설·공원 중 하나를 미리 봐두면 편해요.", filter: "restroom", emoji: "🚻" },
+  { key: "rest", label: "잠깐 머물 곳 확보", hint: "비·더위·대기 시간이 생길 때 갈 곳을 남겨둬요.", filter: "rest", emoji: "☔" },
+  { key: "korean", label: "한국어 신호 확인", hint: "초행 동선이면 한국어 대응 신호도 같이 확인해요.", filter: "korean", emoji: "🇰🇷" }
+];
+
 const allowedReportLabels = new Set(reportTags.map((tag) => tag.label));
 
 const signalForReportTag = {
@@ -71,6 +78,37 @@ const supportedLanguages = new Set(["ko", "ja"]);
 let currentLanguage = readLanguagePreference();
 
 const jaText = {
+  "오늘 생활 루틴": "今日の生活ルーティン",
+  "지금 바로 챙길 것": "今すぐ見るもの",
+  "체크 진행": "チェック進捗",
+  "체크": "チェック",
+  "완료": "完了",
+  "충전 후보 저장": "充電候補を保存",
+  "화장실 후보 확인": "トイレ候補を確認",
+  "잠깐 머물 곳 확보": "少し休める場所を確保",
+  "한국어 신호 확인": "韓国語対応の目印を確認",
+  "배터리 20% 전에 가까운 곳 하나를 잡아둬요.": "バッテリー20%前に近い場所を1つ見ておきましょう。",
+  "역·상업시설·공원 중 하나를 미리 봐두면 편해요.": "駅・商業施設・公園のどれかを先に見ておくと安心です。",
+  "비·더위·대기 시간이 생길 때 갈 곳을 남겨둬요.": "雨・暑さ・待ち時間に移動できる場所を残しておきます。",
+  "초행 동선이면 한국어 대응 신호도 같이 확인해요.": "初めての動線なら韓国語対応の目印も一緒に確認します。",
+  "이어서 보기 좋은 곳": "次に見るとよい場所",
+  "저장 보기": "保存を見る",
+  "제보하기": "投稿する",
+  "저장 브리프": "保存ブリーフ",
+  "오늘 다시 열어볼 장소를 한 문장씩 묶어둬요.": "今日また開く場所を短くまとめます。",
+  "브리프 복사": "ブリーフをコピー",
+  "저장한 장소가 있어야 브리프를 만들 수 있어요.": "保存した場所があるとブリーフを作れます。",
+  "브리프를 복사했어.": "ブリーフをコピーしました。",
+  "복사가 막혔어. 브라우저 권한을 확인해줘.": "コピーできませんでした。ブラウザ権限を確認してください。",
+  "저장한 장소 없음": "保存した場所なし",
+  "장소를 저장하면 이동 전에 다시 볼 수 있는 브리프가 생겨요.": "場所を保存すると、移動前に見返せるブリーフができます。",
+  "3단계 사용 팁": "3ステップ利用メモ",
+  "먼저 확인": "先に確認",
+  "현장": "現地",
+  "제보": "投稿",
+  "이 장소는 이동 전에 신호와 최근 제보를 같이 봐요.": "この場所は移動前に目印と最新投稿を一緒に見ます。",
+  "도착하면 운영 시간과 현장 안내를 한 번 더 확인해요.": "到着したら営業時間と現地案内をもう一度確認します。",
+  "달라진 점이 있으면 두 번만 눌러 바로 제보해요.": "変化があれば数回タップですぐ投稿します。",
   "지도 크게": "地図を広く",
   "스미맵": "スミマップ",
   "스미맵 - 일본 생활 제보 지도": "スミマップ - 日本生活スポットマップ",
@@ -929,6 +967,7 @@ const state = {
   userPosition: null,
   saved: normalizeSaved(readJson("sumimap:saved", [])),
   recent: normalizeRecent(readJson("sumimap:recent", [])),
+  checks: normalizeChecks(readJson("sumimap:checks", {})),
   reports: normalizeReports(readJson("sumimap:reports", []))
 };
 
@@ -1226,6 +1265,24 @@ function bindEvents() {
       return;
     }
 
+    const dailyCheckButton = event.target.closest("[data-daily-check]");
+    if (dailyCheckButton) {
+      toggleDailyCheck(dailyCheckButton.dataset.dailyCheck);
+      return;
+    }
+
+    const openPanelButton = event.target.closest("[data-open-panel]");
+    if (openPanelButton) {
+      setPanel(openPanelButton.dataset.openPanel);
+      return;
+    }
+
+    const copyBriefButton = event.target.closest("[data-copy-brief]");
+    if (copyBriefButton) {
+      copySavedBrief();
+      return;
+    }
+
     const reportChip = event.target.closest("[data-report-tag]");
     if (reportChip) {
       reportChip.classList.toggle("is-selected");
@@ -1385,6 +1442,7 @@ function renderNearby() {
       ${categories.map((item) => filterChip(item)).join("")}
     </div>
     ${renderContextTools()}
+    ${renderDailyRoutine(list, place)}
     ${place ? renderPlaceDetail(place) : renderEmptyState()}
     ${list.length ? `<div class="place-list">${list.map((item) => renderPlaceCard(item)).join("")}</div>` : ""}
   `;
@@ -1515,6 +1573,7 @@ function renderSaved() {
         <span class="compact-stat">${countLabel(savedPlaces.length, "곳")}</span>
       </div>
     </div>
+    ${renderSavedBrief(savedPlaces)}
     <div class="place-section-title">${t("저장한 곳")}</div>
     <div class="place-list compact-list">
       ${savedPlaces.length ? savedPlaces.map((item) => renderPlaceCard(item)).join("") : `<div class="place-card"><h3>${t("아직 저장한 장소가 없어요")}</h3><p>${t("장소 상세에서 저장을 누르면 여기에 모여요.")}</p></div>`}
@@ -1547,6 +1606,127 @@ function renderGuide() {
       <a class="text-button" href="/cities/">${icon("map")}${t("도시 가이드")}</a>
       <a class="text-button" href="/policy/">${icon("shield-check")}${t("제보 정책")}</a>
     </div>
+  `;
+}
+
+function renderDailyRoutine(list, selected) {
+  const done = dailyChecks.filter((item) => state.checks[item.key]).length;
+  const progress = Math.round((done / dailyChecks.length) * 100);
+  const recommendations = (list.length ? list : places)
+    .filter((place) => place.id !== selected?.id)
+    .slice(0, 2);
+
+  return `
+    <section class="routine-card">
+      <div class="routine-head">
+        <div>
+          <span>${t("오늘 생활 루틴")}</span>
+          <strong>${t("지금 바로 챙길 것")}</strong>
+          <p>${t("체크 진행")} ${done}/${dailyChecks.length}</p>
+        </div>
+        <div class="routine-progress" aria-label="${escapeAttr(`${t("체크 진행")} ${done}/${dailyChecks.length}`)}">
+          <span style="width: ${progress}%"></span>
+        </div>
+      </div>
+      <div class="check-list">
+        ${dailyChecks.map((item) => {
+          const checked = Boolean(state.checks[item.key]);
+          return `
+            <button class="check-row ${checked ? "is-done" : ""}" type="button" data-daily-check="${escapeAttr(item.key)}" aria-pressed="${checked ? "true" : "false"}">
+              <span class="check-emoji" aria-hidden="true">${item.emoji}</span>
+              <span>
+                <strong>${t(item.label)}</strong>
+                <small>${t(item.hint)}</small>
+              </span>
+              <em>${checked ? t("완료") : t("체크")}</em>
+            </button>
+          `;
+        }).join("")}
+      </div>
+      ${recommendations.length ? `
+        <div class="related-inline">
+          <strong>${t("이어서 보기 좋은 곳")}</strong>
+          <div class="mini-place-row">
+            ${recommendations.map((place) => renderMiniPlace(place)).join("")}
+          </div>
+        </div>
+      ` : ""}
+      <div class="detail-actions compact-actions">
+        <button class="text-button" type="button" data-open-panel="saved">${icon("bookmark")}${t("저장 보기")}</button>
+        <button class="text-button" type="button" data-open-panel="report">${icon("plus")}${t("제보하기")}</button>
+      </div>
+    </section>
+  `;
+}
+
+function renderSavedBrief(savedPlaces) {
+  const preview = savedPlaces.slice(0, 3);
+  return `
+    <section class="travel-brief-card ${preview.length ? "" : "is-empty"}">
+      <div>
+        <span>${t("저장 브리프")}</span>
+        <strong>${preview.length ? preview.map((place) => shortPlaceName(placeText(place, "name"))).join(" · ") : t("저장한 장소 없음")}</strong>
+        <p>${preview.length ? t("오늘 다시 열어볼 장소를 한 문장씩 묶어둬요.") : t("장소를 저장하면 이동 전에 다시 볼 수 있는 브리프가 생겨요.")}</p>
+      </div>
+      <button class="text-button" type="button" data-copy-brief ${preview.length ? "" : "disabled"}>
+        ${icon("copy")}
+        ${t("브리프 복사")}
+      </button>
+    </section>
+  `;
+}
+
+function renderPlacePlaybook(place) {
+  const tips = categoryUseTips(place.category);
+  return `
+    <div class="playbook-strip">
+      <div class="playbook-head">
+        <span>${t("3단계 사용 팁")}</span>
+        <strong>${escapeHtml(shortPlaceName(placeText(place, "name")))}</strong>
+      </div>
+      <ol class="playbook-list">
+        <li><span>1</span><div><strong>${t("먼저 확인")}</strong><p>${escapeHtml(t(tips.check))}</p></div></li>
+        <li><span>2</span><div><strong>${t("현장")}</strong><p>${escapeHtml(t(tips.onsite))}</p></div></li>
+        <li><span>3</span><div><strong>${t("제보")}</strong><p>${escapeHtml(t(tips.report))}</p></div></li>
+      </ol>
+    </div>
+  `;
+}
+
+function renderRelatedPlaces(place) {
+  const currentTags = new Set(getLiveTags(place));
+  const related = places
+    .filter((item) => item.id !== place.id)
+    .map((item) => {
+      const tags = getLiveTags(item);
+      const overlap = tags.filter((tag) => currentTags.has(tag)).length;
+      const score = (item.city === place.city ? 5 : 0) + (item.category === place.category ? 3 : 0) + overlap;
+      return { item, score };
+    })
+    .filter(({ score }) => score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 3)
+    .map(({ item }) => item);
+
+  if (!related.length) return "";
+
+  return `
+    <div class="related-block">
+      <div class="related-title">${t("이어서 보기 좋은 곳")}</div>
+      <div class="mini-place-row">
+        ${related.map((item) => renderMiniPlace(item)).join("")}
+      </div>
+    </div>
+  `;
+}
+
+function renderMiniPlace(place) {
+  return `
+    <button type="button" class="mini-place" data-place-id="${escapeAttr(place.id)}">
+      <span aria-hidden="true">${categoryEmoji(place.category)}</span>
+      <strong>${escapeHtml(shortPlaceName(placeText(place, "name")))}</strong>
+      <small>${escapeHtml(distanceLabel(place))} · ${escapeHtml(placeText(place, "area"))}</small>
+    </button>
   `;
 }
 
@@ -1622,6 +1802,8 @@ function renderPlaceDetail(place) {
       <ul class="note-list">
         ${placeNotes(place).map((note) => `<li>${escapeHtml(note)}</li>`).join("")}
       </ul>
+      ${renderPlacePlaybook(place)}
+      ${renderRelatedPlaces(place)}
       ${renderReportFeed(reports)}
     </section>
   `;
@@ -1862,6 +2044,95 @@ function toggleSave(placeId) {
   }
   writeJson("sumimap:saved", state.saved);
   renderSheet();
+}
+
+function toggleDailyCheck(key) {
+  if (!dailyChecks.some((item) => item.key === key)) return;
+  state.checks = { ...state.checks, [key]: !state.checks[key] };
+  writeJson("sumimap:checks", state.checks);
+  showToast(state.checks[key] ? "오늘 체크에 담았어." : "오늘 체크에서 뺐어.");
+  renderSheet();
+}
+
+async function copySavedBrief() {
+  const savedPlaces = state.saved.map((id) => placesById.get(id)).filter(Boolean);
+  if (!savedPlaces.length) {
+    showToast("저장한 장소가 있어야 브리프를 만들 수 있어요.");
+    return;
+  }
+
+  try {
+    await copyText(savedBriefText(savedPlaces));
+    showToast("브리프를 복사했어.");
+  } catch {
+    showToast("복사가 막혔어. 브라우저 권한을 확인해줘.");
+  }
+}
+
+function savedBriefText(savedPlaces) {
+  const lines = savedPlaces.slice(0, 8).map((place, index) => {
+    const tags = getLiveTags(place).slice(0, 3).map(tagText).join(", ");
+    return `${index + 1}. ${placeText(place, "name")} - ${placeText(place, "area")} / ${tags} / ${mapsUrl(place)}`;
+  });
+  return [`스미맵 저장 브리프`, ...lines].join("\n");
+}
+
+async function copyText(text) {
+  if (navigator.clipboard?.writeText) {
+    try {
+      await navigator.clipboard.writeText(text);
+      return;
+    } catch {
+      // Some in-app browsers expose Clipboard API but block it until a fallback is used.
+    }
+  }
+
+  const textarea = document.createElement("textarea");
+  textarea.value = text;
+  textarea.setAttribute("readonly", "");
+  textarea.style.position = "fixed";
+  textarea.style.top = "-9999px";
+  document.body.append(textarea);
+  textarea.select();
+  const ok = document.execCommand("copy");
+  textarea.remove();
+  if (!ok) throw new Error("copy failed");
+}
+
+function categoryUseTips(category) {
+  const tips = {
+    charge: {
+      check: "콘센트 위치와 직원 허락 필요 여부를 먼저 봐요.",
+      onsite: "주문·이용 규칙을 확인하고 짧게 충전해요.",
+      report: "충전 가능 여부가 바뀌면 제보로 신호를 남겨요."
+    },
+    restroom: {
+      check: "단독 이용 가능인지, 매장 이용이 필요한지 먼저 봐요.",
+      onsite: "동선이 복잡하면 직원 안내 표지를 먼저 확인해요.",
+      report: "대기나 이용 제한이 있으면 바로 표시해요."
+    },
+    rest: {
+      check: "비 피하기·잠깐 쉬기·장시간 비추천 신호를 같이 봐요.",
+      onsite: "혼잡하면 오래 머물기보다 다음 후보를 열어둬요.",
+      report: "머물기 애매한 분위기는 응대 불편이 아니라 이용 팁으로 남겨요."
+    },
+    korean: {
+      check: "한국어 메뉴·응대·주변 생활권 신호를 함께 봐요.",
+      onsite: "가능하면 일본어 안내와 현장 표기도 같이 확인해요.",
+      report: "한국어 대응이 실제와 다르면 최신 신호로 바로 고쳐요."
+    },
+    caution: {
+      check: "불편 신호는 단정이 아니라 최근 참고 신호로만 봐요.",
+      onsite: "무리하게 머물지 말고 가까운 대체 장소를 같이 열어둬요.",
+      report: "괜찮았거나 달라졌다면 동의·허위 의심으로 균형을 맞춰요."
+    }
+  };
+
+  return tips[category] || {
+    check: "이 장소는 이동 전에 신호와 최근 제보를 같이 봐요.",
+    onsite: "도착하면 운영 시간과 현장 안내를 한 번 더 확인해요.",
+    report: "달라진 점이 있으면 두 번만 눌러 바로 제보해요."
+  };
 }
 
 function getSelectedPlace() {
@@ -2466,6 +2737,7 @@ function icon(name) {
     languages: `<path d="M5 8h8"/><path d="M9 4v4c0 4-2 7-5 9"/><path d="M7 12c1 2 3 4 6 5"/><path d="M15 21l4-9 4 9"/><path d="M17 17h4"/>`,
     "triangle-alert": `<path d="M12 3 2 21h20L12 3Z"/><path d="M12 9v5M12 17h.01"/>`,
     search: `<path d="m21 21-4.3-4.3"/><circle cx="11" cy="11" r="7"/>`,
+    copy: `<rect x="9" y="9" width="13" height="13" rx="2"/><rect x="2" y="2" width="13" height="13" rx="2"/>`,
     map: `<path d="M9 18 3 21V6l6-3 6 3 6-3v15l-6 3-6-3Z"/><path d="M9 3v15M15 6v15"/>`,
     crosshair: `<circle cx="12" cy="12" r="6"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/>`,
     "locate-fixed": `<line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="3"/>`
@@ -2609,6 +2881,11 @@ function normalizeSaved(ids) {
 
 function normalizeRecent(ids) {
   return normalizeSaved(ids).slice(0, 8);
+}
+
+function normalizeChecks(checks) {
+  if (!checks || typeof checks !== "object" || Array.isArray(checks)) return {};
+  return Object.fromEntries(dailyChecks.map((item) => [item.key, Boolean(checks[item.key])]));
 }
 
 function rememberPlace(placeId) {
