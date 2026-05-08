@@ -2792,3 +2792,179 @@ textarea:focus-visible {
 .report-grid.is-extra {
   margin-top: 8px;
 }
+
+/* Comfort UX pass */
+html {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.leaflet-container {
+  background: #e7efea;
+}
+
+.leaflet-tile {
+  filter: saturate(0.72) contrast(0.9) brightness(1.05);
+  opacity: 0.94;
+}
+
+.topbar,
+.search-panel,
+.bottom-sheet,
+.bottom-nav,
+.quick-chip {
+  background-color: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 8px 24px rgba(21, 32, 38, 0.12);
+}
+
+.bottom-sheet {
+  scrollbar-gutter: stable both-edges;
+}
+
+.bottom-sheet::-webkit-scrollbar,
+.scenario-rail::-webkit-scrollbar,
+.place-list::-webkit-scrollbar,
+.quick-place-row::-webkit-scrollbar {
+  display: none;
+}
+
+.sheet-head-actions {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.sheet-head-actions .sheet-mini-action {
+  min-width: 70px;
+}
+
+.sheet-mini-action,
+.address-search-button,
+.chip,
+.text-button,
+.primary-button,
+.nav-button,
+.quick-chip,
+.scenario-chip,
+.place-card {
+  touch-action: manipulation;
+}
+
+.sheet-mini-action,
+.address-search-button,
+.chip,
+.text-button,
+.primary-button,
+.nav-button,
+.quick-chip,
+.scenario-chip,
+.place-card,
+.icon-button {
+  transition:
+    transform 0.12s ease,
+    background-color 0.12s ease,
+    border-color 0.12s ease,
+    box-shadow 0.12s ease;
+}
+
+.sheet-mini-action:active,
+.address-search-button:active,
+.chip:active,
+.text-button:active,
+.primary-button:active,
+.nav-button:active,
+.quick-chip:active,
+.scenario-chip:active,
+.place-card:active,
+.icon-button:active {
+  transform: translateY(1px) scale(0.99);
+}
+
+.sheet-head h1,
+.sheet-head h2,
+.place-card h3 {
+  font-weight: 850;
+}
+
+.compact-stat,
+.badge,
+.chip,
+.nav-button,
+.quick-chip strong,
+.scenario-chip strong {
+  font-weight: 800;
+}
+
+.place-list {
+  content-visibility: auto;
+  contain-intrinsic-size: 360px;
+}
+
+.report-form .form-section {
+  padding: 11px;
+  border: 1px solid rgba(21, 32, 38, 0.08);
+  border-radius: 8px;
+  background: rgba(248, 250, 249, 0.72);
+}
+
+.report-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.report-chip {
+  justify-content: flex-start;
+  min-height: 44px;
+}
+
+.report-chip span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 779px) {
+  .bottom-sheet.is-collapsed .sheet-mini-action {
+    display: none;
+  }
+
+  .bottom-sheet.is-expanded {
+    max-height: min(47dvh, 430px) !important;
+  }
+
+  .sheet-head-actions {
+    gap: 6px;
+  }
+}
+
+@media (max-width: 390px) {
+  .sheet-head-actions {
+    flex-direction: column;
+    align-items: flex-end;
+  }
+
+  .sheet-head-actions .sheet-mini-action {
+    min-height: 30px;
+    padding-inline: 9px;
+  }
+
+  .report-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bottom-sheet,
+  .sheet-mini-action,
+  .address-search-button,
+  .chip,
+  .text-button,
+  .primary-button,
+  .nav-button,
+  .quick-chip,
+  .scenario-chip,
+  .place-card,
+  .icon-button {
+    transition: none !important;
+  }
+}

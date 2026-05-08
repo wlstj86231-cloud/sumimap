@@ -71,6 +71,7 @@ const supportedLanguages = new Set(["ko", "ja"]);
 let currentLanguage = readLanguagePreference();
 
 const jaText = {
+  "지도 크게": "地図を広く",
   "스미맵": "スミマップ",
   "스미맵 - 일본 생활 제보 지도": "スミマップ - 日本生活スポットマップ",
   "일본 생활 제보 지도": "日本生活スポットマップ",
@@ -1018,6 +1019,12 @@ function bootMap() {
 
   markerLayer = L.layerGroup().addTo(map);
   map.on("contextmenu", selectHeldMapPointForReport);
+  map.on("click", () => {
+    if (!searchPanel?.hidden) setSearchPanel(false);
+    if (state.activePanel === "near" && state.sheetMode !== "collapsed") {
+      setSheetMode("collapsed");
+    }
+  });
 }
 
 function bindEvents() {
@@ -1368,7 +1375,10 @@ function renderNearby() {
         <h1>${t("지금 확인할 생활 스팟")}</h1>
         <p>${t("충전, 화장실, 쉬기, 한국어 대응, 응대 불편 신호를 한 번에 봐요.")}</p>
       </div>
-      <span class="compact-stat">${countLabel(list.length, "곳")}</span>
+      <div class="sheet-head-actions">
+        <button class="sheet-mini-action" type="button" data-sheet-collapse>${t("지도 크게")}</button>
+        <span class="compact-stat">${countLabel(list.length, "곳")}</span>
+      </div>
     </div>
     ${renderScenarioRail()}
     <div class="filter-row">
@@ -1388,6 +1398,7 @@ function renderFilters() {
         <h2>${t("필터")}</h2>
         <p>${t("상황별로 빠르게 좁혀요. 응대 불편은 낙인이 아니라 최근 제보 신호로만 봐요.")}</p>
       </div>
+      <button class="sheet-mini-action" type="button" data-sheet-collapse>${t("지도 크게")}</button>
     </div>
     ${renderScenarioRail()}
     <div class="filter-row">
@@ -1499,7 +1510,10 @@ function renderSaved() {
         <h2>${t("저장한 곳")}</h2>
         <p>${t("저장한 곳과 방금 확인한 곳을 빠르게 다시 열어요.")}</p>
       </div>
-      <span class="compact-stat">${countLabel(savedPlaces.length, "곳")}</span>
+      <div class="sheet-head-actions">
+        <button class="sheet-mini-action" type="button" data-sheet-collapse>${t("지도 크게")}</button>
+        <span class="compact-stat">${countLabel(savedPlaces.length, "곳")}</span>
+      </div>
     </div>
     <div class="place-section-title">${t("저장한 곳")}</div>
     <div class="place-list compact-list">
@@ -1520,6 +1534,7 @@ function renderGuide() {
         <h2>${t("스미맵 기준")}</h2>
         <p>${t("일본 생활 중 곤란한 순간을 빠르게 피하기 위한 한국어 지도예요.")}</p>
       </div>
+      <button class="sheet-mini-action" type="button" data-sheet-collapse>${t("지도 크게")}</button>
     </div>
     <ul class="note-list">
       <li>${t("응대 불편은 상대를 공격하는 표시가 아니라, 방문자가 조심할 수 있게 만드는 약한 신호예요.")}</li>
@@ -1728,7 +1743,10 @@ function renderMarkers() {
         html: markerLabel(place.category)
       })
     });
-    marker.on("click", () => selectPlace(place.id, false));
+    marker.on("click", (event) => {
+      if (event?.originalEvent) L.DomEvent.stopPropagation(event.originalEvent);
+      selectPlace(place.id, false);
+    });
     marker.addTo(markerLayer);
     markers.set(place.id, marker);
     markerClassNames.set(place.id, markerClassName);
