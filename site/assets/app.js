@@ -571,6 +571,7 @@ function bootMap() {
   }).addTo(map);
 
   markerLayer = L.layerGroup().addTo(map);
+  map.on("contextmenu", selectHeldMapPointForReport);
 }
 
 function bindEvents() {
@@ -1571,8 +1572,29 @@ function activateReportPlace(place, zoom = 16, message = "") {
 }
 
 async function selectMapCenterForReport() {
-  const center = map.getCenter();
+  const center = getVisibleMapCenter();
   await selectPointForReport(center.lat, center.lng, "지도 중심");
+}
+
+function selectHeldMapPointForReport(event) {
+  if (state.activePanel !== "report") return;
+  if (!event?.latlng || !Number.isFinite(event.latlng.lat) || !Number.isFinite(event.latlng.lng)) return;
+  selectPointForReport(event.latlng.lat, event.latlng.lng, "길게 누른 위치");
+}
+
+function getVisibleMapCenter() {
+  const mapRect = map.getContainer().getBoundingClientRect();
+  const sheetRect = sheet.getBoundingClientRect();
+  const usableBottom =
+    sheetRect.top > mapRect.top && sheetRect.top < mapRect.bottom
+      ? sheetRect.top
+      : mapRect.bottom;
+  const visibleHeight = Math.max(120, usableBottom - mapRect.top);
+  const point = L.point(
+    mapRect.width / 2,
+    Math.min(usableBottom - mapRect.top - 24, visibleHeight / 2)
+  );
+  return map.containerPointToLatLng(point);
 }
 
 async function selectCurrentLocationForReport() {
@@ -1644,7 +1666,11 @@ function fallbackCandidateForPoint(lat, lng, label) {
 }
 
 function objectParticle(label) {
-  return label === "내 위치" ? "를" : "을";
+  const last = [...String(label || "").trim()].pop();
+  if (!last) return "을";
+  const code = last.charCodeAt(0);
+  if (code < 0xac00 || code > 0xd7a3) return "를";
+  return (code - 0xac00) % 28 ? "을" : "를";
 }
 
 function getCurrentPosition() {
