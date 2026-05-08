@@ -637,6 +637,97 @@ a {
   line-height: 1.25;
 }
 
+.place-brief {
+  display: grid;
+  gap: 11px;
+}
+
+.place-brief .place-title-row {
+  margin-bottom: 0;
+}
+
+.compact-tags {
+  margin-top: 0;
+}
+
+.brief-line {
+  padding: 11px;
+  border: 1px solid #d9ece5;
+  border-radius: 8px;
+  background: #f6fbf8;
+}
+
+.brief-line span,
+.brief-stats span {
+  display: block;
+  color: #0f705b;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.brief-line strong {
+  display: block;
+  margin-top: 4px;
+  font-size: 15px;
+  line-height: 1.42;
+}
+
+.brief-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.brief-stats div {
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface-soft);
+}
+
+.brief-stats strong {
+  display: block;
+  overflow: hidden;
+  margin-top: 4px;
+  font-size: 15px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.brief-actions {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.brief-actions .text-button,
+.brief-actions .primary-button {
+  min-width: 0;
+  padding-inline: 9px;
+}
+
+.place-more {
+  border-top: 1px solid var(--line);
+  padding-top: 9px;
+}
+
+.place-more summary {
+  width: fit-content;
+  min-height: 34px;
+  padding: 8px 11px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  background: #ffffff;
+  font-size: 12px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.feed-actions .danger-action {
+  color: #8d3329;
+  background: var(--red-soft);
+}
+
 .detail-actions {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -2575,13 +2666,13 @@ textarea:focus-visible {
   }
 
   .bottom-sheet.is-collapsed {
-    max-height: 96px !important;
+    max-height: 30px !important;
     overflow: hidden;
-    padding: 10px 14px 12px !important;
+    padding: 7px 14px 8px !important;
   }
 
   .bottom-sheet.is-collapsed .sheet-grip {
-    margin-bottom: 8px;
+    margin-bottom: 0;
   }
 
   .bottom-sheet.is-collapsed .sheet-head {
@@ -2595,6 +2686,7 @@ textarea:focus-visible {
     line-height: 1.18;
   }
 
+  .bottom-sheet.is-collapsed .sheet-head,
   .bottom-sheet.is-collapsed .sheet-head p,
   .bottom-sheet.is-collapsed .scenario-rail,
   .bottom-sheet.is-collapsed .filter-row,
@@ -2621,7 +2713,7 @@ textarea:focus-visible {
 
 @media (max-width: 390px) {
   .bottom-sheet.is-collapsed {
-    max-height: 90px !important;
+    max-height: 30px !important;
   }
 
   .bottom-sheet.is-expanded {

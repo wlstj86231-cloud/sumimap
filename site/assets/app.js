@@ -319,7 +319,16 @@ const jaText = {
   "주소검색으로 잡은 새 장소예요.": "住所検索で指定した新しい場所です。",
   "제보가 쌓이면 충전, 화장실, 쉬기, 한국어 대응 신호가 지도에 반영돼요.": "投稿が集まると、充電・トイレ・休憩・韓国語対応のサインが地図に反映されます。",
   "제보가 쌓이면 생활 신호가 지도에 반영돼요.": "投稿が集まると生活サインが地図に反映されます。",
-  "빠른 상황": "すぐ見る状況"
+  "빠른 상황": "すぐ見る状況",
+  "지도에서 이모티콘을 눌러요": "地図で絵文字を押します",
+  "원하는 표시를 누르면 필요한 정보만 짧게 떠요.": "必要な表示を押すと短い情報だけ出ます。",
+  "지도에서 필요한 표시를 고른 뒤 눌러보세요.": "地図で必要な表示を選んで押してください。",
+  "한 줄 확인": "一行確認",
+  "간단히 보기": "短く見る",
+  "최근 제보 보기": "最近の投稿を見る",
+  "자세한 정보는 필터나 정보 탭에서 천천히 볼 수 있어요.": "詳しい情報はフィルターや情報タブで見られます。",
+  "삭제": "削除",
+  "제보를 삭제했어.": "投稿を削除しました。"
 };
 
 const hiraganaTextReplacements = [
@@ -1240,7 +1249,8 @@ const state = {
   saved: normalizeSaved(readJson("sumimap:saved", [])),
   recent: normalizeRecent(readJson("sumimap:recent", [])),
   checks: normalizeChecks(readJson("sumimap:checks", {})),
-  reports: normalizeReports(readJson("sumimap:reports", []))
+  reports: normalizeReports(readJson("sumimap:reports", [])),
+  reportFeedOpen: false
 };
 
 const placesById = new Map(places.map((place) => [place.id, place]));
@@ -1343,13 +1353,24 @@ async function setBaseMapLanguage(language, notify = true) {
   if (notify) showToast("지도 언어를 바꾸는 중...");
 
   try {
-    if (!window.maplibregl || !L.maplibreGL) throw new Error("vector map unavailable");
+    if (
+      !window.maplibregl ||
+      !L.maplibreGL ||
+      (typeof window.maplibregl.supported === "function" && !window.maplibregl.supported({ failIfMajorPerformanceCaveat: true }))
+    ) {
+      throw new Error("vector map unavailable");
+    }
     const style = await localizedVectorStyle(mapLanguage);
     if (seq !== baseMapSeq || !map) return;
     const nextLayer = L.maplibreGL({
       style,
       interactive: false
     });
+    nextLayer.on?.("error", () => fallbackToRasterBaseMap(nextLayer, mapLanguage));
+    map.getContainer().addEventListener("webglcontextlost", (event) => {
+      event.preventDefault?.();
+      fallbackToRasterBaseMap(nextLayer, mapLanguage);
+    }, { once: true, capture: true });
     replaceBaseMap(nextLayer);
     if (notify) showToast("지도 언어를 바꿨어.");
   } catch {
@@ -1357,6 +1378,11 @@ async function setBaseMapLanguage(language, notify = true) {
     replaceBaseMap(rasterBaseMap(mapLanguage));
     if (notify) showToast("지도 언어 전환이 불안정해서 기본 지도로 보여줄게.");
   }
+}
+
+function fallbackToRasterBaseMap(layer, language) {
+  if (!map || baseMapLayer !== layer) return;
+  replaceBaseMap(rasterBaseMap(language));
 }
 
 function replaceBaseMap(nextLayer) {
@@ -1677,6 +1703,13 @@ function bindEvents() {
     const reportVote = event.target.closest("[data-report-vote]");
     if (reportVote) {
       voteReport(reportVote.dataset.reportId, reportVote.dataset.reportVote);
+      return;
+    }
+
+    const reportDelete = event.target.closest("[data-report-delete]");
+    if (reportDelete) {
+      deleteReport(reportDelete.dataset.reportDelete);
+      return;
     }
   });
 }
@@ -1843,29 +1876,26 @@ function renderSheet() {
 function renderNearby() {
   const list = getFilteredPlaces();
   const place = list.find((item) => item.id === state.selectedId) || null;
-
-  return `
-    <button class="sheet-grip" type="button" data-sheet-toggle aria-label="${escapeAttr(t("지도 보기"))}"></button>
+  const introHead = place
+    ? ""
+    : `
     <div class="sheet-head" data-sheet-toggle>
       <div>
-        <h1>${t("지금 확인할 생활 스팟")}</h1>
-        <p>${t("충전, 화장실, 쉬기, 한국어 대응, 응대 불편 신호를 한 번에 봐요.")}</p>
+        <h1>${t("지도에서 이모티콘을 눌러요")}</h1>
+        <p>${t("원하는 표시를 누르면 필요한 정보만 짧게 떠요.")}</p>
       </div>
       <div class="sheet-head-actions">
         <button class="sheet-mini-action" type="button" data-sheet-collapse>${t("지도 크게")}</button>
         <span class="compact-stat">${countLabel(list.length, "곳")}</span>
       </div>
     </div>
-    ${renderScenarioRail()}
-    <div class="filter-row">
-      ${categories.map((item) => filterChip(item)).join("")}
-    </div>
+  `;
+
+  return `
+    <button class="sheet-grip" type="button" data-sheet-toggle aria-label="${escapeAttr(t("지도 보기"))}"></button>
+    ${introHead}
     ${renderContextTools()}
-    ${renderDailyRoutine(list, place)}
-    ${renderMiniRoute(list, place)}
-    ${renderEntryShareCard(list, place)}
-    ${place ? renderPlaceDetail(place) : renderEmptyState()}
-    ${list.length ? `<div class="place-list">${list.map((item) => renderPlaceCard(item)).join("")}</div>` : ""}
+    ${place ? renderPlaceBrief(place) : renderMapFirstHint(list)}
   `;
 }
 
@@ -2250,6 +2280,71 @@ function renderMiniPlace(place) {
   `;
 }
 
+function renderMapFirstHint(list) {
+  return `
+    <section class="place-card place-brief">
+      <h3>${t("지도에서 필요한 표시를 고른 뒤 눌러보세요.")}</h3>
+      <p>${t("자세한 정보는 필터나 정보 탭에서 천천히 볼 수 있어요.")}</p>
+      <div class="brief-stats">
+        <div><span>${t("장소")}</span><strong>${countLabel(list.length, "곳")}</strong></div>
+        <div><span>${t("빠른 상황")}</span><strong>${scenarios.slice(0, 3).map((item) => item.emoji).join(" ")}</strong></div>
+      </div>
+    </section>
+  `;
+}
+
+function renderPlaceBrief(place) {
+  const saved = state.saved.includes(place.id);
+  const signals = getLiveSignals(place);
+  const tags = getLiveTags(place).slice(0, 3);
+  const reports = getVisibleReportsForPlace(place.id).slice(0, 3);
+  const caution = signals.caution > 0;
+  const line = placeText(place, "watchout") || placeText(place, "bestFor") || t("운영 시간과 현장 안내를 먼저 확인해요.");
+
+  return `
+    <section class="place-card place-brief is-selected">
+      <div class="place-title-row">
+        <div>
+          <h3><span class="place-title-emoji" aria-hidden="true">${categoryEmoji(place.category)}</span>${escapeHtml(placeText(place, "name"))}</h3>
+          <p>${escapeHtml(placeText(place, "area"))} · ${escapeHtml(placeText(place, "kind"))}</p>
+        </div>
+        <span class="badge ${caution ? "caution" : reports.length ? "info" : "good"}">${escapeHtml(getLiveTrust(place))}</span>
+      </div>
+      <div class="tag-row compact-tags" aria-label="${escapeAttr(t("간단히 보기"))}">
+        ${tags.map((tag) => `<span class="badge ${tag === "응대 불편" ? "caution" : tag.includes("충전") || tag.includes("와이파이") ? "info" : tag.includes("비") || tag.includes("허락") ? "warn" : "good"}"><span class="badge-emoji" aria-hidden="true">${emojiForTag(tag)}</span>${escapeHtml(tagText(tag))}</span>`).join("")}
+      </div>
+      <div class="brief-line">
+        <span>${t("한 줄 확인")}</span>
+        <strong>${escapeHtml(line)}</strong>
+      </div>
+      <div class="brief-stats">
+        <div><span>${t("최근 확인")}</span><strong>${escapeHtml(placeText(place, "lastSeen") || t("제보 필요"))}</strong></div>
+        <div><span>${t("신뢰")}</span><strong>${getTrustScore(place)}%</strong></div>
+      </div>
+      <div class="detail-actions brief-actions">
+        <button class="text-button" type="button" data-save="${place.id}">
+          ${icon(saved ? "bookmark-check" : "bookmark")}
+          ${saved ? t("저장됨") : t("저장")}
+        </button>
+        <a class="text-button" href="${mapsUrl(place)}" target="_blank" rel="noreferrer">
+          ${icon("navigation")}
+          ${t("길찾기")}
+        </a>
+        <button class="primary-button" type="button" data-open-report>
+          ${icon("plus")}
+          ${t("제보")}
+        </button>
+      </div>
+      ${reports.length ? `
+        <details class="place-more" ${state.reportFeedOpen ? "open" : ""}>
+          <summary>${t("최근 제보 보기")}</summary>
+          ${renderReportFeed(reports)}
+        </details>
+      ` : ""}
+    </section>
+  `;
+}
+
 function renderPlaceDetail(place) {
   const saved = state.saved.includes(place.id);
   const signals = getLiveSignals(place);
@@ -2411,6 +2506,7 @@ function renderReportFeed(reports) {
           <div class="feed-actions">
             <button type="button" data-report-id="${escapeAttr(report.id)}" data-report-vote="agree">${t("동의")}</button>
             <button type="button" data-report-id="${escapeAttr(report.id)}" data-report-vote="dispute">${t("허위 의심")}</button>
+            <button type="button" class="danger-action" data-report-delete="${escapeAttr(report.id)}">${t("삭제")}</button>
           </div>
         </article>
       `).join("")}
@@ -2472,6 +2568,7 @@ function selectPlace(placeId, moveMap) {
   rememberPlace(place.id);
   state.activePanel = "near";
   state.sheetMode = "expanded";
+  state.reportFeedOpen = false;
   setActiveNav("near");
   if (moveMap) {
     map.setView([place.lat, place.lng], 15);
@@ -2535,6 +2632,7 @@ function submitReport(form) {
   state.sheetMode = "expanded";
   state.activeScenario = "";
   state.filter = "all";
+  state.reportFeedOpen = true;
   clearSearchState();
   setSearchPanel(false);
   renderMapQuickRail();
@@ -2558,7 +2656,23 @@ function voteReport(reportId, vote) {
   }
 
   invalidateReportCaches();
+  state.reportFeedOpen = true;
   writeJson("sumimap:reports", state.reports);
+  renderSheet();
+  renderMarkers();
+  refreshStatus();
+}
+
+function deleteReport(reportId) {
+  const previousLength = state.reports.length;
+  const target = state.reports.find((item) => item.id === reportId);
+  state.reports = state.reports.filter((item) => item.id !== reportId);
+  if (state.reports.length === previousLength) return;
+
+  invalidateReportCaches();
+  state.reportFeedOpen = target ? getVisibleReportsForPlace(target.placeId).length > 0 : false;
+  writeJson("sumimap:reports", state.reports);
+  showToast("제보를 삭제했어.");
   renderSheet();
   renderMarkers();
   refreshStatus();
@@ -2825,7 +2939,7 @@ function getFilteredPlaces() {
 function refreshStatus() {
   const visible = getFilteredPlaces();
   const scenario = scenariosByKey.get(state.activeScenario);
-  statusPill.textContent = scenario ? `${scenario.emoji} ${t(scenario.label)} · ${countLabel(visible.length, "곳")}` : `📍 ${countLabel(visible.length, "곳")} ${t("표시")} · ${t("바로 제보")}`;
+  statusPill.textContent = scenario ? `${scenario.emoji} ${t(scenario.label)} · ${countLabel(visible.length, "곳")}` : `📍 ${countLabel(visible.length, "곳")} ${t("표시")}`;
   if (state.userPosition && !scenario) {
     statusPill.textContent = `📍 ${t("내 위치 기준")} · ${countLabel(visible.length, "곳")}`;
   }
