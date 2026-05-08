@@ -67,6 +67,9 @@ const filterThresholds = {
 const geocodeSearchUrl = "https://nominatim.openstreetmap.org/search";
 const reverseGeocodeUrl = "https://nominatim.openstreetmap.org/reverse";
 const vectorMapStyleUrl = "https://tiles.openfreemap.org/styles/positron";
+const mapLibreCssUrl = "https://unpkg.com/maplibre-gl@5.24.0/dist/maplibre-gl.css";
+const mapLibreScriptUrl = "https://unpkg.com/maplibre-gl@5.24.0/dist/maplibre-gl.js";
+const mapLibreLeafletScriptUrl = "https://unpkg.com/@maplibre/maplibre-gl-leaflet/leaflet-maplibre-gl.js";
 const japanBounds = {
   minLat: 24,
   maxLat: 46,
@@ -1285,6 +1288,7 @@ let reportVersion = 0;
 let visibleReportsCache = null;
 let derivedPlaceCache = new Map();
 const vectorStyleCache = new Map();
+let mapLibreLoadPromise = null;
 let filteredPlacesCacheKey = "";
 let filteredPlacesCache = [];
 let started = false;
@@ -1320,9 +1324,7 @@ function init() {
   renderMarkers();
   refreshStatus();
   setSearchPanel(false);
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("/sw.js").catch(() => {});
-  }
+  registerServiceWorkerWhenIdle();
 }
 
 function bootMap() {
@@ -1346,13 +1348,27 @@ function bootMap() {
   });
 }
 
-async function setBaseMapLanguage(language, notify = true) {
+function setBaseMapLanguage(language, notify = true) {
   const seq = baseMapSeq + 1;
   baseMapSeq = seq;
   const mapLanguage = language === "ja" ? "ja" : "ko";
-  if (notify) showToast("지도 언어를 바꾸는 중...");
+  replaceBaseMap(rasterBaseMap(mapLanguage));
+  if (notify) showToast("지도 언어를 바꿨어.");
+  scheduleVectorMapUpgrade(mapLanguage, seq);
+}
 
+function scheduleVectorMapUpgrade(mapLanguage, seq) {
+  const upgrade = () => upgradeToVectorBaseMap(mapLanguage, seq);
+  if ("requestIdleCallback" in window) {
+    window.requestIdleCallback(upgrade, { timeout: 2500 });
+  } else {
+    window.setTimeout(upgrade, 900);
+  }
+}
+
+async function upgradeToVectorBaseMap(mapLanguage, seq) {
   try {
+    await loadMapLibreAssets();
     if (
       !window.maplibregl ||
       !L.maplibreGL ||
@@ -1372,11 +1388,70 @@ async function setBaseMapLanguage(language, notify = true) {
       fallbackToRasterBaseMap(nextLayer, mapLanguage);
     }, { once: true, capture: true });
     replaceBaseMap(nextLayer);
-    if (notify) showToast("지도 언어를 바꿨어.");
   } catch {
     if (seq !== baseMapSeq || !map) return;
-    replaceBaseMap(rasterBaseMap(mapLanguage));
-    if (notify) showToast("지도 언어 전환이 불안정해서 기본 지도로 보여줄게.");
+    if (!baseMapLayer) replaceBaseMap(rasterBaseMap(mapLanguage));
+  }
+}
+
+async function loadMapLibreAssets() {
+  if (window.maplibregl && L.maplibreGL) return;
+  if (!mapLibreLoadPromise) {
+    mapLibreLoadPromise = Promise.all([
+      loadStylesheet(mapLibreCssUrl),
+      loadScript(mapLibreScriptUrl).then(() => loadScript(mapLibreLeafletScriptUrl))
+    ]).catch((error) => {
+      mapLibreLoadPromise = null;
+      throw error;
+    });
+  }
+  await mapLibreLoadPromise;
+}
+
+function loadStylesheet(href) {
+  if (document.querySelector(`link[href="${href}"]`)) return Promise.resolve();
+  return new Promise((resolve) => {
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = href;
+    link.onload = resolve;
+    link.onerror = resolve;
+    document.head.appendChild(link);
+  });
+}
+
+function loadScript(src) {
+  const existing = document.querySelector(`script[src="${src}"]`);
+  if (existing?.dataset.loaded === "true") return Promise.resolve();
+  if (existing) {
+    return new Promise((resolve, reject) => {
+      existing.addEventListener("load", resolve, { once: true });
+      existing.addEventListener("error", reject, { once: true });
+    });
+  }
+  return new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    script.src = src;
+    script.async = true;
+    script.onload = () => {
+      script.dataset.loaded = "true";
+      resolve();
+    };
+    script.onerror = () => {
+      script.remove();
+      reject(new Error(`Failed to load ${src}`));
+    };
+    document.head.appendChild(script);
+  });
+}
+
+function registerServiceWorkerWhenIdle() {
+  if (!("serviceWorker" in navigator)) return;
+  const register = () => navigator.serviceWorker.register("/sw.js").catch(() => {});
+  if ("requestIdleCallback" in window) {
+    window.requestIdleCallback(register, { timeout: 3500 });
+  } else {
+    window.setTimeout(register, 1600);
   }
 }
 

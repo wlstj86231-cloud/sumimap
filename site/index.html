@@ -15,26 +15,40 @@
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="스미맵 - 일본 생활 제보 지도">
     <meta name="twitter:description" content="일본에서 사는 한국인을 위한 충전, 화장실, 쉬기 좋은 곳, 한국어 대응, 응대 불편 제보 지도.">
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7217591196020054" crossorigin="anonymous"></script>
     <meta name="google-adsense-account" content="ca-pub-7217591196020054">
+    <script>
+      window.addEventListener("load", () => {
+        const loadAdSense = () => {
+          if (document.querySelector("script[data-adsense-loader]")) return;
+          const script = document.createElement("script");
+          script.async = true;
+          script.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7217591196020054";
+          script.crossOrigin = "anonymous";
+          script.dataset.adsenseLoader = "true";
+          document.head.appendChild(script);
+        };
+        if ("requestIdleCallback" in window) {
+          window.requestIdleCallback(loadAdSense, { timeout: 3500 });
+        } else {
+          window.setTimeout(loadAdSense, 1800);
+        }
+      }, { once: true });
+    </script>
     <meta name="google-site-verification" content="tSlD6MvlQAUKN3XASMGLU-vJTeaoUxCSFg-tn3JMmvk">
     <link rel="alternate" type="application/rss+xml" title="스미맵 RSS" href="https://sumimap.com/feed.xml">
     <link rel="manifest" href="/manifest.webmanifest">
     <link rel="icon" href="/assets/icon.svg" type="image/svg+xml">
     <link rel="preconnect" href="https://tile.openstreetmap.org">
-    <link rel="preconnect" href="https://tiles.openfreemap.org">
-    <link rel="preconnect" href="https://unpkg.com">
     <link rel="dns-prefetch" href="https://tile.openstreetmap.org">
     <link rel="dns-prefetch" href="https://tiles.openfreemap.org">
     <link rel="dns-prefetch" href="https://unpkg.com">
     <link rel="dns-prefetch" href="https://nominatim.openstreetmap.org">
     <link rel="preload" href="/assets/vendor/leaflet/leaflet.css" as="style">
-    <link rel="preload" href="/assets/styles.css?v=20260508-mapfirst2" as="style">
+    <link rel="preload" href="/assets/styles.css?v=20260508-speed1" as="style">
     <link rel="preload" href="/assets/vendor/leaflet/leaflet.js" as="script">
-    <link rel="modulepreload" href="/assets/app.js?v=20260508-mapfirst2">
+    <link rel="modulepreload" href="/assets/app.js?v=20260508-speed1">
     <link rel="stylesheet" href="/assets/vendor/leaflet/leaflet.css">
-    <link href="https://unpkg.com/maplibre-gl@5.24.0/dist/maplibre-gl.css" rel="stylesheet">
-    <link rel="stylesheet" href="/assets/styles.css?v=20260508-mapfirst2">
+    <link rel="stylesheet" href="/assets/styles.css?v=20260508-speed1">
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
@@ -167,8 +181,6 @@
     </noscript>
 
     <script src="/assets/vendor/leaflet/leaflet.js" defer></script>
-    <script src="https://unpkg.com/maplibre-gl@5.24.0/dist/maplibre-gl.js" defer></script>
-    <script src="https://unpkg.com/@maplibre/maplibre-gl-leaflet/leaflet-maplibre-gl.js" defer></script>
-    <script src="/assets/app.js?v=20260508-mapfirst2" type="module"></script>
+    <script src="/assets/app.js?v=20260508-speed1" type="module"></script>
   </body>
 </html>
