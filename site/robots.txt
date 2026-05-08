@@ -1,4 +1,13 @@
 User-agent: *
 Allow: /
 
+User-agent: Yeti
+Allow: /
+
+User-agent: DAUM
+Allow: /
+
+User-agent: Daumoa
+Allow: /
+
 Sitemap: https://sumimap.com/sitemap.xml
