@@ -78,6 +78,18 @@ const supportedLanguages = new Set(["ko", "ja"]);
 let currentLanguage = readLanguagePreference();
 
 const jaText = {
+  "오늘 미니 동선": "今日のミニ動線",
+  "급한 일 3곳으로 압축": "急ぎの用事を3か所に圧縮",
+  "가까운 후보를 묶어두면 다시 검색하지 않아도 돼요.": "近い候補をまとめると再検索せずに見返せます。",
+  "코스 저장": "コース保存",
+  "오늘 동선에 저장했어.": "今日の動線に保存しました。",
+  "저장 비교": "保存スポット比較",
+  "저장한 곳을 신호 기준으로 다시 고르세요.": "保存した場所を目印で比較できます。",
+  "가장 강한 신호": "一番強い目印",
+  "대체 후보": "代替候補",
+  "저장한 장소를 더 쌓으면 비교가 좋아져요.": "保存場所が増えると比較しやすくなります。",
+  "다시 보기": "もう一度見る",
+  "신호": "目印",
   "오늘 생활 루틴": "今日の生活ルーティン",
   "지금 바로 챙길 것": "今すぐ見るもの",
   "체크 진행": "チェック進捗",
@@ -1265,6 +1277,12 @@ function bindEvents() {
       return;
     }
 
+    const saveRouteButton = event.target.closest("[data-save-route]");
+    if (saveRouteButton) {
+      saveRouteCandidates();
+      return;
+    }
+
     const dailyCheckButton = event.target.closest("[data-daily-check]");
     if (dailyCheckButton) {
       toggleDailyCheck(dailyCheckButton.dataset.dailyCheck);
@@ -1443,6 +1461,7 @@ function renderNearby() {
     </div>
     ${renderContextTools()}
     ${renderDailyRoutine(list, place)}
+    ${renderMiniRoute(list, place)}
     ${place ? renderPlaceDetail(place) : renderEmptyState()}
     ${list.length ? `<div class="place-list">${list.map((item) => renderPlaceCard(item)).join("")}</div>` : ""}
   `;
@@ -1574,6 +1593,7 @@ function renderSaved() {
       </div>
     </div>
     ${renderSavedBrief(savedPlaces)}
+    ${renderSavedCompare(savedPlaces)}
     <div class="place-section-title">${t("저장한 곳")}</div>
     <div class="place-list compact-list">
       ${savedPlaces.length ? savedPlaces.map((item) => renderPlaceCard(item)).join("") : `<div class="place-card"><h3>${t("아직 저장한 장소가 없어요")}</h3><p>${t("장소 상세에서 저장을 누르면 여기에 모여요.")}</p></div>`}
@@ -1672,6 +1692,83 @@ function renderSavedBrief(savedPlaces) {
         ${icon("copy")}
         ${t("브리프 복사")}
       </button>
+    </section>
+  `;
+}
+
+function renderMiniRoute(list, selected) {
+  const route = getRouteCandidates(list, selected);
+  if (route.length < 2) return "";
+  const signalCount = route.reduce((sum, place) => sum + totalSignals(place), 0);
+
+  return `
+    <section class="route-card">
+      <div class="route-head">
+        <div>
+          <span>${t("오늘 미니 동선")}</span>
+          <strong>${t("급한 일 3곳으로 압축")}</strong>
+          <p>${t("가까운 후보를 묶어두면 다시 검색하지 않아도 돼요.")}</p>
+        </div>
+        <span class="route-signal">${signalCount}${t("신호")}</span>
+      </div>
+      <div class="route-steps">
+        ${route.map((place, index) => `
+          <button class="route-step" type="button" data-place-id="${escapeAttr(place.id)}">
+            <span class="route-number">${index + 1}</span>
+            <span class="route-emoji" aria-hidden="true">${categoryEmoji(place.category)}</span>
+            <span>
+              <strong>${escapeHtml(shortPlaceName(placeText(place, "name")))}</strong>
+              <small>${escapeHtml(distanceLabel(place))} · ${getLiveTags(place).slice(0, 2).map((tag) => `${emojiForTag(tag)} ${escapeHtml(tagText(tag))}`).join(" · ")}</small>
+            </span>
+          </button>
+        `).join("")}
+      </div>
+      <div class="detail-actions compact-actions">
+        <button class="primary-button route-save" type="button" data-save-route>${icon("bookmark-check")}${t("코스 저장")}</button>
+        <button class="text-button" type="button" data-open-panel="saved">${icon("bookmark")}${t("저장 보기")}</button>
+      </div>
+    </section>
+  `;
+}
+
+function renderSavedCompare(savedPlaces) {
+  const targets = savedPlaces.slice(0, 4);
+  if (!targets.length) {
+    return `
+      <section class="saved-compare is-empty">
+        <div>
+          <span>${t("저장 비교")}</span>
+          <strong>${t("대체 후보")}</strong>
+          <p>${t("저장한 장소를 더 쌓으면 비교가 좋아져요.")}</p>
+        </div>
+      </section>
+    `;
+  }
+
+  return `
+    <section class="saved-compare">
+      <div class="compare-head">
+        <div>
+          <span>${t("저장 비교")}</span>
+          <strong>${t("저장한 곳을 신호 기준으로 다시 고르세요.")}</strong>
+        </div>
+        <em>${targets.length}${t("곳")}</em>
+      </div>
+      <div class="compare-list">
+        ${targets.map((place) => {
+          const tags = getLiveTags(place);
+          return `
+            <button type="button" class="compare-row" data-place-id="${escapeAttr(place.id)}">
+              <span class="compare-emoji" aria-hidden="true">${categoryEmoji(place.category)}</span>
+              <span>
+                <strong>${escapeHtml(shortPlaceName(placeText(place, "name")))}</strong>
+                <small>${t("가장 강한 신호")} · ${tags.slice(0, 2).map((tag) => `${emojiForTag(tag)} ${escapeHtml(tagText(tag))}`).join(" · ")}</small>
+              </span>
+              <em>${getTrustScore(place)}%</em>
+            </button>
+          `;
+        }).join("")}
+      </div>
     </section>
   `;
 }
@@ -2097,6 +2194,48 @@ async function copyText(text) {
   const ok = document.execCommand("copy");
   textarea.remove();
   if (!ok) throw new Error("copy failed");
+}
+
+function getRouteCandidates(list, selected) {
+  const primary = selected || list[0] || places[0];
+  if (!primary) return [];
+  const source = uniquePlaces([
+    primary,
+    ...list,
+    ...places.filter((place) => place.city === primary.city),
+    ...places
+  ]);
+  const picks = [];
+  const categoryOrder = [primary.category, "charge", "restroom", "rest", "korean", "caution"];
+  const add = (place) => {
+    if (place && !picks.some((item) => item.id === place.id)) picks.push(place);
+  };
+
+  add(primary);
+  categoryOrder.forEach((category) => {
+    add(source.find((place) => place.category === category && place.city === primary.city));
+  });
+  sortPlacesForContext(source).forEach(add);
+  return picks.slice(0, 3);
+}
+
+function saveRouteCandidates() {
+  const route = getRouteCandidates(getFilteredPlaces(), getSelectedPlace());
+  const ids = route.map((place) => place.id);
+  if (!ids.length) return;
+  state.saved = [...ids, ...state.saved.filter((id) => !ids.includes(id))].slice(0, 40);
+  writeJson("sumimap:saved", state.saved);
+  showToast("오늘 동선에 저장했어.");
+  renderSheet();
+}
+
+function uniquePlaces(items) {
+  const seen = new Set();
+  return items.filter((place) => {
+    if (!place || seen.has(place.id)) return false;
+    seen.add(place.id);
+    return true;
+  });
 }
 
 function categoryUseTips(category) {
