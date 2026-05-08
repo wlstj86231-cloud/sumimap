@@ -57,6 +57,14 @@ const filterThresholds = {
   caution: 3
 };
 
+const geocodeSearchUrl = "https://nominatim.openstreetmap.org/search";
+const japanBounds = {
+  minLat: 24,
+  maxLat: 46,
+  minLng: 122,
+  maxLng: 154
+};
+
 const places = [
   {
     id: "tokyo-shinjuku-east",
@@ -459,6 +467,10 @@ const places = [
   }
 ];
 
+normalizeCustomPlaces(readJson("sumimap:customPlaces", [])).forEach((place) => {
+  places.push(place);
+});
+
 const state = {
   filter: "all",
   query: "",
@@ -466,6 +478,9 @@ const state = {
   activePanel: "near",
   sheetMode: "collapsed",
   activeScenario: "",
+  addressCandidates: [],
+  addressLoading: false,
+  addressMessage: "",
   userPosition: null,
   saved: normalizeSaved(readJson("sumimap:saved", [])),
   recent: normalizeRecent(readJson("sumimap:recent", [])),
@@ -489,6 +504,8 @@ const searchPanel = document.querySelector("#searchPanel");
 const searchToggle = document.querySelector("#searchToggle");
 const searchClear = document.querySelector("#searchClear");
 const placeSearch = document.querySelector("#placeSearch");
+const addressSearchButton = document.querySelector("#addressSearchButton");
+const addressResults = document.querySelector("#addressResults");
 
 let map;
 let markerLayer;
@@ -524,6 +541,7 @@ function init() {
   bootMap();
   bindEvents();
   renderMapQuickRail();
+  renderAddressResults();
   renderSheet();
   renderMarkers();
   refreshStatus();
@@ -564,6 +582,10 @@ function bindEvents() {
     if (!searchPanel.hidden) placeSearch.focus();
   });
 
+  addressSearchButton.addEventListener("click", () => {
+    searchAddressFromInput();
+  });
+
   locateButton.addEventListener("click", locateUser);
 
   mapQuickRail.addEventListener("click", (event) => {
@@ -597,22 +619,40 @@ function bindEvents() {
 
   placeSearch.addEventListener("input", (event) => {
     state.query = event.target.value.trim();
+    state.addressCandidates = [];
+    state.addressMessage = "";
     updateSearchClear();
+    renderAddressResults();
     syncSelectedWithFiltered();
     renderSheet();
     renderMarkers();
     refreshStatus();
   });
 
+  placeSearch.addEventListener("keydown", (event) => {
+    if (event.key !== "Enter") return;
+    event.preventDefault();
+    searchAddressFromInput();
+  });
+
   searchClear.addEventListener("click", () => {
     state.query = "";
+    state.addressCandidates = [];
+    state.addressMessage = "";
     placeSearch.value = "";
     updateSearchClear();
+    renderAddressResults();
     syncSelectedWithFiltered();
     renderSheet();
     renderMarkers();
     refreshStatus();
     placeSearch.focus();
+  });
+
+  addressResults.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-address-index]");
+    if (!button) return;
+    selectAddressCandidate(Number(button.dataset.addressIndex));
   });
 
   document.querySelectorAll("[data-city]").forEach((button) => {
@@ -633,6 +673,12 @@ function bindEvents() {
   });
 
   sheet.addEventListener("click", (event) => {
+    const sheetCollapse = event.target.closest("[data-sheet-collapse]");
+    if (sheetCollapse) {
+      setSheetMode("collapsed");
+      return;
+    }
+
     const sheetToggle = event.target.closest("[data-sheet-toggle]");
     if (sheetToggle) {
       if (!ignoreNextSheetToggleClick) toggleSheetMode();
@@ -679,6 +725,23 @@ function bindEvents() {
     const reportOpenButton = event.target.closest("[data-open-report]");
     if (reportOpenButton) {
       setPanel("report");
+      return;
+    }
+
+    const focusAddressButton = event.target.closest("[data-focus-address-search]");
+    if (focusAddressButton) {
+      searchPanel.hidden = false;
+      placeSearch.focus();
+      showToast("주소나 지명을 검색하면 그 위치로 바로 제보할 수 있어.");
+      return;
+    }
+
+    const reportPlaceButton = event.target.closest("[data-report-place]");
+    if (reportPlaceButton) {
+      state.selectedId = reportPlaceButton.dataset.reportPlace;
+      rememberPlace(state.selectedId);
+      renderSheet();
+      renderMarkers();
       return;
     }
 
@@ -737,7 +800,7 @@ function setSheetMode(mode) {
 }
 
 function syncSheetMode() {
-  const isCollapsed = state.activePanel === "near" && state.sheetMode === "collapsed";
+  const isCollapsed = state.sheetMode === "collapsed";
   sheet.classList.toggle("is-collapsed", isCollapsed);
   sheet.classList.toggle("is-expanded", !isCollapsed);
 }
@@ -805,33 +868,67 @@ function renderFilters() {
 function renderReport() {
   const place = getSelectedPlace();
   const visibleReports = getVisibleReports();
+  const nearbyChoices = getFilteredPlaces()
+    .filter((item) => item.id !== place?.id)
+    .slice(0, 3);
+  const mainTags = ["charge", "restroom", "rest", "korean", "rain", "caution"];
+  const extraTags = reportTags.filter((tag) => !mainTags.includes(tag.key));
   return `
     <button class="sheet-grip" type="button" data-sheet-toggle aria-label="Toggle panel"></button>
     <div class="sheet-head" data-sheet-toggle>
       <div>
-        <h2>제보하기</h2>
-        <p>제보는 바로 지도에 반영돼요. 허위로 보이면 다른 사람이 허위 의심을 눌러 신호를 밀어낼 수 있어요.</p>
+        <h2>간단 제보</h2>
+        <p>주소를 검색해 장소를 먼저 잡고, 확인한 신호만 눌러요.</p>
       </div>
-      <span class="compact-stat">반영 ${visibleReports.length}</span>
+      <button class="sheet-mini-action" type="button" data-sheet-collapse>지도 보기</button>
     </div>
     <form class="report-form" id="reportForm">
       <div class="form-section">
         <h3>장소</h3>
-        <select class="mini-field" name="placeId" aria-label="제보할 장소">
-          ${places.map((item) => `<option value="${item.id}" ${item.id === place?.id ? "selected" : ""}>${item.name}</option>`).join("")}
-        </select>
+        <input type="hidden" name="placeId" value="${escapeAttr(place?.id || "")}">
+        <div class="report-place-box">
+          <span class="place-title-emoji" aria-hidden="true">${categoryEmoji(place?.category)}</span>
+          <div>
+            <strong>${escapeHtml(place?.name || "장소 선택 필요")}</strong>
+            <p>${escapeHtml(place?.area || "주소나 지명을 검색해서 위치를 잡아주세요.")}</p>
+          </div>
+        </div>
+        <div class="report-place-actions">
+          <button class="text-button" type="button" data-focus-address-search>${icon("search")}주소검색</button>
+          ${place?.custom ? `<a class="text-button" href="${mapsUrl(place)}" target="_blank" rel="noreferrer">${icon("navigation")}지도 확인</a>` : ""}
+        </div>
+        ${nearbyChoices.length ? `
+          <div class="quick-place-row" aria-label="빠른 장소 선택">
+            ${nearbyChoices.map((item) => `
+              <button type="button" class="${item.id === place?.id ? "is-active" : ""}" data-report-place="${escapeAttr(item.id)}">
+                <span aria-hidden="true">${categoryEmoji(item.category)}</span>${escapeHtml(shortPlaceName(item.name))}
+              </button>
+            `).join("")}
+          </div>
+        ` : ""}
       </div>
       <div class="form-section">
         <h3>확인한 내용</h3>
-        <p>해당되는 버튼만 눌러요. 응대 불편은 단정이 아니라 방문자 주의 신호로 바로 반영돼요.</p>
+        <p>한두 개만 눌러도 충분해요. 응대 불편은 낙인이 아니라 방문 전 주의 신호로만 써요.</p>
         <div class="report-grid">
-          ${reportTags.map((tag) => `
+          ${mainTags.map((key) => reportTagsByKey.get(key)).filter(Boolean).map((tag) => `
             <button type="button" class="chip report-chip ${tag.danger ? "danger" : ""}" data-report-tag="${escapeAttr(tag.key)}" aria-label="${escapeAttr(tag.label)}">
               <span class="report-emoji" aria-hidden="true">${tag.emoji}</span>
               <span>${tag.label}</span>
             </button>
           `).join("")}
         </div>
+        <details class="report-extra">
+          <summary>추가 옵션</summary>
+          <div class="report-grid is-extra">
+            ${extraTags.map((tag) => `
+              <button type="button" class="chip report-chip ${tag.danger ? "danger" : ""}" data-report-tag="${escapeAttr(tag.key)}" aria-label="${escapeAttr(tag.label)}">
+                <span class="report-emoji" aria-hidden="true">${tag.emoji}</span>
+                <span>${tag.label}</span>
+              </button>
+            `).join("")}
+          </div>
+        </details>
       </div>
       <div class="form-section">
         <h3>방문 시점</h3>
@@ -844,7 +941,7 @@ function renderReport() {
       </div>
       <button class="primary-button" type="submit" data-submit-report>
         ${icon("send")}
-        바로 제보
+        ${visibleReports.length ? "바로 반영" : "첫 제보 남기기"}
       </button>
     </form>
   `;
@@ -1148,9 +1245,15 @@ function submitReport(form) {
   }
 
   const data = new FormData(form);
+  const placeId = String(data.get("placeId") || "");
+  if (!validPlaceIds.has(placeId)) {
+    showToast("주소검색으로 장소를 먼저 선택해줘.");
+    return;
+  }
+
   const report = {
     id: createId(),
-    placeId: data.get("placeId"),
+    placeId,
     tags: selected,
     recency: data.get("recency"),
     createdAt: new Date().toISOString(),
@@ -1309,6 +1412,181 @@ function clearLocationContext() {
   renderMarkers();
   refreshStatus();
   showToast("내 위치 기준을 해제했어.");
+}
+
+async function searchAddressFromInput() {
+  const query = placeSearch.value.trim();
+  if (query.length < 2) {
+    showToast("주소나 지명을 두 글자 이상 입력해줘.");
+    return;
+  }
+
+  state.addressLoading = true;
+  state.addressMessage = "";
+  state.addressCandidates = [];
+  renderAddressResults();
+  addressSearchButton.disabled = true;
+
+  try {
+    const params = new URLSearchParams({
+      format: "jsonv2",
+      q: query,
+      countrycodes: "jp",
+      limit: "6",
+      addressdetails: "1",
+      "accept-language": "ko"
+    });
+    const response = await fetch(`${geocodeSearchUrl}?${params.toString()}`, {
+      headers: { Accept: "application/json" }
+    });
+    if (!response.ok) throw new Error(`geocode ${response.status}`);
+    const results = await response.json();
+    state.addressCandidates = results
+      .map(normalizeAddressCandidate)
+      .filter(Boolean)
+      .filter((candidate) => isPointInJapan(candidate.lat, candidate.lng))
+      .slice(0, 5);
+    state.addressMessage = state.addressCandidates.length
+      ? "검색 결과를 눌러 제보 장소로 잡아주세요."
+      : "일본 주소나 역 이름으로 다시 검색해보세요.";
+  } catch (error) {
+    state.addressMessage = "주소검색이 잠시 불안정해요. 지명 또는 역 이름으로 다시 시도해줘.";
+    state.addressCandidates = [];
+  } finally {
+    state.addressLoading = false;
+    addressSearchButton.disabled = false;
+    renderAddressResults();
+  }
+}
+
+function renderAddressResults() {
+  if (!addressResults) return;
+  if (state.addressLoading) {
+    addressResults.hidden = false;
+    addressResults.innerHTML = `<div class="address-result is-muted">주소를 찾는 중...</div>`;
+    return;
+  }
+
+  if (!state.addressCandidates.length && !state.addressMessage) {
+    addressResults.hidden = true;
+    addressResults.innerHTML = "";
+    return;
+  }
+
+  addressResults.hidden = false;
+  addressResults.innerHTML = `
+    ${state.addressMessage ? `<div class="address-result-hint">${escapeHtml(state.addressMessage)}</div>` : ""}
+    ${state.addressCandidates.map((candidate, index) => `
+      <button type="button" class="address-result" data-address-index="${index}">
+        <strong>${escapeHtml(candidate.title)}</strong>
+        <span>${escapeHtml(candidate.address)}</span>
+      </button>
+    `).join("")}
+  `;
+}
+
+function normalizeAddressCandidate(item) {
+  const lat = Number(item?.lat);
+  const lng = Number(item?.lon);
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+  const address = String(item?.display_name || "").replace(/\s+/g, " ").trim();
+  const title =
+    item?.name ||
+    item?.address?.amenity ||
+    item?.address?.station ||
+    item?.address?.road ||
+    item?.address?.suburb ||
+    item?.address?.city ||
+    item?.address?.town ||
+    item?.address?.village ||
+    "검색한 위치";
+
+  return {
+    id: safeId(`addr-${item?.osm_type || "point"}-${item?.osm_id || `${lat.toFixed(5)}-${lng.toFixed(5)}`}`, createId()),
+    title: String(title).trim(),
+    address: address || `${lat.toFixed(5)}, ${lng.toFixed(5)}`,
+    lat,
+    lng
+  };
+}
+
+function selectAddressCandidate(index) {
+  const candidate = state.addressCandidates[index];
+  if (!candidate) return;
+  const place = upsertCustomPlace(candidate);
+  state.selectedId = place.id;
+  state.activePanel = "report";
+  state.sheetMode = "expanded";
+  state.activeScenario = "";
+  rememberPlace(place.id);
+  map.setView([place.lat, place.lng], 16);
+  searchPanel.hidden = true;
+  document.querySelectorAll(".nav-button").forEach((button) => {
+    button.classList.toggle("is-active", button.dataset.action === "report");
+  });
+  renderMapQuickRail();
+  renderSheet();
+  renderMarkers();
+  refreshStatus();
+  showToast("주소를 제보 장소로 잡았어. 이제 신호만 눌러주면 돼.");
+}
+
+function upsertCustomPlace(candidate) {
+  const existing = placesById.get(candidate.id);
+  if (existing) {
+    existing.name = candidate.title;
+    existing.area = candidate.address;
+    existing.lat = candidate.lat;
+    existing.lng = candidate.lng;
+    persistCustomPlaces();
+    return existing;
+  }
+
+  const place = {
+    id: candidate.id,
+    name: candidate.title,
+    area: candidate.address,
+    city: nearestCityKey(candidate.lat, candidate.lng),
+    kind: "주소 검색",
+    lat: candidate.lat,
+    lng: candidate.lng,
+    category: "custom",
+    trust: "새 장소",
+    tags: ["주소 검색", "제보 대기"],
+    signals: { charge: 0, restroom: 0, rest: 0, korean: 0, caution: 0 },
+    walk: "주소 선택",
+    lastSeen: "방금 검색",
+    crowd: "현장 확인",
+    bestFor: "새 생활 스팟 제보",
+    watchout: "검색한 주소는 위치 기준이에요. 운영 시간과 현장 안내는 직접 확인해 주세요.",
+    notes: ["주소검색으로 잡은 새 장소예요.", "제보가 쌓이면 충전, 화장실, 쉬기, 한국어 대응 신호가 지도에 반영돼요."],
+    custom: true
+  };
+
+  places.unshift(place);
+  placesById.set(place.id, place);
+  validPlaceIds.add(place.id);
+  persistCustomPlaces();
+  invalidateReportCaches();
+  return place;
+}
+
+function persistCustomPlaces() {
+  const custom = places.filter((place) => place.custom).slice(0, 50);
+  writeJson("sumimap:customPlaces", custom);
+}
+
+function nearestCityKey(lat, lng) {
+  return Object.entries(cities)
+    .map(([key, city]) => ({ key, distance: distanceInMeters(lat, lng, city.center[0], city.center[1]) }))
+    .sort((a, b) => a.distance - b.distance)[0]?.key || "tokyo";
+}
+
+function isPointInJapan(lat, lng) {
+  return lat >= japanBounds.minLat &&
+    lat <= japanBounds.maxLat &&
+    lng >= japanBounds.minLng &&
+    lng <= japanBounds.maxLng;
 }
 
 function updateSearchClear() {
@@ -1556,6 +1834,38 @@ function isHiddenReport(report) {
   return report.disputes >= 3 && report.disputes > report.agrees;
 }
 
+function normalizeCustomPlaces(customPlaces) {
+  if (!Array.isArray(customPlaces)) return [];
+  return customPlaces
+    .map((place, index) => {
+      const lat = Number(place?.lat);
+      const lng = Number(place?.lng);
+      if (!Number.isFinite(lat) || !Number.isFinite(lng) || !isPointInJapan(lat, lng)) return null;
+      return {
+        id: safeId(place?.id, `addr-legacy-${index}`),
+        name: String(place?.name || "검색한 위치").slice(0, 80),
+        area: String(place?.area || `${lat.toFixed(5)}, ${lng.toFixed(5)}`).slice(0, 160),
+        city: cities[place?.city] ? place.city : nearestCityKey(lat, lng),
+        kind: "주소 검색",
+        lat,
+        lng,
+        category: "custom",
+        trust: "새 장소",
+        tags: ["주소 검색", "제보 대기"],
+        signals: { charge: 0, restroom: 0, rest: 0, korean: 0, caution: 0 },
+        walk: "주소 선택",
+        lastSeen: place?.lastSeen || "주소 검색",
+        crowd: "현장 확인",
+        bestFor: "새 생활 스팟 제보",
+        watchout: "검색한 주소는 위치 기준이에요. 운영 시간과 현장 안내는 직접 확인해 주세요.",
+        notes: ["주소검색으로 잡은 새 장소예요.", "제보가 쌓이면 생활 신호가 지도에 반영돼요."],
+        custom: true
+      };
+    })
+    .filter(Boolean)
+    .slice(0, 50);
+}
+
 function normalizeReports(reports) {
   if (!Array.isArray(reports)) return [];
   const validPlaceIds = new Set(places.map((place) => place.id));
@@ -1587,6 +1897,11 @@ function rememberPlace(placeId) {
   if (!validPlaceIds.has(placeId)) return;
   state.recent = [placeId, ...state.recent.filter((id) => id !== placeId)].slice(0, 8);
   writeJson("sumimap:recent", state.recent);
+}
+
+function shortPlaceName(name) {
+  const text = String(name || "장소").trim();
+  return text.length > 10 ? `${text.slice(0, 10)}...` : text;
 }
 
 function safeId(value, fallback) {

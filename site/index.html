@@ -23,12 +23,13 @@
     <link rel="icon" href="/assets/icon.svg" type="image/svg+xml">
     <link rel="preconnect" href="https://tile.openstreetmap.org">
     <link rel="dns-prefetch" href="https://tile.openstreetmap.org">
+    <link rel="dns-prefetch" href="https://nominatim.openstreetmap.org">
     <link rel="preload" href="/assets/vendor/leaflet/leaflet.css" as="style">
-    <link rel="preload" href="/assets/styles.css?v=20260508-density" as="style">
+    <link rel="preload" href="/assets/styles.css?v=20260508-search" as="style">
     <link rel="preload" href="/assets/vendor/leaflet/leaflet.js" as="script">
-    <link rel="modulepreload" href="/assets/app.js?v=20260508-info">
+    <link rel="modulepreload" href="/assets/app.js?v=20260508-search">
     <link rel="stylesheet" href="/assets/vendor/leaflet/leaflet.css">
-    <link rel="stylesheet" href="/assets/styles.css?v=20260508-density">
+    <link rel="stylesheet" href="/assets/styles.css?v=20260508-search">
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
@@ -67,9 +68,11 @@
       <section class="search-panel" id="searchPanel" hidden>
         <div class="search-box">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m21 21-4.3-4.3"/><circle cx="11" cy="11" r="7"/></svg>
-          <input id="placeSearch" type="search" placeholder="지역, 상황, 태그 검색" autocomplete="off">
+          <input id="placeSearch" type="search" placeholder="주소·지명 검색 또는 태그 검색" autocomplete="off">
           <button class="search-clear" id="searchClear" type="button" aria-label="검색어 지우기" hidden>×</button>
+          <button class="address-search-button" id="addressSearchButton" type="button">주소검색</button>
         </div>
+        <div class="address-results" id="addressResults" aria-live="polite" hidden></div>
         <div class="city-strip" aria-label="도시 빠른 이동">
           <button type="button" data-city="tokyo">도쿄</button>
           <button type="button" data-city="osaka">오사카</button>
@@ -155,6 +158,6 @@
     </noscript>
 
     <script src="/assets/vendor/leaflet/leaflet.js" defer></script>
-    <script src="/assets/app.js?v=20260508-info" type="module"></script>
+    <script src="/assets/app.js?v=20260508-search" type="module"></script>
   </body>
 </html>
