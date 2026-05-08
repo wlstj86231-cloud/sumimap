@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Sumimap</title>
+    <link>https://sumimap.com/</link>
+    <description>Mobile-first Korean guide map for useful living spots in Japan.</description>
+    <language>ko-KR</language>
+    <lastBuildDate>Fri, 08 May 2026 00:00:00 +0900</lastBuildDate>
+    <item>
+      <title>Sumimap Japan Living Map</title>
+      <link>https://sumimap.com/</link>
+      <guid>https://sumimap.com/</guid>
+      <pubDate>Fri, 08 May 2026 00:00:00 +0900</pubDate>
+      <description>Fast map for charging, restroom, rest, rain shelter, Korean support, and uncomfortable response signals in Japan.</description>
+    </item>
+    <item>
+      <title>Sumimap Usage Guide</title>
+      <link>https://sumimap.com/guide/</link>
+      <guid>https://sumimap.com/guide/</guid>
+      <pubDate>Fri, 08 May 2026 00:00:00 +0900</pubDate>
+      <description>Guide to report standards and living-signal interpretation for Korean residents in Japan.</description>
+    </item>
+    <item>
+      <title>City Living Guide</title>
+      <link>https://sumimap.com/cities/</link>
+      <guid>https://sumimap.com/cities/</guid>
+      <pubDate>Fri, 08 May 2026 00:00:00 +0900</pubDate>
+      <description>City-level context for Tokyo, Osaka, Fukuoka, and Kyoto living spot signals.</description>
+    </item>
+    <item>
+      <title>About Sumimap</title>
+      <link>https://sumimap.com/about/</link>
+      <guid>https://sumimap.com/about/</guid>
+      <pubDate>Fri, 08 May 2026 00:00:00 +0900</pubDate>
+      <description>Purpose, operating standards, and report signals behind Sumimap.</description>
+    </item>
+    <item>
+      <title>Operating Policy</title>
+      <link>https://sumimap.com/policy/</link>
+      <guid>https://sumimap.com/policy/</guid>
+      <pubDate>Fri, 08 May 2026 00:00:00 +0900</pubDate>
+      <description>Report publishing, false-report handling, and uncomfortable response signal policy.</description>
+    </item>
+  </channel>
+</rss>
