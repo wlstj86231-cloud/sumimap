@@ -3598,3 +3598,119 @@ html {
     height: 31px;
   }
 }
+
+/* Visual polish pass */
+.app-shell {
+  background:
+    radial-gradient(circle at 50% 18%, rgba(255, 255, 255, 0.52), transparent 34%),
+    #e7efea;
+}
+
+.map-surface {
+  background: #e5eee9;
+}
+
+.topbar,
+.search-panel,
+.bottom-sheet,
+.bottom-nav {
+  border-color: rgba(16, 26, 31, 0.1);
+  background-color: rgba(255, 255, 255, 0.965);
+  box-shadow: 0 10px 26px rgba(21, 32, 38, 0.11);
+}
+
+.topbar,
+.search-panel {
+  backdrop-filter: blur(16px);
+}
+
+.brand-mark {
+  box-shadow:
+    inset 0 -9px 16px rgba(6, 96, 73, 0.18),
+    0 6px 14px rgba(15, 164, 120, 0.16);
+}
+
+.brand strong,
+.sheet-head h1,
+.sheet-head h2,
+.place-card h3 {
+  color: #111c21;
+}
+
+.status-pill,
+.quick-chip,
+.chip,
+.text-button,
+.address-search-button,
+.city-strip button {
+  border-color: rgba(16, 26, 31, 0.12);
+}
+
+.status-pill {
+  background: rgba(246, 252, 249, 0.94);
+  box-shadow: 0 8px 20px rgba(21, 32, 38, 0.1);
+}
+
+.quick-chip,
+.chip,
+.city-strip button {
+  background: rgba(255, 255, 255, 0.94);
+}
+
+.quick-chip.is-active,
+.chip.is-active,
+.nav-button.is-active {
+  box-shadow:
+    inset 0 0 0 1px rgba(15, 164, 120, 0.16),
+    0 7px 16px rgba(15, 164, 120, 0.08);
+}
+
+.bottom-sheet {
+  background: rgba(255, 255, 255, 0.975);
+}
+
+.place-card,
+.routine-card,
+.route-card,
+.entry-share-card,
+.travel-brief-card,
+.saved-compare,
+.report-form .form-section,
+.info-card {
+  border-color: rgba(16, 26, 31, 0.1);
+  box-shadow: 0 1px 0 rgba(16, 26, 31, 0.035);
+}
+
+.place-card.is-selected {
+  border-color: rgba(15, 164, 120, 0.3);
+  box-shadow:
+    inset 4px 0 0 #3fc09a,
+    0 8px 20px rgba(15, 164, 120, 0.08);
+}
+
+.sheet-head p,
+.place-card p,
+.info-card p,
+.guide-card p {
+  color: #596970;
+}
+
+.primary-button,
+.nav-report {
+  box-shadow: 0 10px 22px rgba(15, 164, 120, 0.18);
+}
+
+@media (max-width: 390px) {
+  .bottom-sheet {
+    border-radius: 8px 8px 0 0;
+  }
+
+  .place-card,
+  .routine-card,
+  .route-card,
+  .entry-share-card,
+  .travel-brief-card,
+  .saved-compare {
+    margin-top: 8px;
+  }
+}

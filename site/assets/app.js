@@ -322,6 +322,248 @@ const jaText = {
   "빠른 상황": "すぐ見る状況"
 };
 
+const hiraganaTextReplacements = [
+  ["スミマップ", "すみまっぷ"],
+  ["日本語", "にほんご"],
+  ["韓国語", "かんこくご"],
+  ["日本", "にほん"],
+  ["韓国", "かんこく"],
+  ["現在地", "げんざいち"],
+  ["現在", "げんざい"],
+  ["住所検索", "じゅうしょけんさく"],
+  ["住所", "じゅうしょ"],
+  ["駅名", "えきめい"],
+  ["地図", "ちず"],
+  ["言語", "げんご"],
+  ["切り替え", "きりかえ"],
+  ["基本", "きほん"],
+  ["候補一覧", "こうほいちらん"],
+  ["候補", "こうほ"],
+  ["一覧", "いちらん"],
+  ["検索", "けんさく"],
+  ["検索語", "けんさくご"],
+  ["消去", "しょうきょ"],
+  ["表示", "ひょうじ"],
+  ["今すぐ", "いますぐ"],
+  ["今", "いま"],
+  ["翻訳", "ほんやく"],
+  ["上部", "じょうぶ"],
+  ["都市", "とし"],
+  ["移動", "いどう"],
+  ["近く", "ちかく"],
+  ["絞り込み", "しぼりこみ"],
+  ["情報", "じょうほう"],
+  ["急ぎ", "いそぎ"],
+  ["状況", "じょうきょう"],
+  ["共有", "きょうゆう"],
+  ["投稿場所", "とうこうばしょ"],
+  ["投稿", "とうこう"],
+  ["保存済み", "ほぞんずみ"],
+  ["保存", "ほぞん"],
+  ["確認", "かくにん"],
+  ["選択", "せんたく"],
+  ["中心", "ちゅうしん"],
+  ["条件解除", "じょうけんかいじょ"],
+  ["条件", "じょうけん"],
+  ["解除", "かいじょ"],
+  ["反映", "はんえい"],
+  ["同意", "どうい"],
+  ["虚偽疑い", "きょぎうたがい"],
+  ["虚偽", "きょぎ"],
+  ["疑い", "うたがい"],
+  ["信頼度", "しんらいど"],
+  ["信頼", "しんらい"],
+  ["累計", "るいけい"],
+  ["最近", "さいきん"],
+  ["直近", "さいきん"],
+  ["週間", "しゅうかん"],
+  ["混雑", "こんざつ"],
+  ["距離感", "きょりかん"],
+  ["距離", "きょり"],
+  ["徒歩", "とほ"],
+  ["場所", "ばしょ"],
+  ["新しい", "あたらしい"],
+  ["生活", "せいかつ"],
+  ["充電", "じゅうでん"],
+  ["休憩", "きゅうけい"],
+  ["対応", "たいおう"],
+  ["不安", "ふあん"],
+  ["必要", "ひつよう"],
+  ["注意", "ちゅうい"],
+  ["利用", "りよう"],
+  ["可能", "かのう"],
+  ["単独", "たんどく"],
+  ["長時間", "ちょうじかん"],
+  ["雨宿り", "あまやどり"],
+  ["一人", "ひとり"],
+  ["公共施設", "こうきょうしせつ"],
+  ["商業施設", "しょうぎょうしせつ"],
+  ["商店街", "しょうてんがい"],
+  ["飲食店", "いんしょくてん"],
+  ["屋内", "おくない"],
+  ["地下街", "ちかがい"],
+  ["駅周辺", "えきしゅうへん"],
+  ["周辺", "しゅうへん"],
+  ["営業", "えいぎょう"],
+  ["時間", "じかん"],
+  ["現地", "げんち"],
+  ["案内", "あんない"],
+  ["目印", "めじるし"],
+  ["動線", "どうせん"],
+  ["今日", "きょう"],
+  ["少し休める", "すこしやすめる"],
+  ["少し休みやすい", "すこしやすみやすい"],
+  ["少し滞在", "すこしたいざい"],
+  ["長時間滞在", "ちょうじかんたいざい"],
+  ["非推奨", "ひすいしょう"],
+  ["進捗", "しんちょく"],
+  ["許可", "きょか"],
+  ["先に", "さきに"],
+  ["前に", "まえに"],
+  ["近い", "ちかい"],
+  ["近く", "ちかく"],
+  ["公園", "こうえん"],
+  ["安心", "あんしん"],
+  ["確保", "かくほ"],
+  ["雨", "あめ"],
+  ["暑さ", "あつさ"],
+  ["待ち時間", "まちじかん"],
+  ["残して", "のこして"],
+  ["初めて", "はじめて"],
+  ["一緒", "いっしょ"],
+  ["次に", "つぎに"],
+  ["分", "ふん"],
+  ["用事", "ようじ"],
+  ["圧縮", "あっしゅく"],
+  ["再検索", "さいけんさく"],
+  ["見返せます", "みかえせます"],
+  ["見る", "みる"],
+  ["公共", "こうきょう"],
+  ["入口", "いりぐち"],
+  ["経路", "けいろ"],
+  ["別の", "べつの"],
+  ["昼", "ひる"],
+  ["不足", "ふそく"],
+  ["第一", "だいいち"],
+  ["席", "せき"],
+  ["注文前", "ちゅうもんまえ"],
+  ["注文", "ちゅうもん"],
+  ["場合", "ばあい"],
+  ["違う", "ちがう"],
+  ["電子街", "でんしがい"],
+  ["期待", "きたい"],
+  ["生活圏", "せいかつけん"],
+  ["待機", "たいき"],
+  ["便利", "べんり"],
+  ["可能性", "かのうせい"],
+  ["高い", "たかい"],
+  ["か月", "かげつ"],
+  ["四条", "しじょう"],
+  ["中心部", "ちゅうしんぶ"],
+  ["部", "ぶ"],
+  ["東京", "とうきょう"],
+  ["大阪", "おおさか"],
+  ["福岡", "ふくおか"],
+  ["京都", "きょうと"],
+  ["新宿", "しんじゅく"],
+  ["上野", "うえの"],
+  ["池袋", "いけぶくろ"],
+  ["新大久保", "しんおおくぼ"],
+  ["渋谷", "しぶや"],
+  ["東側", "ひがしがわ"],
+  ["北側", "きたがわ"],
+  ["秋葉原", "あきはばら"],
+  ["品川", "しながわ"],
+  ["高田馬場", "たかだのばば"],
+  ["八重洲", "やえす"],
+  ["梅田", "うめだ"],
+  ["鶴橋", "つるはし"],
+  ["天王寺", "てんのうじ"],
+  ["新今宮", "しんいまみや"],
+  ["天神", "てんじん"],
+  ["博多", "はかた"],
+  ["中洲", "なかす"],
+  ["河原町", "かわらまち"],
+  ["祇園", "ぎおん"],
+  ["型", "がた"]
+].sort((a, b) => b[0].length - a[0].length);
+
+const kanjiFallbackReadings = {
+  一: "いち",
+  不: "ふ",
+  事: "こと",
+  休: "やす",
+  便: "べん",
+  保: "ほ",
+  先: "さき",
+  入: "いり",
+  公: "こう",
+  共: "きょう",
+  再: "さい",
+  分: "ふん",
+  初: "はじ",
+  別: "べつ",
+  利: "り",
+  前: "まえ",
+  口: "ぐち",
+  可: "か",
+  合: "あい",
+  四: "し",
+  圏: "けん",
+  園: "えん",
+  圧: "あつ",
+  在: "ざい",
+  場: "ば",
+  奨: "しょう",
+  子: "こ",
+  安: "あん",
+  少: "すこ",
+  席: "せき",
+  帯: "たい",
+  広: "ひろ",
+  待: "ま",
+  心: "しん",
+  性: "せい",
+  所: "ところ",
+  捗: "ちょく",
+  推: "すい",
+  文: "ぶん",
+  方: "ほう",
+  昼: "ひる",
+  時: "じ",
+  暑: "あつ",
+  月: "げつ",
+  条: "じょう",
+  機: "き",
+  次: "つぎ",
+  残: "のこ",
+  気: "き",
+  注: "ちゅう",
+  滞: "たい",
+  用: "よう",
+  確: "かく",
+  第: "だい",
+  経: "けい",
+  緒: "しょ",
+  縮: "しゅく",
+  街: "がい",
+  見: "み",
+  許: "きょ",
+  足: "そく",
+  路: "ろ",
+  近: "ちか",
+  返: "かえ",
+  進: "すす",
+  違: "ちが",
+  部: "ぶ",
+  開: "ひら",
+  雨: "あめ",
+  電: "でん",
+  非: "ひ",
+  駅: "えき",
+  高: "たか"
+};
+
 const places = [
   {
     id: "tokyo-shinjuku-east",
@@ -1112,7 +1354,7 @@ async function setBaseMapLanguage(language, notify = true) {
     if (notify) showToast("지도 언어를 바꿨어.");
   } catch {
     if (seq !== baseMapSeq || !map) return;
-    replaceBaseMap(rasterBaseMap());
+    replaceBaseMap(rasterBaseMap(mapLanguage));
     if (notify) showToast("지도 언어 전환이 불안정해서 기본 지도로 보여줄게.");
   }
 }
@@ -1125,10 +1367,15 @@ function replaceBaseMap(nextLayer) {
   markerLayer?.eachLayer((layer) => layer.bringToFront?.());
 }
 
-function rasterBaseMap() {
-  return L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+function rasterBaseMap(language = "ko") {
+  const japanese = language === "ja";
+  const url = japanese
+    ? "https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png"
+    : "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
+  return L.tileLayer(url, {
     maxZoom: 19,
-    attribution: "&copy; OpenStreetMap",
+    subdomains: japanese ? "abcd" : "abc",
+    attribution: japanese ? "&copy; OpenStreetMap &copy; CARTO" : "&copy; OpenStreetMap",
     updateWhenIdle: true,
     updateWhenZooming: false,
     keepBuffer: 1
@@ -1140,10 +1387,19 @@ async function localizedVectorStyle(language) {
   const response = await fetch(vectorMapStyleUrl, { headers: { Accept: "application/json" } });
   if (!response.ok) throw new Error(`map style ${response.status}`);
   const style = await response.json();
-  const labelExpression = mapLabelExpression(language);
+  const labelExpression = language === "ja" ? "" : mapLabelExpression(language);
 
   style.layers = style.layers.map((layer) => {
     if (layer.type !== "symbol" || !layer.layout?.["text-field"]) return layer;
+    if (language === "ja") {
+      return {
+        ...layer,
+        layout: {
+          ...layer.layout,
+          visibility: "none"
+        }
+      };
+    }
     return {
       ...layer,
       layout: {
@@ -1159,7 +1415,7 @@ async function localizedVectorStyle(language) {
 
 function mapLabelExpression(language) {
   const fields = language === "ja"
-    ? ["name:ja_kana", "name:ja", "name:nonlatin", "name", "name:latin", "name_en"]
+    ? ["name:ja_kana", "name:en", "name_en", "name:latin", "name:romaji"]
     : ["name:ko", "name_ko", "name:en", "name_en", "name:latin", "name"];
   return ["coalesce", ...fields.map((field) => ["get", field])];
 }
@@ -1501,6 +1757,7 @@ function applyStaticLanguage() {
   document.querySelector("#map")?.setAttribute("aria-label", t("스미맵 지도"));
   document.querySelector(".topbar")?.setAttribute("aria-label", t("상단 탐색"));
   document.querySelector(".brand")?.setAttribute("aria-label", t("스미맵 홈"));
+  document.querySelector(".brand-mark").textContent = japanese ? "す" : "住";
   document.querySelector(".brand strong").textContent = t("스미맵");
   document.querySelector(".brand small").textContent = t("일본 생활 제보 지도");
 
@@ -3379,25 +3636,27 @@ function isJapanese() {
 function t(value) {
   const text = String(value ?? "");
   if (!isJapanese()) return text;
-  return jaText[text] || translatePattern(text);
+  return hiraganaJapaneseText(jaText[text] || translatePattern(text));
 }
 
 function placeText(place, field) {
   if (place?.custom && (field === "name" || field === "area")) {
     const suffix = isJapanese() ? "Ja" : "Ko";
     const localized = place[`${field}${suffix}`];
-    if (typeof localized === "string" && localized.trim()) return localized;
+    if (typeof localized === "string" && localized.trim()) {
+      return isJapanese() ? hiraganaJapaneseText(localized) : localized;
+    }
   }
   const text = String(place?.[field] || "");
   if (!isJapanese()) return text;
   const translated = placeJapanese[place?.id]?.[field];
-  return typeof translated === "string" ? translated : t(text);
+  return typeof translated === "string" ? hiraganaJapaneseText(translated) : t(text);
 }
 
 function placeNotes(place) {
   if (!isJapanese()) return Array.isArray(place.notes) ? place.notes : [];
   const translated = placeJapanese[place?.id]?.notes;
-  if (Array.isArray(translated)) return translated;
+  if (Array.isArray(translated)) return translated.map(hiraganaJapaneseText);
   return Array.isArray(place.notes) ? place.notes.map(t) : [];
 }
 
@@ -3408,9 +3667,9 @@ function tagText(tag) {
 function countLabel(count, unit) {
   const number = Number(count) || 0;
   if (!isJapanese()) return `${number}${unit}`;
-  if (unit === "곳") return `${number}か所`;
-  if (unit === "건 즉시 반영") return `${number}件すぐ反映`;
-  return `${number}${t(unit)}`;
+  if (unit === "곳") return `${number}かしょ`;
+  if (unit === "건 즉시 반영") return `${number}けんすぐはんえい`;
+  return hiraganaJapaneseText(`${number}${t(unit)}`);
 }
 
 function translatePattern(text) {
@@ -3426,6 +3685,17 @@ function translatePattern(text) {
   const reportMatch = text.match(/^(\d+)건 즉시 반영$/);
   if (reportMatch) return `${reportMatch[1]}件すぐ反映`;
   return text;
+}
+
+function hiraganaJapaneseText(value) {
+  let result = String(value ?? "");
+  hiraganaTextReplacements.forEach(([from, to]) => {
+    result = result.split(from).join(to);
+  });
+  result = result.replace(/[\u30A1-\u30F6]/g, (char) =>
+    String.fromCharCode(char.charCodeAt(0) - 0x60)
+  );
+  return result.replace(/[一-龯]/g, (char) => kanjiFallbackReadings[char] || "");
 }
 
 function showToast(message) {
