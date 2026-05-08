@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="ko">
   <head>
     <meta charset="utf-8">
@@ -23,11 +23,11 @@
     <link rel="preconnect" href="https://tile.openstreetmap.org">
     <link rel="dns-prefetch" href="https://tile.openstreetmap.org">
     <link rel="preload" href="/assets/vendor/leaflet/leaflet.css" as="style">
-    <link rel="preload" href="/assets/styles.css?v=20260508-sheet" as="style">
+    <link rel="preload" href="/assets/styles.css?v=20260508-density" as="style">
     <link rel="preload" href="/assets/vendor/leaflet/leaflet.js" as="script">
-    <link rel="modulepreload" href="/assets/app.js?v=20260508-sheet">
+    <link rel="modulepreload" href="/assets/app.js?v=20260508-density">
     <link rel="stylesheet" href="/assets/vendor/leaflet/leaflet.css">
-    <link rel="stylesheet" href="/assets/styles.css?v=20260508-sheet">
+    <link rel="stylesheet" href="/assets/styles.css?v=20260508-density">
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
@@ -108,7 +108,52 @@
       <div class="toast" id="toast" role="status" aria-live="polite"></div>
     </div>
 
+    <noscript>
+      <main class="static-shell">
+        <section class="static-hero">
+          <h1>스미맵은 일본 생활 중 바로 필요한 장소 신호를 모으는 지도입니다</h1>
+          <p>스미맵은 일본에 사는 한국인, 유학생, 워홀러, 출장자, 장기 체류자가 낯선 동네에서 급하게 필요한 정보를 빠르게 확인하도록 만든 생활형 제보 지도입니다. 배터리가 얼마 남지 않았을 때 충전 가능한 곳을 찾고, 화장실이 급할 때 단독 이용 가능성이 높은 곳을 확인하고, 비가 오거나 짐이 많을 때 잠깐 머물기 좋은 공간을 고르는 데 초점을 맞춥니다.</p>
+        </section>
+        <section class="static-content">
+          <article class="static-section">
+            <h2>왜 일본 거주 한국인을 위한 지도가 필요한가</h2>
+            <p>일본의 대형 지도 서비스는 주소, 영업시간, 별점처럼 일반적인 정보에는 강하지만, 실제 생활 중 곤란한 순간에 필요한 세부 신호는 충분히 드러나지 않는 경우가 많습니다. 예를 들어 콘센트가 있는 카페라도 직원에게 허락을 받아야 하는지, 화장실만 이용해도 괜찮은 분위기인지, 한국어 메뉴나 한국어 응대가 가능한지, 오래 머물면 눈치가 보이는지 같은 정보는 현장 경험이 있어야 판단하기 쉽습니다.</p>
+            <p>스미맵은 이런 작고 구체적인 정보를 별점 경쟁으로 만들지 않고, 상황별 신호로 분리합니다. 충전, 화장실, 쉬기, 한국어 대응, 응대 불편 같은 항목은 특정 가게를 공격하거나 무조건 추천하기 위한 것이 아니라, 사용자가 지금 어떤 선택을 하면 덜 곤란한지 판단하는 보조 정보입니다.</p>
+          </article>
+          <article class="static-section">
+            <h2>제보는 바로 보이되 신호는 조정됩니다</h2>
+            <p>스미맵은 빠른 현장성을 위해 제보를 즉시 지도에 반영합니다. 대신 허위 가능성이 있거나 과장된 제보는 다른 사용자의 허위 의심과 동의 신호를 통해 점차 약해지도록 설계했습니다. 운영자가 모든 제보를 사전에 검수하는 방식은 속도가 느리고 관리 부담이 크기 때문에, 초기 서비스에서는 생활 정보에 맞는 가벼운 자정 구조를 우선 적용합니다.</p>
+            <p>응대 불편 표시는 혐오 표현이나 낙인을 위한 버튼이 아닙니다. 언어, 국적, 외국인 응대 과정에서 방문자가 불편을 느낄 수 있었다는 약한 신호이며, 반대 경험이 쌓이면 신호가 약해질 수 있습니다. 이 기준은 애드센스 정책과 운영 안정성을 함께 고려한 장치입니다.</p>
+          </article>
+          <article class="static-section">
+            <h2>스미맵에서 우선 보는 생활 스팟</h2>
+            <ul>
+              <li>충전: 콘센트 사용 가능성, 직원 허락 필요 여부, 오래 머물기 적절한 분위기</li>
+              <li>화장실: 단독 이용 가능성, 역이나 공공시설 근처 여부, 급할 때 이동하기 쉬운 동선</li>
+              <li>쉬기: 비를 피하거나 짐을 정리하거나 잠깐 앉기 좋은 실내 공간</li>
+              <li>한국어 대응: 한국어 메뉴, 한국어 안내, 한국인이 자주 이용하는 생활권 신호</li>
+              <li>응대 불편: 방문 전 조심해서 확인하면 좋은 반복 제보 신호</li>
+            </ul>
+          </article>
+          <article class="static-section">
+            <h2>현장에서 확인해야 할 기준</h2>
+            <p>지도에 올라온 정보는 이동 판단을 돕는 참고 자료입니다. 매장 운영 시간, 현장 안내, 직원 요청, 시설 정책은 항상 우선합니다. 특히 충전이나 화장실 이용은 무단 사용을 권장하지 않으며, 가능하면 주문이나 직원 확인을 거친 뒤 이용하는 편이 안전합니다. 스미맵은 일본 생활의 작은 불편을 줄이기 위한 도구이지, 가게나 개인을 평가하고 공격하는 공간이 아닙니다.</p>
+          </article>
+          <article class="static-section">
+            <h2>운영자가 중요하게 보는 실제 사용 장면</h2>
+            <p>스미맵을 만들 때 가장 먼저 떠올린 장면은 여행 정보가 아니라 생활 중 갑자기 판단력이 줄어드는 순간입니다. 휴대폰 배터리가 5퍼센트밖에 남지 않았는데 숙소 위치를 다시 확인해야 하거나, 역을 잘못 내려 화장실을 급히 찾아야 하거나, 비가 많이 와서 짐을 정리할 실내 공간이 필요한 순간입니다. 이런 상황에서는 별점이 높은 맛집보다 지금 바로 앉을 수 있는지, 충전해도 되는지, 직원에게 어떤 방식으로 물어보면 안전한지가 더 중요합니다.</p>
+            <p>그래서 스미맵의 문장은 과장된 추천보다 조심스러운 판단 문장에 가깝게 작성됩니다. “무조건 가능”보다 “가능성이 높다”, “직원 확인이 필요하다”, “혼잡 시간에는 피하는 편이 낫다”처럼 실제 사용자가 실수하지 않도록 돕는 표현을 우선합니다. 이런 편집 방향은 광고 승인용 문장을 억지로 늘리는 것이 아니라, 서비스가 오래 운영될 때 신뢰를 잃지 않기 위한 기본 기준입니다.</p>
+          </article>
+          <article class="static-section">
+            <h2>검색과 색인을 위한 정보 구조</h2>
+            <p>스미맵은 지도 앱처럼 보이지만 검색엔진이 이해할 수 있도록 안내 문서, 제보 정책, 개인정보 처리방침, 문의 페이지를 별도로 둡니다. 사용자는 앱 화면에서 빠르게 장소를 확인하고, 검색엔진과 광고 심사는 이 정적 문서를 통해 서비스의 목적, 운영 기준, 허용하지 않는 제보, 개인정보 처리 방식을 확인할 수 있습니다.</p>
+            <p>앞으로 장소 수가 늘어나면 도시별 생활권 페이지, 상황별 가이드, 제보 정정 안내도 추가할 수 있습니다. 예를 들어 도쿄 신주쿠에서 충전 가능한 곳을 찾는 방법, 오사카 난바에서 화장실 급할 때 먼저 볼 구역, 후쿠오카 하카타역 주변에서 짐을 잠깐 정리하기 좋은 장소처럼 실제 검색 의도에 가까운 문서를 만들 수 있습니다. 이렇게 하면 스미맵은 단순 지도 화면이 아니라 일본 생활 문제를 해결하는 정보 사이트로도 성장할 수 있습니다.</p>
+          </article>
+        </section>
+      </main>
+    </noscript>
+
     <script src="/assets/vendor/leaflet/leaflet.js" defer></script>
-    <script src="/assets/app.js?v=20260508-sheet" type="module"></script>
+    <script src="/assets/app.js?v=20260508-density" type="module"></script>
   </body>
 </html>

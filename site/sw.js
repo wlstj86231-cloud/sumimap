@@ -1,8 +1,8 @@
-const CACHE_NAME = "sumimap-v18-sheet";
+﻿const CACHE_NAME = "sumimap-v19-density";
 const LOCAL_ASSETS = [
   "/",
-  "/assets/styles.css?v=20260508-sheet",
-  "/assets/app.js?v=20260508-sheet",
+  "/assets/styles.css?v=20260508-density",
+  "/assets/app.js?v=20260508-density",
   "/assets/vendor/leaflet/leaflet.css",
   "/assets/vendor/leaflet/leaflet.js",
   "/assets/vendor/leaflet/images/layers.png",
