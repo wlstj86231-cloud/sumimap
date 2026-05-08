@@ -66,6 +66,193 @@ const japanBounds = {
   maxLng: 154
 };
 
+const languageStorageKey = "sumimap:language";
+const supportedLanguages = new Set(["ko", "ja"]);
+let currentLanguage = readLanguagePreference();
+
+const jaText = {
+  "스미맵": "スミマップ",
+  "스미맵 - 일본 생활 제보 지도": "スミマップ - 日本生活スポットマップ",
+  "일본 생활 제보 지도": "日本生活スポットマップ",
+  "일본에서 사는 한국인을 위한 충전, 화장실, 쉬기 좋은 곳, 한국어 대응, 응대 불편 제보 지도.": "日本で暮らす韓国語ユーザー向けの、充電・トイレ・休憩・韓国語対応・対応に不安がある場所を確認できる生活マップです。",
+  "스미맵 지도": "スミマップ地図",
+  "상단 탐색": "上部ナビゲーション",
+  "스미맵 홈": "スミマップ ホーム",
+  "현재 위치로 이동": "現在地へ移動",
+  "검색 열기": "検索を開く",
+  "검색 닫기": "検索を閉じる",
+  "일본어로 번역": "日本語に翻訳",
+  "한국어로 보기": "韓国語で表示",
+  "주소·지명 검색 또는 태그 검색": "住所・地名・タグを検索",
+  "검색어 지우기": "検索語を消去",
+  "주소검색": "住所検索",
+  "도시 빠른 이동": "都市へすぐ移動",
+  "긴급 상황 바로 보기": "急ぎの状況をすぐ確認",
+  "주요 메뉴": "メインメニュー",
+  "근처": "近く",
+  "필터": "絞り込み",
+  "제보": "投稿",
+  "저장": "保存",
+  "정보": "情報",
+  "도쿄": "東京",
+  "오사카": "大阪",
+  "후쿠오카": "福岡",
+  "교토": "京都",
+  "전체": "すべて",
+  "충전": "充電",
+  "화장실": "トイレ",
+  "쉬기": "休憩",
+  "한국어": "韓国語",
+  "응대 불편": "対応不安",
+  "배터리 5%": "バッテリー5%",
+  "화장실 급함": "トイレ急ぎ",
+  "비 피하기": "雨宿り",
+  "한국어 필요": "韓国語が必要",
+  "응대 조심": "対応に注意",
+  "콘센트와 허락 여부 먼저": "コンセントと許可を先に確認",
+  "단독 이용 가능성 확인": "単独利用できるか確認",
+  "잠깐 머물기 좋은 곳": "少し滞在しやすい場所",
+  "한국어 대응 신호": "韓国語対応のサイン",
+  "불편 제보가 있는 곳": "不安投稿がある場所",
+  "충전 가능": "充電可",
+  "직원 허락 필요": "スタッフ確認が必要",
+  "화장실 가능": "トイレ利用可",
+  "화장실만 이용 애매": "トイレだけの利用は微妙",
+  "잠깐 쉬기 좋음": "少し休みやすい",
+  "장시간 비추천": "長時間滞在は非推奨",
+  "와이파이": "Wi-Fi",
+  "한국어 대응": "韓国語対応",
+  "비 피하기 좋음": "雨宿りしやすい",
+  "혼자 쉬기 좋음": "一人で休みやすい",
+  "혼자 이용 편함": "一人でも利用しやすい",
+  "주소 검색": "住所検索",
+  "제보 대기": "投稿待ち",
+  "새 장소": "新しい場所",
+  "주소 선택": "住所選択",
+  "방금 검색": "検索したばかり",
+  "현장 확인": "現地確認",
+  "새 생활 스팟 제보": "新しい生活スポット投稿",
+  "검색한 위치": "検索した位置",
+  "지금 확인할 생활 스팟": "今すぐ確認したい生活スポット",
+  "충전, 화장실, 쉬기, 한국어 대응, 응대 불편 신호를 한 번에 봐요.": "充電、トイレ、休憩、韓国語対応、対応不安のサインをまとめて確認できます。",
+  "상황별로 빠르게 좁혀요. 응대 불편은 낙인이 아니라 최근 제보 신호로만 봐요.": "状況別にすばやく絞り込めます。対応不安はレッテルではなく、最近の投稿サインとしてだけ扱います。",
+  "충전은 콘센트 위치와 직원 허락 여부를 같이 봐야 정확해요.": "充電はコンセント位置とスタッフ確認の必要性を一緒に見ると正確です。",
+  "화장실은 단독 이용 가능 여부가 장소마다 달라요.": "トイレは単独利用できるかが場所によって異なります。",
+  "응대 불편은 1건으로 공개하지 않고 반복 신호일 때만 약하게 표시하는 전제로 설계했어요.": "対応不安は1件だけで強く表示せず、繰り返しのサインとして弱く扱う前提で設計しています。",
+  "간단 제보": "かんたん投稿",
+  "주소를 검색해 장소를 먼저 잡고, 확인한 신호만 눌러요.": "住所を検索して場所を決め、確認したサインだけを押してください。",
+  "지도 보기": "地図を見る",
+  "장소": "場所",
+  "지도 중심": "地図の中心",
+  "내 위치": "現在地",
+  "지도 확인": "地図で確認",
+  "장소 선택 필요": "場所の選択が必要です",
+  "주소나 지명을 검색해서 위치를 잡아주세요.": "住所や地名を検索して位置を指定してください。",
+  "빠른 장소 선택": "場所をすばやく選択",
+  "확인한 내용": "確認した内容",
+  "한두 개만 눌러도 충분해요. 응대 불편은 낙인이 아니라 방문 전 주의 신호로만 써요.": "1、2個だけでも十分です。対応不安はレッテルではなく、訪問前の注意サインとしてだけ使います。",
+  "추가 옵션": "追加オプション",
+  "방문 시점": "訪問時期",
+  "오늘": "今日",
+  "오늘 확인": "今日確認",
+  "최근 1주일": "直近1週間",
+  "최근 1개월": "直近1か月",
+  "이전 기억": "以前の記憶",
+  "바로 반영": "すぐ反映",
+  "첫 제보 남기기": "最初の投稿を残す",
+  "저장한 곳": "保存した場所",
+  "저장한 곳과 방금 확인한 곳을 빠르게 다시 열어요.": "保存した場所と直前に見た場所をすばやく開けます。",
+  "아직 저장한 장소가 없어요": "まだ保存した場所がありません",
+  "장소 상세에서 저장을 누르면 여기에 모여요.": "場所の詳細で保存を押すとここに集まります。",
+  "최근 본 곳": "最近見た場所",
+  "최근 확인한 장소가 없어요": "最近確認した場所がありません",
+  "지도를 누르거나 장소 카드를 열면 자동으로 기록돼요.": "地図や場所カードを開くと自動で記録されます。",
+  "스미맵 기준": "スミマップの基準",
+  "일본 생활 중 곤란한 순간을 빠르게 피하기 위한 한국어 지도예요.": "日本生活で困る瞬間をすばやく避けるための韓国語ベースの地図です。",
+  "응대 불편은 상대를 공격하는 표시가 아니라, 방문자가 조심할 수 있게 만드는 약한 신호예요.": "対応不安は相手を攻撃する表示ではなく、訪問者が注意できるようにする弱いサインです。",
+  "제보는 바로 반영하되 자유 텍스트는 열지 않아 애드센스와 운영 리스크를 낮춰요.": "投稿はすぐ反映しますが、自由入力を開かないことで広告審査と運営リスクを下げています。",
+  "허위 의심이 누적되고 동의보다 많아지면 해당 제보는 자동으로 신호 계산에서 빠지는 구조예요.": "虚偽疑いが同意より多く積み上がると、その投稿は自動的にサイン計算から外れます。",
+  "도쿄는 출구와 환승, 오사카는 지하 동선, 후쿠오카는 짧은 이동, 교토는 관광 혼잡을 같이 봐요.": "東京は出口と乗換、大阪は地下動線、福岡は短い移動、京都は観光混雑を一緒に見ます。",
+  "운영 기준": "運営基準",
+  "도시 가이드": "都市ガイド",
+  "제보 정책": "投稿ポリシー",
+  "저장됨": "保存済み",
+  "길찾기": "経路",
+  "이 장소 바로 제보": "この場所を投稿",
+  "거리감": "距離感",
+  "최근 확인": "最近確認",
+  "혼잡": "混雑",
+  "신뢰도": "信頼度",
+  "이럴 때 좋아요": "こんな時に便利",
+  "잠깐 확인이 필요할 때": "少し確認したい時",
+  "운영 시간과 현장 안내를 먼저 확인해요.": "営業時間と現地案内を先に確認しましょう。",
+  "충전 제보": "充電投稿",
+  "화장실 제보": "トイレ投稿",
+  "쉬기 제보": "休憩投稿",
+  "한국어 신호": "韓国語サイン",
+  "누적 신호": "累計サイン",
+  "최근 제보": "最近の投稿",
+  "아직 실시간 제보 없음": "まだリアルタイム投稿はありません",
+  "바로 반영됨": "すぐ反映済み",
+  "동의": "同意",
+  "허위 의심": "虚偽疑い",
+  "조건에 맞는 장소가 아직 없어요": "条件に合う場所はまだありません",
+  "검색 결과가 없어요.": "検索結果がありません。",
+  "제보를 남기면 바로 지도에 반영돼요.": "投稿するとすぐ地図に反映されます。",
+  "새 제보 남기기": "新しい投稿を残す",
+  "현재 보기 조건": "現在の表示条件",
+  "조건 해제": "条件解除",
+  "위치 해제": "位置解除",
+  "내 위치 기준": "現在地基準",
+  "주소를 찾는 중...": "住所を検索中...",
+  "검색 결과를 눌러 제보 장소로 잡아주세요.": "検索結果を押して投稿場所に指定してください。",
+  "일본 주소나 역 이름으로 다시 검색해보세요.": "日本の住所や駅名でもう一度検索してください。",
+  "주소검색이 잠시 불안정해요. 지명 또는 역 이름으로 다시 시도해줘.": "住所検索が一時的に不安定です。地名または駅名でもう一度試してください。",
+  "주소나 지명을 두 글자 이상 입력해줘.": "住所や地名を2文字以上入力してください。",
+  "확인한 내용을 하나 이상 선택해줘.": "確認した内容を1つ以上選んでください。",
+  "주소검색으로 장소를 먼저 선택해줘.": "住所検索で先に場所を選んでください。",
+  "제보가 바로 반영됐어. 허위면 다른 사람들이 허위 의심으로 밀어낼 수 있어.": "投稿をすぐ反映しました。虚偽なら他の人が虚偽疑いで押し下げられます。",
+  "동의가 반영됐어.": "同意を反映しました。",
+  "허위 의심이 누적되어 신호 계산에서 빠졌어.": "虚偽疑いが積み上がったため、サイン計算から外れました。",
+  "허위 의심을 반영했어.": "虚偽疑いを反映しました。",
+  "저장에서 뺐어.": "保存から外しました。",
+  "저장했어.": "保存しました。",
+  "검색과 필터를 해제했어.": "検索と絞り込みを解除しました。",
+  "내 위치 기준을 해제했어.": "現在地基準を解除しました。",
+  "이 브라우저에서는 현재 위치를 사용할 수 없어.": "このブラウザでは現在地を利用できません。",
+  "현재 위치 기준으로 지도를 이동했어.": "現在地基準で地図を移動しました。",
+  "위치 권한을 허용하면 내 주변으로 바로 이동할 수 있어.": "位置情報を許可すると周辺へすぐ移動できます。",
+  "기기 저장 공간이 부족해서 이번 변경은 임시로만 반영됐어.": "端末の保存容量が不足しているため、今回の変更は一時的にだけ反映されました。",
+  "일본어로 전환했어.": "日本語表示に切り替えました。",
+  "한국어로 전환했어.": "韓国語表示に切り替えました。",
+  "표시": "表示",
+  "바로 제보": "すぐ投稿",
+  "검색": "検索",
+  "조건": "条件",
+  "중심으로 이동했어.": "中心へ移動しました。",
+  "상황으로 좁혔어.": "の状況で絞り込みました。",
+  "최근 확인 필요": "最近確認が必要",
+  "제보 필요": "投稿が必要",
+  "방문 시점 미상": "訪問時期不明",
+  "거리 확인": "距離確認",
+  "도보 확인": "徒歩確認",
+  "신뢰": "信頼",
+  "문제없었음": "問題なかった",
+  "주소나 지명을 검색하면 그 위치로 바로 제보할 수 있어.": "住所や地名を検索すると、その位置をすぐ投稿場所にできます。",
+  "위치 권한을 허용하면 내 위치를 제보 장소로 바로 잡을 수 있어.": "位置情報を許可すると、現在地をすぐ投稿場所にできます。",
+  "스미맵은 일본 안의 위치만 제보 장소로 잡을 수 있어.": "スミマップでは日本国内の位置だけを投稿場所にできます。",
+  "주소를 확인하는 중이야.": "の住所を確認しています。",
+  "제보 장소로 잡았어.": "を投稿場所に指定しました。",
+  "길게 누른 위치": "長押しした位置",
+  "선택 위치": "選択位置",
+  "주소를 제보 장소로 잡았어. 이제 신호만 눌러주면 돼.": "住所を投稿場所に指定しました。あとはサインを押すだけです。",
+  "검색한 주소는 위치 기준이에요. 운영 시간과 현장 안내는 직접 확인해 주세요.": "検索した住所は位置の基準です。営業時間と現地案内は直接確認してください。",
+  "주소검색으로 잡은 새 장소예요.": "住所検索で指定した新しい場所です。",
+  "제보가 쌓이면 충전, 화장실, 쉬기, 한국어 대응 신호가 지도에 반영돼요.": "投稿が集まると、充電・トイレ・休憩・韓国語対応のサインが地図に反映されます。",
+  "제보가 쌓이면 생활 신호가 지도에 반영돼요.": "投稿が集まると生活サインが地図に反映されます。",
+  "빠른 상황": "すぐ見る状況"
+};
+
 const places = [
   {
     id: "tokyo-shinjuku-east",
@@ -468,11 +655,267 @@ const places = [
   }
 ];
 
+const placeJapanese = {
+  "tokyo-shinjuku-east": {
+    name: "新宿東側 カフェ型スポット",
+    area: "東京 新宿",
+    kind: "カフェ/飲食店",
+    trust: "よく確認されています",
+    walk: "徒歩6分",
+    lastSeen: "今日確認",
+    crowd: "昼は混雑",
+    bestFor: "バッテリー不足の時の第一候補",
+    watchout: "コンセント席は先に確認してから注文する方が安心です。",
+    notes: ["混雑時間帯は長時間滞在が少し気まずい場合があります。", "コンセントは席によって違うため、注文前に確認すると安心です。"]
+  },
+  "tokyo-ueno-public": {
+    name: "上野駅近くの公共便利スポット",
+    area: "東京 上野",
+    kind: "公共施設",
+    trust: "利用できる可能性が高い",
+    walk: "徒歩4分",
+    lastSeen: "直近1週間",
+    crowd: "昼は普通",
+    bestFor: "トイレが急ぎの時",
+    watchout: "遅い時間は周辺の動線と営業時間を一緒に確認しましょう。",
+    notes: ["トイレまでの動線が比較的わかりやすいという投稿が多いです。", "遅い時間は周辺の雰囲気を確認して移動する方が安心です。"]
+  },
+  "tokyo-ikebukuro-rest": {
+    name: "池袋北側の待機スポット",
+    area: "東京 池袋",
+    kind: "屋内休憩",
+    trust: "投稿あり",
+    walk: "徒歩8分",
+    lastSeen: "直近1か月",
+    crowd: "夕方は混雑",
+    bestFor: "待ち合わせ前の10分待機",
+    watchout: "店舗の利用条件は現地案内を優先してください。",
+    notes: ["短時間の待機に向いているという投稿があります。", "店舗の利用条件は現地案内を優先してください。"]
+  },
+  "tokyo-shinokubo-korean": {
+    name: "新大久保 韓国語対応が期待できるエリア",
+    area: "東京 新大久保",
+    kind: "商店街",
+    trust: "よく確認されています",
+    walk: "徒歩5分",
+    lastSeen: "今日確認",
+    crowd: "週末は混雑",
+    bestFor: "日本語で詰まった時",
+    watchout: "店によって韓国語対応の度合いが違うため、詳細タグも一緒に見ましょう。",
+    notes: ["韓国語メニューや案内がある場所が多いという投稿が集まっています。", "店舗ごとの条件差が大きいため、詳細タグの確認が必要です。"]
+  },
+  "tokyo-shibuya-caution": {
+    name: "渋谷 混雑エリア注意スポット",
+    area: "東京 渋谷",
+    kind: "混雑商圏",
+    trust: "注意投稿あり",
+    walk: "徒歩7分",
+    lastSeen: "直近1週間",
+    crowd: "常に混雑",
+    bestFor: "訪問前の雰囲気確認",
+    watchout: "対応不安は断定ではなく注意サインです。反対の経験も一緒に反映されます。",
+    notes: ["対応不安の投稿が複数あります。断定ではなく、訪問前の確認サインとしてだけ表示します。", "反対の経験があれば同じ場所で「問題なかった」サインとしてバランスを取れます。"]
+  },
+  "osaka-namba-charge": {
+    name: "なんば駅近くの充電確認スポット",
+    area: "大阪 なんば",
+    kind: "カフェ/飲食店",
+    trust: "投稿あり",
+    walk: "徒歩6分",
+    lastSeen: "直近1週間",
+    crowd: "午後は普通",
+    bestFor: "なんば移動前の充電",
+    watchout: "注文せず充電だけする利用は避ける方がよいです。",
+    notes: ["コンセント席が限られるという投稿があります。", "注文せず充電だけする利用は避ける方がよいです。"]
+  },
+  "fukuoka-hakata-restroom": {
+    name: "博多駅周辺 トイレ確認スポット",
+    area: "福岡 博多",
+    kind: "駅周辺",
+    trust: "利用できる可能性が高い",
+    walk: "徒歩3分",
+    lastSeen: "直近1週間",
+    crowd: "通勤時間は混雑",
+    bestFor: "博多駅を移動中で急ぎの時",
+    watchout: "施設の営業時間は季節やイベントによって変わることがあります。",
+    notes: ["駅周辺を移動中、急ぎの時に確認しやすい位置です。", "施設の営業時間は季節やイベントによって変わることがあります。"]
+  },
+  "kyoto-station-rest": {
+    name: "京都駅 待機と休憩スポット",
+    area: "京都駅",
+    kind: "駅周辺",
+    trust: "投稿あり",
+    walk: "徒歩5分",
+    lastSeen: "直近1か月",
+    crowd: "繁忙期は混雑",
+    bestFor: "荷物が多い時の動線整理",
+    watchout: "観光シーズンは混雑度がすぐ上がります。",
+    notes: ["荷物が多い時に少し動線を整理しやすいという投稿があります。", "観光シーズンは混雑度がすぐ上がります。"]
+  },
+  "tokyo-yaesu-restroom": {
+    name: "東京駅 八重洲トイレ確認スポット",
+    area: "東京駅 八重洲",
+    kind: "駅周辺",
+    trust: "利用できる可能性が高い",
+    walk: "徒歩4分",
+    lastSeen: "直近1週間",
+    crowd: "通勤時間は混雑",
+    bestFor: "東京駅で乗り換え中に急ぎの時",
+    watchout: "駅構内の動線が複雑なので、出口と階を先に確認する方がよいです。",
+    notes: ["乗り換え中にトイレと屋内待機動線を一緒に確認しやすいエリアです。", "ラッシュ時は移動時間が予想より長くなることがあります。"]
+  },
+  "tokyo-akihabara-charge": {
+    name: "秋葉原 電子街の充電候補スポット",
+    area: "東京 秋葉原",
+    kind: "商店街",
+    trust: "投稿あり",
+    walk: "徒歩6分",
+    lastSeen: "直近1か月",
+    crowd: "週末は混雑",
+    bestFor: "電子機器のバッテリーとデータ整理",
+    watchout: "コンセントが見えても、スタッフ確認なしで使うのは避ける方が安心です。",
+    notes: ["機器充電の需要が多い生活圏なので、充電候補サインを別で集めています。", "店舗ごとの方針差が大きいため、注文前の確認が必要です。"]
+  },
+  "tokyo-shinagawa-rain": {
+    name: "品川駅 雨宿りスポット",
+    area: "東京 品川",
+    kind: "屋内移動",
+    trust: "投稿あり",
+    walk: "徒歩5分",
+    lastSeen: "直近1週間",
+    crowd: "退勤時間は混雑",
+    bestFor: "雨の日の待ち合わせ前待機",
+    watchout: "通路型の空間は長く滞在するより、短く動線を整える用途で見る方がよいです。",
+    notes: ["雨の日に屋内を移動しながら荷物を整理しやすいサインがあります。", "退勤時間は座れる場所がすぐ減ることがあります。"]
+  },
+  "tokyo-takadanobaba-korean": {
+    name: "高田馬場 韓国語生活圏スポット",
+    area: "東京 高田馬場",
+    kind: "生活商圏",
+    trust: "投稿あり",
+    walk: "徒歩7分",
+    lastSeen: "直近1か月",
+    crowd: "夜は普通",
+    bestFor: "日本語の説明が負担な時",
+    watchout: "韓国語対応の有無は時間帯とスタッフによって変わることがあります。",
+    notes: ["留学生生活圏の投稿が集まりやすいエリアです。", "韓国語メニューと実際の韓国語対応は分けて確認する方がよいです。"]
+  },
+  "osaka-umeda-underground-rest": {
+    name: "梅田地下街 待機スポット",
+    area: "大阪 梅田",
+    kind: "地下街",
+    trust: "よく確認されています",
+    walk: "徒歩4分",
+    lastSeen: "今日確認",
+    crowd: "常に混雑",
+    bestFor: "雨の日や暑い日の屋内待機",
+    watchout: "地下動線が複雑なので、経路案内をつけたまま移動する方がよいです。",
+    notes: ["梅田では雨宿りとトイレ動線を一緒に見るユーザーが多いです。", "初めてなら出口番号を先に確認すると迷いにくくなります。"]
+  },
+  "osaka-tsuruhashi-korean": {
+    name: "鶴橋 韓国語対応生活圏",
+    area: "大阪 鶴橋",
+    kind: "商店街",
+    trust: "投稿あり",
+    walk: "徒歩6分",
+    lastSeen: "直近1週間",
+    crowd: "週末は混雑",
+    bestFor: "韓国語メニューと生活商圏の確認",
+    watchout: "店ごとに雰囲気と対応できる言語が違うため、詳細サインも一緒に見ましょう。",
+    notes: ["韓国人訪問者が多い生活圏なので、韓国語サインを別で集めやすい場所です。", "混雑時間は長く滞在するより、目的地を決めて動く方がよいです。"]
+  },
+  "osaka-tennoji-restroom": {
+    name: "天王寺周辺 トイレ確認スポット",
+    area: "大阪 天王寺",
+    kind: "駅周辺",
+    trust: "利用できる可能性が高い",
+    walk: "徒歩5分",
+    lastSeen: "直近1週間",
+    crowd: "休日は混雑",
+    bestFor: "公園・商業施設へ移動する前の確認",
+    watchout: "イベント日は周辺トイレの待ち時間が長くなることがあります。",
+    notes: ["天王寺は観光動線と生活動線が重なり、急ぎの状況投稿が集まりやすいです。", "混雑日は近い場所だけでなく、2番目の候補も一緒に保存しておくと便利です。"]
+  },
+  "osaka-shinimamiya-caution": {
+    name: "新今宮 移動前注意スポット",
+    area: "大阪 新今宮",
+    kind: "駅周辺",
+    trust: "注意投稿あり",
+    walk: "徒歩7分",
+    lastSeen: "直近1か月",
+    crowd: "夜は要確認",
+    bestFor: "夜の移動前の雰囲気確認",
+    watchout: "対応不安と夜間の雰囲気サインは断定ではなく、移動前の参考サインとしてだけ見ましょう。",
+    notes: ["夜間移動前は明るい大通りと駅動線を優先する方が安心です。", "反対の経験投稿が集まれば注意サインは弱くなります。"]
+  },
+  "fukuoka-tenjin-charge": {
+    name: "天神中心部 充電確認スポット",
+    area: "福岡 天神",
+    kind: "商業施設",
+    trust: "投稿あり",
+    walk: "徒歩5分",
+    lastSeen: "直近1週間",
+    crowd: "午後は混雑",
+    bestFor: "買い物中のバッテリー回復",
+    watchout: "充電できる席は限られている場合があります。",
+    notes: ["天神は移動前に充電とトイレを同時に確認したいユーザーが多いです。", "週末は長く座れる席が早くなくなることがあります。"]
+  },
+  "fukuoka-nakasu-rain": {
+    name: "中洲 雨宿り確認スポット",
+    area: "福岡 中洲",
+    kind: "屋内待機",
+    trust: "投稿あり",
+    walk: "徒歩6分",
+    lastSeen: "直近1か月",
+    crowd: "夜は混雑",
+    bestFor: "雨の日に短く動線整理",
+    watchout: "夜間は混雑と客引きの雰囲気も一緒に確認する方がよいです。",
+    notes: ["雨を避けながら次の移動経路を整理しやすいサインがあります。", "長時間滞在より短い待機用途で見る方が合っています。"]
+  },
+  "fukuoka-hakata-korean": {
+    name: "博多 韓国語案内候補スポット",
+    area: "福岡 博多",
+    kind: "駅周辺",
+    trust: "投稿あり",
+    walk: "徒歩4分",
+    lastSeen: "直近1週間",
+    crowd: "旅行客混雑",
+    bestFor: "博多駅周辺の韓国語案内確認",
+    watchout: "韓国語案内板と実際に会話できるかは分けて見る必要があります。",
+    notes: ["空港と駅の移動が多いエリアなので、韓国語案内サインが役立ちます。", "スタッフの対応可能言語は時間帯によって変わることがあります。"]
+  },
+  "kyoto-shijo-restroom": {
+    name: "四条河原町 トイレ確認スポット",
+    area: "京都 四条河原町",
+    kind: "商業施設",
+    trust: "利用できる可能性が高い",
+    walk: "徒歩5分",
+    lastSeen: "直近1週間",
+    crowd: "観光混雑",
+    bestFor: "観光動線中の急なトイレ確認",
+    watchout: "観光客が多い時間は、近い候補を2つ一緒に見る方がよいです。",
+    notes: ["京都中心商圏はトイレと雨宿りサインを一緒に見ることが多いです。", "季節イベント期間は普段より待ち時間が長くなることがあります。"]
+  },
+  "kyoto-gion-caution": {
+    name: "祇園周辺 対応注意スポット",
+    area: "京都 祇園",
+    kind: "観光商圏",
+    trust: "注意投稿あり",
+    walk: "徒歩8分",
+    lastSeen: "直近1か月",
+    crowd: "夕方は混雑",
+    bestFor: "観光地のマナーと利用条件確認",
+    watchout: "対応不安はレッテルではなく、訪問前に慎重に確認するためのサインです。",
+    notes: ["観光地では撮影、待機、利用条件を現地案内に合わせる方が安心です。", "反対の経験投稿が集まれば注意サインは弱くなります。"]
+  }
+};
+
 normalizeCustomPlaces(readJson("sumimap:customPlaces", [])).forEach((place) => {
   places.push(place);
 });
 
 const state = {
+  language: currentLanguage,
   filter: "all",
   query: "",
   selectedId: places[0].id,
@@ -503,6 +946,7 @@ const mapQuickRail = document.querySelector("#mapQuickRail");
 const locateButton = document.querySelector("#locateButton");
 const searchPanel = document.querySelector("#searchPanel");
 const searchToggle = document.querySelector("#searchToggle");
+const languageToggle = document.querySelector("#languageToggle");
 const searchClear = document.querySelector("#searchClear");
 const placeSearch = document.querySelector("#placeSearch");
 const addressSearchButton = document.querySelector("#addressSearchButton");
@@ -543,6 +987,7 @@ function startWhenReady() {
 function init() {
   bootMap();
   bindEvents();
+  applyStaticLanguage();
   renderMapQuickRail();
   renderAddressResults();
   renderSheet();
@@ -591,6 +1036,8 @@ function bindEvents() {
   });
 
   locateButton.addEventListener("click", locateUser);
+
+  languageToggle?.addEventListener("click", toggleLanguage);
 
   document.addEventListener("keydown", (event) => {
     if (event.key !== "Escape" || searchPanel.hidden) return;
@@ -667,7 +1114,7 @@ function bindEvents() {
       const city = cities[button.dataset.city];
       if (!city) return;
       map.setView(city.center, city.zoom);
-      showToast(`${city.label} 중심으로 이동했어.`);
+      showToast(`${t(city.label)} ${t("중심으로 이동했어.")}`);
       setSearchPanel(false);
     });
   });
@@ -816,6 +1263,7 @@ function setActiveNav(panel) {
 function setSearchPanel(open, focus = false) {
   searchPanel.hidden = !open;
   searchToggle.setAttribute("aria-expanded", String(open));
+  searchToggle.setAttribute("aria-label", t(open ? "검색 닫기" : "검색 열기"));
   if (open && focus) {
     window.requestAnimationFrame(() => placeSearch.focus());
   }
@@ -839,6 +1287,61 @@ function syncSheetMode() {
   sheet.classList.toggle("is-expanded", !isCollapsed);
 }
 
+function toggleLanguage() {
+  state.language = state.language === "ja" ? "ko" : "ja";
+  currentLanguage = state.language;
+  writeJson(languageStorageKey, state.language);
+  filteredPlacesCacheKey = "";
+  applyStaticLanguage();
+  renderMapQuickRail();
+  renderAddressResults();
+  renderSheet();
+  renderMarkers();
+  refreshStatus();
+  showToast(state.language === "ja" ? "일본어로 전환했어." : "한국어로 전환했어.");
+}
+
+function applyStaticLanguage() {
+  const japanese = isJapanese();
+  document.documentElement.lang = japanese ? "ja" : "ko";
+  document.title = t("스미맵 - 일본 생활 제보 지도");
+
+  const description = t("일본에서 사는 한국인을 위한 충전, 화장실, 쉬기 좋은 곳, 한국어 대응, 응대 불편 제보 지도.");
+  document.querySelector("meta[name='description']")?.setAttribute("content", description);
+  document.querySelector("meta[property='og:title']")?.setAttribute("content", document.title);
+  document.querySelector("meta[property='og:description']")?.setAttribute("content", description);
+  document.querySelector("meta[name='twitter:title']")?.setAttribute("content", document.title);
+  document.querySelector("meta[name='twitter:description']")?.setAttribute("content", description);
+  document.querySelector("#map")?.setAttribute("aria-label", t("스미맵 지도"));
+  document.querySelector(".topbar")?.setAttribute("aria-label", t("상단 탐색"));
+  document.querySelector(".brand")?.setAttribute("aria-label", t("스미맵 홈"));
+  document.querySelector(".brand strong").textContent = t("스미맵");
+  document.querySelector(".brand small").textContent = t("일본 생활 제보 지도");
+
+  locateButton?.setAttribute("aria-label", t("현재 위치로 이동"));
+  searchToggle?.setAttribute("aria-label", t(searchPanel?.hidden ? "검색 열기" : "검색 닫기"));
+  languageToggle?.setAttribute("aria-label", japanese ? t("한국어로 보기") : t("일본어로 번역"));
+  languageToggle?.setAttribute("aria-pressed", String(japanese));
+  const languageCode = languageToggle?.querySelector(".language-code");
+  if (languageCode) languageCode.textContent = japanese ? "한" : "日";
+
+  if (placeSearch) placeSearch.placeholder = t("주소·지명 검색 또는 태그 검색");
+  searchClear?.setAttribute("aria-label", t("검색어 지우기"));
+  if (addressSearchButton) addressSearchButton.textContent = t("주소검색");
+  document.querySelector(".city-strip")?.setAttribute("aria-label", t("도시 빠른 이동"));
+  document.querySelectorAll("[data-city]").forEach((button) => {
+    const city = cities[button.dataset.city];
+    if (city) button.textContent = t(city.label);
+  });
+  mapQuickRail?.setAttribute("aria-label", t("긴급 상황 바로 보기"));
+  document.querySelector(".bottom-nav")?.setAttribute("aria-label", t("주요 메뉴"));
+  document.querySelectorAll(".nav-button").forEach((button) => {
+    const span = button.querySelector("span");
+    const labels = { near: "근처", filters: "필터", report: "제보", saved: "저장", guide: "정보" };
+    if (span && labels[button.dataset.action]) span.textContent = t(labels[button.dataset.action]);
+  });
+}
+
 function renderSheet() {
   if (state.activePanel === "filters") {
     sheet.innerHTML = renderFilters();
@@ -859,13 +1362,13 @@ function renderNearby() {
   const place = list.find((item) => item.id === state.selectedId) || null;
 
   return `
-    <button class="sheet-grip" type="button" data-sheet-toggle aria-label="Toggle panel"></button>
+    <button class="sheet-grip" type="button" data-sheet-toggle aria-label="${escapeAttr(t("지도 보기"))}"></button>
     <div class="sheet-head" data-sheet-toggle>
       <div>
-        <h1>지금 확인할 생활 스팟</h1>
-        <p>충전, 화장실, 쉬기, 한국어 대응, 응대 불편 신호를 한 번에 봐요.</p>
+        <h1>${t("지금 확인할 생활 스팟")}</h1>
+        <p>${t("충전, 화장실, 쉬기, 한국어 대응, 응대 불편 신호를 한 번에 봐요.")}</p>
       </div>
-      <span class="compact-stat">${list.length}곳</span>
+      <span class="compact-stat">${countLabel(list.length, "곳")}</span>
     </div>
     ${renderScenarioRail()}
     <div class="filter-row">
@@ -879,11 +1382,11 @@ function renderNearby() {
 
 function renderFilters() {
   return `
-    <button class="sheet-grip" type="button" data-sheet-toggle aria-label="Toggle panel"></button>
+    <button class="sheet-grip" type="button" data-sheet-toggle aria-label="${escapeAttr(t("지도 보기"))}"></button>
     <div class="sheet-head" data-sheet-toggle>
       <div>
-        <h2>필터</h2>
-        <p>상황별로 빠르게 좁혀요. 응대 불편은 낙인이 아니라 최근 제보 신호로만 봐요.</p>
+        <h2>${t("필터")}</h2>
+        <p>${t("상황별로 빠르게 좁혀요. 응대 불편은 낙인이 아니라 최근 제보 신호로만 봐요.")}</p>
       </div>
     </div>
     ${renderScenarioRail()}
@@ -892,9 +1395,9 @@ function renderFilters() {
     </div>
     ${renderContextTools()}
     <ul class="note-list">
-      <li>충전은 콘센트 위치와 직원 허락 여부를 같이 봐야 정확해요.</li>
-      <li>화장실은 단독 이용 가능 여부가 장소마다 달라요.</li>
-      <li>응대 불편은 1건으로 공개하지 않고 반복 신호일 때만 약하게 표시하는 전제로 설계했어요.</li>
+      <li>${t("충전은 콘센트 위치와 직원 허락 여부를 같이 봐야 정확해요.")}</li>
+      <li>${t("화장실은 단독 이용 가능 여부가 장소마다 달라요.")}</li>
+      <li>${t("응대 불편은 1건으로 공개하지 않고 반복 신호일 때만 약하게 표시하는 전제로 설계했어요.")}</li>
     </ul>
   `;
 }
@@ -908,76 +1411,76 @@ function renderReport() {
   const mainTags = ["charge", "restroom", "rest", "korean", "rain", "caution"];
   const extraTags = reportTags.filter((tag) => !mainTags.includes(tag.key));
   return `
-    <button class="sheet-grip" type="button" data-sheet-toggle aria-label="Toggle panel"></button>
+    <button class="sheet-grip" type="button" data-sheet-toggle aria-label="${escapeAttr(t("지도 보기"))}"></button>
     <div class="sheet-head" data-sheet-toggle>
       <div>
-        <h2>간단 제보</h2>
-        <p>주소를 검색해 장소를 먼저 잡고, 확인한 신호만 눌러요.</p>
+        <h2>${t("간단 제보")}</h2>
+        <p>${t("주소를 검색해 장소를 먼저 잡고, 확인한 신호만 눌러요.")}</p>
       </div>
-      <button class="sheet-mini-action" type="button" data-sheet-collapse>지도 보기</button>
+      <button class="sheet-mini-action" type="button" data-sheet-collapse>${t("지도 보기")}</button>
     </div>
     <form class="report-form" id="reportForm">
       <div class="form-section">
-        <h3>장소</h3>
+        <h3>${t("장소")}</h3>
         <input type="hidden" name="placeId" value="${escapeAttr(place?.id || "")}">
         <div class="report-place-actions">
-          <button class="text-button" type="button" data-focus-address-search>${icon("search")}주소검색</button>
-          <button class="text-button" type="button" data-use-map-center>${icon("crosshair")}지도 중심</button>
-          <button class="text-button" type="button" data-use-current-location>${icon("locate-fixed")}내 위치</button>
-          ${place?.custom ? `<a class="text-button" href="${mapsUrl(place)}" target="_blank" rel="noreferrer">${icon("navigation")}지도 확인</a>` : ""}
+          <button class="text-button" type="button" data-focus-address-search>${icon("search")}${t("주소검색")}</button>
+          <button class="text-button" type="button" data-use-map-center>${icon("crosshair")}${t("지도 중심")}</button>
+          <button class="text-button" type="button" data-use-current-location>${icon("locate-fixed")}${t("내 위치")}</button>
+          ${place?.custom ? `<a class="text-button" href="${mapsUrl(place)}" target="_blank" rel="noreferrer">${icon("navigation")}${t("지도 확인")}</a>` : ""}
         </div>
         <div class="report-place-box">
           <span class="place-title-emoji" aria-hidden="true">${categoryEmoji(place?.category)}</span>
           <div>
-            <strong>${escapeHtml(place?.name || "장소 선택 필요")}</strong>
-            <p>${escapeHtml(place?.area || "주소나 지명을 검색해서 위치를 잡아주세요.")}</p>
+            <strong>${escapeHtml(place ? placeText(place, "name") : t("장소 선택 필요"))}</strong>
+            <p>${escapeHtml(place ? placeText(place, "area") : t("주소나 지명을 검색해서 위치를 잡아주세요."))}</p>
           </div>
         </div>
         ${nearbyChoices.length ? `
-          <div class="quick-place-row" aria-label="빠른 장소 선택">
+          <div class="quick-place-row" aria-label="${escapeAttr(t("빠른 장소 선택"))}">
             ${nearbyChoices.map((item) => `
               <button type="button" class="${item.id === place?.id ? "is-active" : ""}" data-report-place="${escapeAttr(item.id)}" aria-pressed="${item.id === place?.id ? "true" : "false"}">
-                <span aria-hidden="true">${categoryEmoji(item.category)}</span>${escapeHtml(shortPlaceName(item.name))}
+                <span aria-hidden="true">${categoryEmoji(item.category)}</span>${escapeHtml(shortPlaceName(placeText(item, "name")))}
               </button>
             `).join("")}
           </div>
         ` : ""}
       </div>
       <div class="form-section">
-        <h3>확인한 내용</h3>
-        <p>한두 개만 눌러도 충분해요. 응대 불편은 낙인이 아니라 방문 전 주의 신호로만 써요.</p>
+        <h3>${t("확인한 내용")}</h3>
+        <p>${t("한두 개만 눌러도 충분해요. 응대 불편은 낙인이 아니라 방문 전 주의 신호로만 써요.")}</p>
         <div class="report-grid">
           ${mainTags.map((key) => reportTagsByKey.get(key)).filter(Boolean).map((tag) => `
-            <button type="button" class="chip report-chip ${tag.danger ? "danger" : ""}" data-report-tag="${escapeAttr(tag.key)}" aria-label="${escapeAttr(tag.label)}" aria-pressed="false">
+            <button type="button" class="chip report-chip ${tag.danger ? "danger" : ""}" data-report-tag="${escapeAttr(tag.key)}" aria-label="${escapeAttr(t(tag.label))}" aria-pressed="false">
               <span class="report-emoji" aria-hidden="true">${tag.emoji}</span>
-              <span>${tag.label}</span>
+              <span>${t(tag.label)}</span>
             </button>
           `).join("")}
         </div>
         <details class="report-extra">
-          <summary>추가 옵션</summary>
+          <summary>${t("추가 옵션")}</summary>
           <div class="report-grid is-extra">
             ${extraTags.map((tag) => `
-              <button type="button" class="chip report-chip ${tag.danger ? "danger" : ""}" data-report-tag="${escapeAttr(tag.key)}" aria-label="${escapeAttr(tag.label)}" aria-pressed="false">
+              <button type="button" class="chip report-chip ${tag.danger ? "danger" : ""}" data-report-tag="${escapeAttr(tag.key)}" aria-label="${escapeAttr(t(tag.label))}" aria-pressed="false">
                 <span class="report-emoji" aria-hidden="true">${tag.emoji}</span>
-                <span>${tag.label}</span>
+                <span>${t(tag.label)}</span>
               </button>
             `).join("")}
           </div>
         </details>
       </div>
       <div class="form-section">
-        <h3>방문 시점</h3>
-        <select class="mini-field" name="recency" aria-label="방문 시점">
-          <option value="today">오늘</option>
-          <option value="week">최근 1주일</option>
-          <option value="month">최근 1개월</option>
-          <option value="old">이전 기억</option>
+        <h3>${t("방문 시점")}</h3>
+        <select class="mini-field" name="recency" aria-label="${escapeAttr(t("방문 시점"))}">
+          <option value="today">${t("오늘")}</option>
+          <option value="week">${t("최근 1주일")}</option>
+          <option value="month">${t("최근 1개월")}</option>
+          <option value="old">${t("이전 기억")}</option>
         </select>
       </div>
       <button class="primary-button" type="submit" data-submit-report>
         ${icon("send")}
-        ${visibleReports.length ? "바로 반영" : "첫 제보 남기기"}
+        ${visibleReports.length ? t("바로 반영") : t("첫 제보 남기기")}
       </button>
     </form>
   `;
@@ -990,44 +1493,44 @@ function renderSaved() {
     .filter((place) => place && !state.saved.includes(place.id))
     .slice(0, 6);
   return `
-    <button class="sheet-grip" type="button" data-sheet-toggle aria-label="Toggle panel"></button>
+    <button class="sheet-grip" type="button" data-sheet-toggle aria-label="${escapeAttr(t("지도 보기"))}"></button>
     <div class="sheet-head" data-sheet-toggle>
       <div>
-        <h2>저장한 곳</h2>
-        <p>저장한 곳과 방금 확인한 곳을 빠르게 다시 열어요.</p>
+        <h2>${t("저장한 곳")}</h2>
+        <p>${t("저장한 곳과 방금 확인한 곳을 빠르게 다시 열어요.")}</p>
       </div>
-      <span class="compact-stat">${savedPlaces.length}곳</span>
+      <span class="compact-stat">${countLabel(savedPlaces.length, "곳")}</span>
     </div>
-    <div class="place-section-title">저장한 곳</div>
+    <div class="place-section-title">${t("저장한 곳")}</div>
     <div class="place-list compact-list">
-      ${savedPlaces.length ? savedPlaces.map((item) => renderPlaceCard(item)).join("") : `<div class="place-card"><h3>아직 저장한 장소가 없어요</h3><p>장소 상세에서 저장을 누르면 여기에 모여요.</p></div>`}
+      ${savedPlaces.length ? savedPlaces.map((item) => renderPlaceCard(item)).join("") : `<div class="place-card"><h3>${t("아직 저장한 장소가 없어요")}</h3><p>${t("장소 상세에서 저장을 누르면 여기에 모여요.")}</p></div>`}
     </div>
-    <div class="place-section-title">최근 본 곳</div>
+    <div class="place-section-title">${t("최근 본 곳")}</div>
     <div class="place-list compact-list">
-      ${recentPlaces.length ? recentPlaces.map((item) => renderPlaceCard(item)).join("") : `<div class="place-card"><h3>최근 확인한 장소가 없어요</h3><p>지도를 누르거나 장소 카드를 열면 자동으로 기록돼요.</p></div>`}
+      ${recentPlaces.length ? recentPlaces.map((item) => renderPlaceCard(item)).join("") : `<div class="place-card"><h3>${t("최근 확인한 장소가 없어요")}</h3><p>${t("지도를 누르거나 장소 카드를 열면 자동으로 기록돼요.")}</p></div>`}
     </div>
   `;
 }
 
 function renderGuide() {
   return `
-    <button class="sheet-grip" type="button" data-sheet-toggle aria-label="Toggle panel"></button>
+    <button class="sheet-grip" type="button" data-sheet-toggle aria-label="${escapeAttr(t("지도 보기"))}"></button>
     <div class="sheet-head" data-sheet-toggle>
       <div>
-        <h2>스미맵 기준</h2>
-        <p>일본 생활 중 곤란한 순간을 빠르게 피하기 위한 한국어 지도예요.</p>
+        <h2>${t("스미맵 기준")}</h2>
+        <p>${t("일본 생활 중 곤란한 순간을 빠르게 피하기 위한 한국어 지도예요.")}</p>
       </div>
     </div>
     <ul class="note-list">
-      <li>응대 불편은 상대를 공격하는 표시가 아니라, 방문자가 조심할 수 있게 만드는 약한 신호예요.</li>
-      <li>제보는 바로 반영하되 자유 텍스트는 열지 않아 애드센스와 운영 리스크를 낮춰요.</li>
-      <li>허위 의심이 누적되고 동의보다 많아지면 해당 제보는 자동으로 신호 계산에서 빠지는 구조예요.</li>
-      <li>도쿄는 출구와 환승, 오사카는 지하 동선, 후쿠오카는 짧은 이동, 교토는 관광 혼잡을 같이 봐요.</li>
+      <li>${t("응대 불편은 상대를 공격하는 표시가 아니라, 방문자가 조심할 수 있게 만드는 약한 신호예요.")}</li>
+      <li>${t("제보는 바로 반영하되 자유 텍스트는 열지 않아 애드센스와 운영 리스크를 낮춰요.")}</li>
+      <li>${t("허위 의심이 누적되고 동의보다 많아지면 해당 제보는 자동으로 신호 계산에서 빠지는 구조예요.")}</li>
+      <li>${t("도쿄는 출구와 환승, 오사카는 지하 동선, 후쿠오카는 짧은 이동, 교토는 관광 혼잡을 같이 봐요.")}</li>
     </ul>
     <div class="detail-actions">
-      <a class="text-button" href="/guide/">${icon("book-open")}운영 기준</a>
-      <a class="text-button" href="/cities/">${icon("map")}도시 가이드</a>
-      <a class="text-button" href="/policy/">${icon("shield-check")}제보 정책</a>
+      <a class="text-button" href="/guide/">${icon("book-open")}${t("운영 기준")}</a>
+      <a class="text-button" href="/cities/">${icon("map")}${t("도시 가이드")}</a>
+      <a class="text-button" href="/policy/">${icon("shield-check")}${t("제보 정책")}</a>
     </div>
   `;
 }
@@ -1044,65 +1547,65 @@ function renderPlaceDetail(place) {
     <section class="place-card is-selected">
       <div class="place-title-row">
         <div>
-          <h3><span class="place-title-emoji" aria-hidden="true">${categoryEmoji(place.category)}</span>${place.name}</h3>
-          <p>${place.area} · ${place.kind}</p>
+          <h3><span class="place-title-emoji" aria-hidden="true">${categoryEmoji(place.category)}</span>${escapeHtml(placeText(place, "name"))}</h3>
+          <p>${escapeHtml(placeText(place, "area"))} · ${escapeHtml(placeText(place, "kind"))}</p>
         </div>
-        <span class="badge ${caution ? "caution" : reports.length ? "info" : "good"}">${getLiveTrust(place)}</span>
+        <span class="badge ${caution ? "caution" : reports.length ? "info" : "good"}">${escapeHtml(getLiveTrust(place))}</span>
       </div>
-      <div class="tag-row" aria-label="장소 태그">
-        ${tags.map((tag) => `<span class="badge ${tag === "응대 불편" ? "caution" : tag.includes("충전") || tag.includes("와이파이") ? "info" : tag.includes("비") || tag.includes("허락") ? "warn" : "good"}"><span class="badge-emoji" aria-hidden="true">${emojiForTag(tag)}</span>${tag}</span>`).join("")}
+      <div class="tag-row" aria-label="${escapeAttr(t("장소"))}">
+        ${tags.map((tag) => `<span class="badge ${tag === "응대 불편" ? "caution" : tag.includes("충전") || tag.includes("와이파이") ? "info" : tag.includes("비") || tag.includes("허락") ? "warn" : "good"}"><span class="badge-emoji" aria-hidden="true">${emojiForTag(tag)}</span>${escapeHtml(tagText(tag))}</span>`).join("")}
       </div>
       <div class="detail-actions">
         <button class="text-button" type="button" data-save="${place.id}">
           ${icon(saved ? "bookmark-check" : "bookmark")}
-          ${saved ? "저장됨" : "저장"}
+          ${saved ? t("저장됨") : t("저장")}
         </button>
         <a class="text-button" href="${mapsUrl(place)}" target="_blank" rel="noreferrer">
           ${icon("navigation")}
-          길찾기
+          ${t("길찾기")}
         </a>
       </div>
       <div class="detail-actions single">
         <button class="primary-button" type="button" data-open-report>
           ${icon("plus")}
-          이 장소 바로 제보
+          ${t("이 장소 바로 제보")}
         </button>
       </div>
       <div class="use-summary">
         <div>
-          <span>거리감</span>
-          <strong>${distanceLabel(place)}</strong>
+          <span>${t("거리감")}</span>
+          <strong>${escapeHtml(distanceLabel(place))}</strong>
         </div>
         <div>
-          <span>최근 확인</span>
-          <strong>${place.lastSeen || "제보 필요"}</strong>
+          <span>${t("최근 확인")}</span>
+          <strong>${escapeHtml(placeText(place, "lastSeen") || t("제보 필요"))}</strong>
         </div>
         <div>
-          <span>혼잡</span>
-          <strong>${place.crowd || "현장 확인"}</strong>
+          <span>${t("혼잡")}</span>
+          <strong>${escapeHtml(placeText(place, "crowd") || t("현장 확인"))}</strong>
         </div>
         <div>
-          <span>신뢰도</span>
+          <span>${t("신뢰도")}</span>
           <strong>${trustScore}%</strong>
         </div>
       </div>
       <div class="decision-card ${caution ? "is-caution" : ""}">
         <div>
-          <span>이럴 때 좋아요</span>
-          <strong>${place.bestFor || "잠깐 확인이 필요할 때"}</strong>
+          <span>${t("이럴 때 좋아요")}</span>
+          <strong>${escapeHtml(placeText(place, "bestFor") || t("잠깐 확인이 필요할 때"))}</strong>
         </div>
-        <p>${place.watchout || "운영 시간과 현장 안내를 먼저 확인해요."}</p>
+        <p>${escapeHtml(placeText(place, "watchout") || t("운영 시간과 현장 안내를 먼저 확인해요."))}</p>
       </div>
       <div class="signal-grid">
-        <div class="signal"><strong>${signals.charge}</strong><span>충전 제보</span></div>
-        <div class="signal"><strong>${signals.restroom}</strong><span>화장실 제보</span></div>
-        <div class="signal"><strong>${signals.rest}</strong><span>쉬기 제보</span></div>
-        <div class="signal"><strong>${signals.korean}</strong><span>한국어 신호</span></div>
-        <div class="signal"><strong>${signals.caution}</strong><span>응대 불편</span></div>
-        <div class="signal"><strong>${totalSignals(place)}</strong><span>누적 신호</span></div>
+        <div class="signal"><strong>${signals.charge}</strong><span>${t("충전 제보")}</span></div>
+        <div class="signal"><strong>${signals.restroom}</strong><span>${t("화장실 제보")}</span></div>
+        <div class="signal"><strong>${signals.rest}</strong><span>${t("쉬기 제보")}</span></div>
+        <div class="signal"><strong>${signals.korean}</strong><span>${t("한국어 신호")}</span></div>
+        <div class="signal"><strong>${signals.caution}</strong><span>${t("응대 불편")}</span></div>
+        <div class="signal"><strong>${totalSignals(place)}</strong><span>${t("누적 신호")}</span></div>
       </div>
       <ul class="note-list">
-        ${place.notes.map((note) => `<li>${note}</li>`).join("")}
+        ${placeNotes(place).map((note) => `<li>${escapeHtml(note)}</li>`).join("")}
       </ul>
       ${renderReportFeed(reports)}
     </section>
@@ -1116,11 +1619,11 @@ function renderPlaceCard(place) {
     <button type="button" class="place-card ${place.id === state.selectedId ? "is-selected" : ""}" data-place-id="${place.id}">
       <div class="place-title-row">
         <div>
-          <h3><span class="place-title-emoji" aria-hidden="true">${categoryEmoji(place.category)}</span>${place.name}</h3>
-          <p>${place.area} · ${getLiveTags(place).slice(0, 3).map((tag) => `${emojiForTag(tag)} ${tag}`).join(" · ")}</p>
-          <small class="card-meta">${distanceLabel(place)} · ${place.lastSeen || "최근 확인 필요"} · 신뢰 ${getTrustScore(place)}%</small>
+          <h3><span class="place-title-emoji" aria-hidden="true">${categoryEmoji(place.category)}</span>${escapeHtml(placeText(place, "name"))}</h3>
+          <p>${escapeHtml(placeText(place, "area"))} · ${getLiveTags(place).slice(0, 3).map((tag) => `${emojiForTag(tag)} ${escapeHtml(tagText(tag))}`).join(" · ")}</p>
+          <small class="card-meta">${escapeHtml(distanceLabel(place))} · ${escapeHtml(placeText(place, "lastSeen") || t("최근 확인 필요"))} · ${t("신뢰")} ${getTrustScore(place)}%</small>
         </div>
-        <span class="badge ${caution ? "caution" : "info"}">${getLiveTrust(place)}</span>
+        <span class="badge ${caution ? "caution" : "info"}">${escapeHtml(getLiveTrust(place))}</span>
       </div>
     </button>
   `;
@@ -1130,11 +1633,11 @@ function renderEmptyState() {
   const label = categoriesByKey.get(state.filter)?.label || "조건";
   return `
     <section class="place-card empty-card">
-      <h3>조건에 맞는 장소가 아직 없어요</h3>
-      <p>${state.query ? `"${escapeHtml(state.query)}" 검색 결과가 없어요. ` : ""}${label} 제보를 남기면 바로 지도에 반영돼요.</p>
+      <h3>${t("조건에 맞는 장소가 아직 없어요")}</h3>
+      <p>${state.query ? `"${escapeHtml(state.query)}" ${t("검색 결과가 없어요.")} ` : ""}${t(label)} ${t("제보를 남기면 바로 지도에 반영돼요.")}</p>
       <button class="primary-button" type="button" data-open-report>
         ${icon("plus")}
-        새 제보 남기기
+        ${t("새 제보 남기기")}
       </button>
     </section>
   `;
@@ -1142,12 +1645,12 @@ function renderEmptyState() {
 
 function renderScenarioRail() {
   return `
-    <div class="scenario-rail" aria-label="빠른 상황">
+    <div class="scenario-rail" aria-label="${escapeAttr(t("빠른 상황"))}">
       ${scenarios.map((scenario) => `
         <button type="button" class="scenario-chip ${state.activeScenario === scenario.key ? "is-active" : ""}" data-scenario="${scenario.key}">
           <span class="scenario-emoji" aria-hidden="true">${scenario.emoji}</span>
-          <span>${scenario.label}</span>
-          <small>${scenario.hint}</small>
+          <span>${t(scenario.label)}</span>
+          <small>${t(scenario.hint)}</small>
         </button>
       `).join("")}
     </div>
@@ -1159,8 +1662,8 @@ function renderReportFeed(reports) {
     return `
       <div class="live-feed">
         <div class="feed-head">
-          <strong>최근 제보</strong>
-          <span>아직 실시간 제보 없음</span>
+          <strong>${t("최근 제보")}</strong>
+          <span>${t("아직 실시간 제보 없음")}</span>
         </div>
       </div>
     `;
@@ -1169,18 +1672,18 @@ function renderReportFeed(reports) {
   return `
     <div class="live-feed">
       <div class="feed-head">
-        <strong>최근 제보</strong>
-        <span>바로 반영됨</span>
+        <strong>${t("최근 제보")}</strong>
+        <span>${t("바로 반영됨")}</span>
       </div>
       ${reports.map((report) => `
         <article class="feed-item">
           <div>
-            <p>${report.tags.map((tag) => `${emojiForTag(tag)} ${escapeHtml(tag)}`).join(" · ")}</p>
-            <small>${formatRecency(report.recency)} · 동의 ${report.agrees} · 허위 의심 ${report.disputes}</small>
+            <p>${report.tags.map((tag) => `${emojiForTag(tag)} ${escapeHtml(tagText(tag))}`).join(" · ")}</p>
+            <small>${formatRecency(report.recency)} · ${t("동의")} ${report.agrees} · ${t("허위 의심")} ${report.disputes}</small>
           </div>
           <div class="feed-actions">
-            <button type="button" data-report-id="${escapeAttr(report.id)}" data-report-vote="agree">동의</button>
-            <button type="button" data-report-id="${escapeAttr(report.id)}" data-report-vote="dispute">허위 의심</button>
+            <button type="button" data-report-id="${escapeAttr(report.id)}" data-report-vote="agree">${t("동의")}</button>
+            <button type="button" data-report-id="${escapeAttr(report.id)}" data-report-vote="dispute">${t("허위 의심")}</button>
           </div>
         </article>
       `).join("")}
@@ -1189,7 +1692,7 @@ function renderReportFeed(reports) {
 }
 
 function filterChip(item) {
-  return `<button type="button" class="chip ${state.filter === item.key ? "is-active" : ""}" data-filter="${item.key}"><span class="chip-emoji" aria-hidden="true">${item.emoji}</span><span>${item.label}</span></button>`;
+  return `<button type="button" class="chip ${state.filter === item.key ? "is-active" : ""}" data-filter="${item.key}"><span class="chip-emoji" aria-hidden="true">${item.emoji}</span><span>${t(item.label)}</span></button>`;
 }
 
 function renderMarkers() {
@@ -1261,7 +1764,7 @@ function applyScenario(scenarioKey) {
     rememberPlace(list[0].id);
     map.setView([list[0].lat, list[0].lng], 14);
   }
-  showToast(`${scenario.label} 상황으로 좁혔어.`);
+  showToast(`${t(scenario.label)} ${t("상황으로 좁혔어.")}`);
   renderMapQuickRail();
   renderSheet();
   renderMarkers();
@@ -1357,6 +1860,7 @@ function syncSelectedWithFiltered() {
 
 function getFilteredPlaces() {
   const cacheKey = [
+    state.language,
     state.filter,
     state.query,
     state.activeScenario,
@@ -1378,7 +1882,16 @@ function getFilteredPlaces() {
       liveTags.some((tag) => tag.includes(labelForFilter(state.filter)));
     const queryMatch =
       !normalized ||
-      `${place.name} ${place.area} ${place.kind} ${liveTags.join(" ")}`.toLowerCase().includes(normalized);
+      [
+        place.name,
+        place.area,
+        place.kind,
+        placeText(place, "name"),
+        placeText(place, "area"),
+        placeText(place, "kind"),
+        liveTags.join(" "),
+        liveTags.map(tagText).join(" ")
+      ].join(" ").toLowerCase().includes(normalized);
     return filterMatch && queryMatch;
   });
   filteredPlacesCacheKey = cacheKey;
@@ -1389,9 +1902,9 @@ function getFilteredPlaces() {
 function refreshStatus() {
   const visible = getFilteredPlaces();
   const scenario = scenariosByKey.get(state.activeScenario);
-  statusPill.textContent = scenario ? `${scenario.emoji} ${scenario.label} · ${visible.length}곳` : `📍 ${visible.length}곳 표시 · 바로 제보`;
+  statusPill.textContent = scenario ? `${scenario.emoji} ${t(scenario.label)} · ${countLabel(visible.length, "곳")}` : `📍 ${countLabel(visible.length, "곳")} ${t("표시")} · ${t("바로 제보")}`;
   if (state.userPosition && !scenario) {
-    statusPill.textContent = `📍 내 위치 기준 · ${visible.length}곳`;
+    statusPill.textContent = `📍 ${t("내 위치 기준")} · ${countLabel(visible.length, "곳")}`;
   }
 }
 
@@ -1399,18 +1912,18 @@ function renderContextTools() {
   const labels = [];
   const scenario = scenariosByKey.get(state.activeScenario);
   const filter = state.filter !== "all" ? categoriesByKey.get(state.filter) : null;
-  if (scenario) labels.push(`${scenario.emoji} ${scenario.label}`);
-  if (filter && !scenario) labels.push(`${filter.emoji} ${filter.label}`);
-  if (state.query) labels.push(`검색 "${escapeHtml(state.query)}"`);
-  if (state.userPosition) labels.push("내 위치 기준");
+  if (scenario) labels.push(`${scenario.emoji} ${t(scenario.label)}`);
+  if (filter && !scenario) labels.push(`${filter.emoji} ${t(filter.label)}`);
+  if (state.query) labels.push(`${t("검색")} "${escapeHtml(state.query)}"`);
+  if (state.userPosition) labels.push(t("내 위치 기준"));
   if (!labels.length) return "";
 
   return `
-    <div class="context-tools" aria-label="현재 보기 조건">
+    <div class="context-tools" aria-label="${escapeAttr(t("현재 보기 조건"))}">
       <span>${labels.join(" · ")}</span>
       <div>
-        ${(state.filter !== "all" || state.query || state.activeScenario) ? `<button type="button" data-reset-context>조건 해제</button>` : ""}
-        ${state.userPosition ? `<button type="button" data-clear-location>위치 해제</button>` : ""}
+        ${(state.filter !== "all" || state.query || state.activeScenario) ? `<button type="button" data-reset-context>${t("조건 해제")}</button>` : ""}
+        ${state.userPosition ? `<button type="button" data-clear-location>${t("위치 해제")}</button>` : ""}
       </div>
     </div>
   `;
@@ -1467,7 +1980,7 @@ async function searchAddressFromInput() {
       countrycodes: "jp",
       limit: "6",
       addressdetails: "1",
-      "accept-language": "ko"
+      "accept-language": isJapanese() ? "ja" : "ko"
     });
     const response = await fetch(`${geocodeSearchUrl}?${params.toString()}`, {
       headers: { Accept: "application/json" }
@@ -1500,7 +2013,7 @@ function renderAddressResults() {
   if (!addressResults) return;
   if (state.addressLoading) {
     addressResults.hidden = false;
-    addressResults.innerHTML = `<div class="address-result is-muted">주소를 찾는 중...</div>`;
+    addressResults.innerHTML = `<div class="address-result is-muted">${t("주소를 찾는 중...")}</div>`;
     return;
   }
 
@@ -1512,7 +2025,7 @@ function renderAddressResults() {
 
   addressResults.hidden = false;
   addressResults.innerHTML = `
-    ${state.addressMessage ? `<div class="address-result-hint">${escapeHtml(state.addressMessage)}</div>` : ""}
+    ${state.addressMessage ? `<div class="address-result-hint">${escapeHtml(t(state.addressMessage))}</div>` : ""}
     ${state.addressCandidates.map((candidate, index) => `
       <button type="button" class="address-result" data-address-index="${index}">
         <strong>${escapeHtml(candidate.title)}</strong>
@@ -1558,7 +2071,7 @@ function normalizeAddressCandidate(item) {
     item?.address?.village ||
     item?.address?.county ||
     item?.address?.state ||
-    "검색한 위치";
+    t("검색한 위치");
 
   return {
     id: safeId(`addr-${item?.osm_type || "point"}-${item?.osm_id || `${lat.toFixed(5)}-${lng.toFixed(5)}`}`, createId()),
@@ -1649,12 +2162,16 @@ async function selectPointForReport(lat, lng, label) {
 
   if (locationPickPending) return;
   locationPickPending = true;
-  showToast(`${label} 주소를 확인하는 중이야.`);
+  showToast(isJapanese() ? `${t(label)}${t("주소를 확인하는 중이야.")}` : `${label} 주소를 확인하는 중이야.`);
 
   try {
     const candidate = await reverseGeocodePoint(lat, lng).catch(() => null);
     const place = upsertCustomPlace(candidate || fallbackCandidateForPoint(lat, lng, label));
-    activateReportPlace(place, 16, `${label}${objectParticle(label)} 제보 장소로 잡았어.`);
+    activateReportPlace(
+      place,
+      16,
+      isJapanese() ? `${t(label)}${t("제보 장소로 잡았어.")}` : `${label}${objectParticle(label)} 제보 장소로 잡았어.`
+    );
   } finally {
     locationPickPending = false;
   }
@@ -1666,7 +2183,7 @@ async function reverseGeocodePoint(lat, lng) {
     lat: String(lat),
     lon: String(lng),
     addressdetails: "1",
-    "accept-language": "ko"
+    "accept-language": isJapanese() ? "ja" : "ko"
   });
   const response = await fetch(`${reverseGeocodeUrl}?${params.toString()}`, {
     headers: { Accept: "application/json" }
@@ -1679,7 +2196,7 @@ async function reverseGeocodePoint(lat, lng) {
 function fallbackCandidateForPoint(lat, lng, label) {
   return {
     id: safeId(`addr-point-${lat.toFixed(5)}-${lng.toFixed(5)}`, createId()),
-    title: `${label} 선택 위치`,
+    title: isJapanese() ? `${t(label)} ${t("선택 위치")}` : `${label} 선택 위치`,
     address: `${lat.toFixed(5)}, ${lng.toFixed(5)}`,
     lat,
     lng
@@ -1786,9 +2303,9 @@ function labelForFilter(filter) {
 
 function renderMapQuickRail() {
   mapQuickRail.innerHTML = scenarios.map((scenario) => `
-    <button type="button" class="quick-chip ${state.activeScenario === scenario.key ? "is-active" : ""}" data-quick-scenario="${scenario.key}" aria-label="${escapeAttr(scenario.label)}">
+    <button type="button" class="quick-chip ${state.activeScenario === scenario.key ? "is-active" : ""}" data-quick-scenario="${scenario.key}" aria-label="${escapeAttr(t(scenario.label))}">
       <span aria-hidden="true">${scenario.emoji}</span>
-      <strong>${scenario.label}</strong>
+      <strong>${t(scenario.label)}</strong>
     </button>
   `).join("");
 }
@@ -1863,7 +2380,7 @@ function updateUserLocationLayer(lat, lng, openPopup = false) {
     fillColor: "#13a77a",
     fillOpacity: 0.95
   }).addTo(map);
-  userLocationLayer.bindPopup("내 위치");
+  userLocationLayer.bindPopup(t("내 위치"));
   if (openPopup) userLocationLayer.openPopup();
 }
 
@@ -1873,8 +2390,8 @@ function distanceScore(place) {
 }
 
 function distanceLabel(place) {
-  if (!state.userPosition) return place.walk || "거리 확인";
-  return `${formatDistance(distanceScore(place))} · ${place.walk || "도보 확인"}`;
+  if (!state.userPosition) return placeText(place, "walk") || t("거리 확인");
+  return `${formatDistance(distanceScore(place))} · ${placeText(place, "walk") || t("도보 확인")}`;
 }
 
 function distanceInMeters(lat1, lng1, lat2, lng2) {
@@ -1889,7 +2406,7 @@ function distanceInMeters(lat1, lng1, lat2, lng2) {
 }
 
 function formatDistance(meters) {
-  if (!Number.isFinite(meters)) return "거리 확인";
+  if (!Number.isFinite(meters)) return t("거리 확인");
   if (meters < 1000) return `${Math.max(10, Math.round(meters / 10) * 10)}m`;
   return `${(meters / 1000).toFixed(meters < 10000 ? 1 : 0)}km`;
 }
@@ -1930,6 +2447,8 @@ function icon(name) {
     "cloud-rain": `<path d="M17 18a5 5 0 0 0 0-10 7 7 0 0 0-13 3 4 4 0 0 0 1 7"/><path d="M8 19v2M12 19v2M16 19v2"/>`,
     languages: `<path d="M5 8h8"/><path d="M9 4v4c0 4-2 7-5 9"/><path d="M7 12c1 2 3 4 6 5"/><path d="M15 21l4-9 4 9"/><path d="M17 17h4"/>`,
     "triangle-alert": `<path d="M12 3 2 21h20L12 3Z"/><path d="M12 9v5M12 17h.01"/>`,
+    search: `<path d="m21 21-4.3-4.3"/><circle cx="11" cy="11" r="7"/>`,
+    map: `<path d="M9 18 3 21V6l6-3 6 3 6-3v15l-6 3-6-3Z"/><path d="M9 3v15M15 6v15"/>`,
     crosshair: `<circle cx="12" cy="12" r="6"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/>`,
     "locate-fixed": `<line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="3"/>`
   };
@@ -1973,7 +2492,7 @@ function getVisibleReportsForPlace(placeId) {
 
 function getPlaceDerived(place) {
   const cached = derivedPlaceCache.get(place.id);
-  if (cached?.version === reportVersion) return cached;
+  if (cached?.version === reportVersion && cached?.language === state.language) return cached;
 
   const reports = getVisibleReportsForPlace(place.id);
   const signals = { ...place.signals };
@@ -1991,11 +2510,12 @@ function getPlaceDerived(place) {
   const agrees = reports.reduce((sum, report) => sum + report.agrees, 0);
   const derived = {
     version: reportVersion,
+    language: state.language,
     reports,
     signals,
     tags: [...tags].slice(0, 8),
     totalSignals: total,
-    liveTrust: reports.length ? `${reports.length}건 즉시 반영` : place.trust,
+    liveTrust: reports.length ? countLabel(reports.length, "건 즉시 반영") : placeText(place, "trust"),
     trustScore: Math.max(48, Math.min(98, Math.round(62 + Math.min(total, 42) * 0.7 + agrees * 3 - disputes * 5)))
   };
   derivedPlaceCache.set(place.id, derived);
@@ -2080,7 +2600,7 @@ function rememberPlace(placeId) {
 }
 
 function shortPlaceName(name) {
-  const text = String(name || "장소").trim();
+  const text = String(name || t("장소")).trim();
   return text.length > 10 ? `${text.slice(0, 10)}...` : text;
 }
 
@@ -2101,12 +2621,12 @@ function createId() {
 }
 
 function formatRecency(recency) {
-  return {
+  return t({
     today: "오늘 확인",
     week: "최근 1주일",
     month: "최근 1개월",
     old: "이전 기억"
-  }[recency] || "방문 시점 미상";
+  }[recency] || "방문 시점 미상");
 }
 
 function mapsUrl(place) {
@@ -2126,8 +2646,64 @@ function escapeAttr(value) {
   return escapeHtml(value).replaceAll("`", "&#96;");
 }
 
+function readLanguagePreference() {
+  const stored = readJson(languageStorageKey, "ko");
+  return supportedLanguages.has(stored) ? stored : "ko";
+}
+
+function isJapanese() {
+  return currentLanguage === "ja";
+}
+
+function t(value) {
+  const text = String(value ?? "");
+  if (!isJapanese()) return text;
+  return jaText[text] || translatePattern(text);
+}
+
+function placeText(place, field) {
+  const text = String(place?.[field] || "");
+  if (!isJapanese()) return text;
+  const translated = placeJapanese[place?.id]?.[field];
+  return typeof translated === "string" ? translated : t(text);
+}
+
+function placeNotes(place) {
+  if (!isJapanese()) return Array.isArray(place.notes) ? place.notes : [];
+  const translated = placeJapanese[place?.id]?.notes;
+  if (Array.isArray(translated)) return translated;
+  return Array.isArray(place.notes) ? place.notes.map(t) : [];
+}
+
+function tagText(tag) {
+  return t(tag);
+}
+
+function countLabel(count, unit) {
+  const number = Number(count) || 0;
+  if (!isJapanese()) return `${number}${unit}`;
+  if (unit === "곳") return `${number}か所`;
+  if (unit === "건 즉시 반영") return `${number}件すぐ反映`;
+  return `${number}${t(unit)}`;
+}
+
+function translatePattern(text) {
+  if (!text) return "";
+  const walkMatch = text.match(/^도보\s*(\d+)분$/);
+  if (walkMatch) return `徒歩${walkMatch[1]}分`;
+  const recentWeekMatch = text.match(/^최근\s*(\d+)주(?:일)?$/);
+  if (recentWeekMatch) return `直近${recentWeekMatch[1]}週間`;
+  const recentMonthMatch = text.match(/^최근\s*(\d+)개월$/);
+  if (recentMonthMatch) return `直近${recentMonthMatch[1]}か月`;
+  const placesMatch = text.match(/^(\d+)곳$/);
+  if (placesMatch) return `${placesMatch[1]}か所`;
+  const reportMatch = text.match(/^(\d+)건 즉시 반영$/);
+  if (reportMatch) return `${reportMatch[1]}件すぐ反映`;
+  return text;
+}
+
 function showToast(message) {
-  toast.textContent = message;
+  toast.textContent = t(message);
   toast.classList.add("is-visible");
   window.clearTimeout(showToast.timer);
   showToast.timer = window.setTimeout(() => {
