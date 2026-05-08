@@ -7,10 +7,19 @@
 /contact/*
   Cache-Control: public, max-age=0, must-revalidate
 
+/cities/*
+  Cache-Control: public, max-age=0, must-revalidate
+
+/editorial/*
+  Cache-Control: public, max-age=0, must-revalidate
+
 /guide/*
   Cache-Control: public, max-age=0, must-revalidate
 
 /policy/*
+  Cache-Control: public, max-age=0, must-revalidate
+
+/routes/*
   Cache-Control: public, max-age=0, must-revalidate
 
 /privacy/*
