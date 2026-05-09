@@ -1,5 +1,5 @@
 name = "sumimap"
 pages_build_output_dir = "site"
 
-# Cloudflare Pages 설정에서 D1 database를 REPORTS_DB 이름으로 바인딩하면
-# functions/api/reports.js가 사용자 제보를 공유 데이터로 저장합니다.
+# Bind a D1 database as REPORTS_DB in Cloudflare Pages settings.
+# The report API in functions/api/reports.js stores shared public reports there.
