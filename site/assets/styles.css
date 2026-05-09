@@ -2647,11 +2647,39 @@ textarea:focus-visible {
 /* Mobile sheet control */
 .sheet-grip {
   display: block;
+  position: relative;
+  width: 92px;
+  height: 32px;
+  margin: -4px auto 6px;
   padding: 0;
   border: 0;
+  border-radius: 999px;
+  background: transparent;
   appearance: none;
-  cursor: pointer;
+  cursor: grab;
   touch-action: none;
+}
+
+.sheet-grip::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 52px;
+  height: 5px;
+  border-radius: 999px;
+  background: #c8d2d4;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.8), inset 0 0 0 1px rgba(72, 91, 98, 0.08);
+  transform: translate(-50%, -50%);
+}
+
+.sheet-grip:active {
+  cursor: grabbing;
+}
+
+.sheet-grip:focus-visible {
+  outline: 3px solid rgba(19, 167, 122, 0.28);
+  outline-offset: 2px;
 }
 
 .sheet-head[data-sheet-toggle] {
@@ -2666,9 +2694,9 @@ textarea:focus-visible {
   }
 
   .bottom-sheet.is-collapsed {
-    max-height: 30px !important;
+    max-height: 44px !important;
     overflow: hidden;
-    padding: 7px 14px 8px !important;
+    padding: 6px 14px 6px !important;
   }
 
   .bottom-sheet.is-collapsed .sheet-grip {
@@ -2713,7 +2741,7 @@ textarea:focus-visible {
 
 @media (max-width: 390px) {
   .bottom-sheet.is-collapsed {
-    max-height: 30px !important;
+    max-height: 44px !important;
   }
 
   .bottom-sheet.is-expanded {
@@ -3881,8 +3909,12 @@ html {
 }
 
 .sheet-grip {
-  width: 44px;
-  height: 5px;
+  width: 92px;
+  height: 32px;
+  background: transparent;
+}
+
+.sheet-grip::after {
   background: #a9babd;
 }
 
@@ -3979,8 +4011,8 @@ html {
 
 @media (max-width: 779px) {
   .bottom-sheet.is-collapsed {
-    max-height: 34px !important;
-    padding: 9px 14px 10px !important;
+    max-height: 44px !important;
+    padding: 6px 14px !important;
   }
 
   .bottom-sheet.is-expanded {

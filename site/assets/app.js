@@ -1293,6 +1293,8 @@ let filteredPlacesCacheKey = "";
 let filteredPlacesCache = [];
 let started = false;
 let sheetPointerStartY = null;
+let sheetPointerStartX = null;
+let sheetPointerMoved = false;
 let ignoreNextSheetToggleClick = false;
 let addressSearchSeq = 0;
 let locationPickPending = false;
@@ -1557,16 +1559,48 @@ function bindEvents() {
   });
 
   sheet.addEventListener("pointerdown", (event) => {
-    if (!event.target.closest("[data-sheet-toggle]")) return;
+    const handle = event.target.closest("[data-sheet-toggle]");
+    if (!handle) return;
     sheetPointerStartY = event.clientY;
+    sheetPointerStartX = event.clientX;
+    sheetPointerMoved = false;
+    try {
+      handle.setPointerCapture?.(event.pointerId);
+    } catch {
+      // Synthetic pointer events used by some test runners do not own capture.
+    }
+  });
+
+  sheet.addEventListener("pointermove", (event) => {
+    if (sheetPointerStartY === null || sheetPointerStartX === null) return;
+
+    const deltaY = event.clientY - sheetPointerStartY;
+    const deltaX = event.clientX - sheetPointerStartX;
+    if (Math.abs(deltaY) > 6 || Math.abs(deltaX) > 6) {
+      sheetPointerMoved = true;
+    }
+    if (Math.abs(deltaY) > 12 && Math.abs(deltaY) > Math.abs(deltaX)) {
+      event.preventDefault();
+    }
   });
 
   sheet.addEventListener("pointerup", (event) => {
     if (sheetPointerStartY === null) return;
 
     const deltaY = event.clientY - sheetPointerStartY;
+    const moved = sheetPointerMoved;
     sheetPointerStartY = null;
-    if (Math.abs(deltaY) < 28) return;
+    sheetPointerStartX = null;
+    sheetPointerMoved = false;
+    if (Math.abs(deltaY) < 28) {
+      if (moved) {
+        ignoreNextSheetToggleClick = true;
+        window.setTimeout(() => {
+          ignoreNextSheetToggleClick = false;
+        }, 0);
+      }
+      return;
+    }
 
     setSheetMode(deltaY > 0 ? "collapsed" : "expanded");
     ignoreNextSheetToggleClick = true;
@@ -1577,6 +1611,8 @@ function bindEvents() {
 
   sheet.addEventListener("pointercancel", () => {
     sheetPointerStartY = null;
+    sheetPointerStartX = null;
+    sheetPointerMoved = false;
   });
 
   placeSearch.addEventListener("input", (event) => {
