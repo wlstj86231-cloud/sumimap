@@ -1312,6 +1312,7 @@ let reportSyncInFlight = false;
 let reportSyncAvailable = true;
 let reportLastFailureAt = 0;
 let reportServerFingerprint = "";
+let searchRenderFrame = 0;
 
 startWhenReady();
 
@@ -1658,10 +1659,7 @@ function bindEvents() {
     addressSearchButton.disabled = false;
     updateSearchClear();
     renderAddressResults();
-    syncSelectedWithFiltered();
-    renderSheet();
-    renderMarkers();
-    refreshStatus();
+    scheduleSearchRender();
   });
 
   placeSearch.addEventListener("keydown", (event) => {
@@ -3232,6 +3230,18 @@ function syncSelectedWithFiltered() {
   if (!list.some((place) => place.id === state.selectedId)) {
     state.selectedId = list[0].id;
   }
+}
+
+function scheduleSearchRender() {
+  if (searchRenderFrame) return;
+  const schedule = window.requestAnimationFrame || ((callback) => window.setTimeout(callback, 16));
+  searchRenderFrame = schedule(() => {
+    searchRenderFrame = 0;
+    syncSelectedWithFiltered();
+    renderSheet();
+    renderMarkers();
+    refreshStatus();
+  });
 }
 
 function getFilteredPlaces() {

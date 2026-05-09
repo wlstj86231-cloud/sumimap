@@ -1,8 +1,8 @@
-const CACHE_NAME = "sumimap-v44-perf";
+const CACHE_NAME = "sumimap-v45-perf";
 const LOCAL_ASSETS = [
   "/",
-  "/assets/styles.css?v=20260509-perf2",
-  "/assets/app.js?v=20260509-perf2",
+  "/assets/styles.css?v=20260509-perf3",
+  "/assets/app.js?v=20260509-perf3",
   "/assets/vendor/leaflet/leaflet.css",
   "/assets/vendor/leaflet/leaflet.js",
   "/assets/vendor/leaflet/images/layers.png",
@@ -33,6 +33,7 @@ self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
   const url = new URL(event.request.url);
   if (url.origin !== location.origin) return;
+  if (url.pathname.startsWith("/api/")) return;
 
   event.respondWith(
     caches.match(event.request).then((cached) => {
