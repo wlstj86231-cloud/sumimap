@@ -2648,9 +2648,9 @@ textarea:focus-visible {
 .sheet-grip {
   display: block;
   position: relative;
-  width: 92px;
-  height: 32px;
-  margin: -4px auto 6px;
+  width: 112px;
+  height: 44px;
+  margin: -8px auto 0;
   padding: 0;
   border: 0;
   border-radius: 999px;
@@ -2665,7 +2665,7 @@ textarea:focus-visible {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 52px;
+  width: 58px;
   height: 5px;
   border-radius: 999px;
   background: #c8d2d4;
@@ -2686,6 +2686,14 @@ textarea:focus-visible {
   cursor: pointer;
 }
 
+.bottom-sheet {
+  transform: translateY(var(--sheet-drag-offset, 0));
+}
+
+.bottom-sheet.is-dragging {
+  transition: none !important;
+}
+
 @media (max-width: 779px) {
   .bottom-sheet {
     transition: max-height 0.22s ease, padding 0.22s ease, transform 0.22s ease;
@@ -2694,9 +2702,9 @@ textarea:focus-visible {
   }
 
   .bottom-sheet.is-collapsed {
-    max-height: 44px !important;
+    max-height: 56px !important;
     overflow: hidden;
-    padding: 6px 14px 6px !important;
+    padding: 6px 14px !important;
   }
 
   .bottom-sheet.is-collapsed .sheet-grip {
@@ -2741,7 +2749,7 @@ textarea:focus-visible {
 
 @media (max-width: 390px) {
   .bottom-sheet.is-collapsed {
-    max-height: 44px !important;
+    max-height: 56px !important;
   }
 
   .bottom-sheet.is-expanded {
@@ -3909,8 +3917,8 @@ html {
 }
 
 .sheet-grip {
-  width: 92px;
-  height: 32px;
+  width: 112px;
+  height: 44px;
   background: transparent;
 }
 
@@ -4011,7 +4019,7 @@ html {
 
 @media (max-width: 779px) {
   .bottom-sheet.is-collapsed {
-    max-height: 44px !important;
+    max-height: 56px !important;
     padding: 6px 14px !important;
   }
 

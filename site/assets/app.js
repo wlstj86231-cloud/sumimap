@@ -214,6 +214,7 @@ const jaText = {
   "간단 제보": "かんたん投稿",
   "주소를 검색해 장소를 먼저 잡고, 확인한 신호만 눌러요.": "住所を検索して場所を決め、確認したサインだけを押してください。",
   "지도 보기": "地図を見る",
+  "패널 열고 닫기": "パネルを開閉",
   "장소": "場所",
   "지도 중심": "地図の中心",
   "내 위치": "現在地",
@@ -1294,6 +1295,7 @@ let filteredPlacesCache = [];
 let started = false;
 let sheetPointerStartY = null;
 let sheetPointerStartX = null;
+let sheetPointerStartMode = "";
 let sheetPointerMoved = false;
 let ignoreNextSheetToggleClick = false;
 let addressSearchSeq = 0;
@@ -1563,7 +1565,10 @@ function bindEvents() {
     if (!handle) return;
     sheetPointerStartY = event.clientY;
     sheetPointerStartX = event.clientX;
+    sheetPointerStartMode = state.sheetMode;
     sheetPointerMoved = false;
+    sheet.classList.add("is-dragging");
+    sheet.style.setProperty("--sheet-drag-offset", "0px");
     try {
       handle.setPointerCapture?.(event.pointerId);
     } catch {
@@ -1581,6 +1586,7 @@ function bindEvents() {
     }
     if (Math.abs(deltaY) > 12 && Math.abs(deltaY) > Math.abs(deltaX)) {
       event.preventDefault();
+      previewSheetDrag(deltaY);
     }
   });
 
@@ -1589,9 +1595,7 @@ function bindEvents() {
 
     const deltaY = event.clientY - sheetPointerStartY;
     const moved = sheetPointerMoved;
-    sheetPointerStartY = null;
-    sheetPointerStartX = null;
-    sheetPointerMoved = false;
+    clearSheetDragState();
     if (Math.abs(deltaY) < 28) {
       if (moved) {
         ignoreNextSheetToggleClick = true;
@@ -1610,9 +1614,7 @@ function bindEvents() {
   });
 
   sheet.addEventListener("pointercancel", () => {
-    sheetPointerStartY = null;
-    sheetPointerStartX = null;
-    sheetPointerMoved = false;
+    clearSheetDragState();
   });
 
   placeSearch.addEventListener("input", (event) => {
@@ -1857,6 +1859,23 @@ function toggleSheetMode() {
   setSheetMode(state.sheetMode === "collapsed" ? "expanded" : "collapsed");
 }
 
+function previewSheetDrag(deltaY) {
+  const maxOffset = 88;
+  const offset = sheetPointerStartMode === "collapsed"
+    ? Math.min(0, Math.max(deltaY, -maxOffset))
+    : Math.max(0, Math.min(deltaY, maxOffset));
+  sheet.style.setProperty("--sheet-drag-offset", `${Math.round(offset)}px`);
+}
+
+function clearSheetDragState() {
+  sheetPointerStartY = null;
+  sheetPointerStartX = null;
+  sheetPointerStartMode = "";
+  sheetPointerMoved = false;
+  sheet.classList.remove("is-dragging");
+  sheet.style.removeProperty("--sheet-drag-offset");
+}
+
 function setSheetMode(mode) {
   state.sheetMode = mode === "collapsed" ? "collapsed" : "expanded";
   syncSheetMode();
@@ -2003,7 +2022,7 @@ function renderNearby() {
   `;
 
   return `
-    <button class="sheet-grip" type="button" data-sheet-toggle aria-label="${escapeAttr(t("지도 보기"))}"></button>
+    <button class="sheet-grip" type="button" data-sheet-toggle aria-label="${escapeAttr(t("패널 열고 닫기"))}"></button>
     ${introHead}
     ${renderContextTools()}
     ${place ? renderPlaceBrief(place) : renderMapFirstHint(list)}
@@ -2012,7 +2031,7 @@ function renderNearby() {
 
 function renderFilters() {
   return `
-    <button class="sheet-grip" type="button" data-sheet-toggle aria-label="${escapeAttr(t("지도 보기"))}"></button>
+    <button class="sheet-grip" type="button" data-sheet-toggle aria-label="${escapeAttr(t("패널 열고 닫기"))}"></button>
     <div class="sheet-head" data-sheet-toggle>
       <div>
         <h2>${t("필터")}</h2>
@@ -2042,7 +2061,7 @@ function renderReport() {
   const mainTags = ["charge", "restroom", "rest", "korean", "rain", "caution"];
   const extraTags = reportTags.filter((tag) => !mainTags.includes(tag.key));
   return `
-    <button class="sheet-grip" type="button" data-sheet-toggle aria-label="${escapeAttr(t("지도 보기"))}"></button>
+    <button class="sheet-grip" type="button" data-sheet-toggle aria-label="${escapeAttr(t("패널 열고 닫기"))}"></button>
     <div class="sheet-head" data-sheet-toggle>
       <div>
         <h2>${t("간단 제보")}</h2>
@@ -2124,7 +2143,7 @@ function renderSaved() {
     .filter((place) => place && !state.saved.includes(place.id))
     .slice(0, 6);
   return `
-    <button class="sheet-grip" type="button" data-sheet-toggle aria-label="${escapeAttr(t("지도 보기"))}"></button>
+    <button class="sheet-grip" type="button" data-sheet-toggle aria-label="${escapeAttr(t("패널 열고 닫기"))}"></button>
     <div class="sheet-head" data-sheet-toggle>
       <div>
         <h2>${t("저장한 곳")}</h2>
@@ -2150,7 +2169,7 @@ function renderSaved() {
 
 function renderGuide() {
   return `
-    <button class="sheet-grip" type="button" data-sheet-toggle aria-label="${escapeAttr(t("지도 보기"))}"></button>
+    <button class="sheet-grip" type="button" data-sheet-toggle aria-label="${escapeAttr(t("패널 열고 닫기"))}"></button>
     <div class="sheet-head" data-sheet-toggle>
       <div>
         <h2>${t("스미맵 기준")}</h2>
