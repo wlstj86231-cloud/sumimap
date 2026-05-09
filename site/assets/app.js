@@ -1314,6 +1314,9 @@ let reportLastFailureAt = 0;
 let reportServerFingerprint = "";
 let searchRenderFrame = 0;
 let mapResizeTimer = 0;
+let sheetHtmlCache = "";
+let markerRenderKey = "";
+let quickRailHtmlCache = "";
 
 startWhenReady();
 
@@ -2030,16 +2033,21 @@ function applyEntryParams() {
 }
 
 function renderSheet() {
+  let nextHtml = "";
   if (state.activePanel === "filters") {
-    sheet.innerHTML = renderFilters();
+    nextHtml = renderFilters();
   } else if (state.activePanel === "report") {
-    sheet.innerHTML = renderReport();
+    nextHtml = renderReport();
   } else if (state.activePanel === "saved") {
-    sheet.innerHTML = renderSaved();
+    nextHtml = renderSaved();
   } else if (state.activePanel === "guide") {
-    sheet.innerHTML = renderGuide();
+    nextHtml = renderGuide();
   } else {
-    sheet.innerHTML = renderNearby();
+    nextHtml = renderNearby();
+  }
+  if (sheetHtmlCache !== nextHtml) {
+    sheet.innerHTML = nextHtml;
+    sheetHtmlCache = nextHtml;
   }
   syncSheetMode();
 }
@@ -2691,6 +2699,9 @@ function filterChip(item) {
 
 function renderMarkers() {
   const visiblePlaces = getFilteredPlaces();
+  const nextRenderKey = `${state.selectedId}|${visiblePlaces.map((place) => `${place.id}:${place.category}`).join("|")}`;
+  if (markerRenderKey === nextRenderKey) return;
+  markerRenderKey = nextRenderKey;
   const visibleIds = new Set(visiblePlaces.map((place) => place.id));
 
   markers.forEach((marker, placeId) => {
@@ -3741,12 +3752,16 @@ function labelForFilter(filter) {
 }
 
 function renderMapQuickRail() {
-  mapQuickRail.innerHTML = scenarios.map((scenario) => `
+  const nextHtml = scenarios.map((scenario) => `
     <button type="button" class="quick-chip ${state.activeScenario === scenario.key ? "is-active" : ""}" data-quick-scenario="${scenario.key}" aria-label="${escapeAttr(t(scenario.label))}">
       <span aria-hidden="true">${scenario.emoji}</span>
       <strong>${t(scenario.label)}</strong>
     </button>
   `).join("");
+  if (quickRailHtmlCache !== nextHtml) {
+    mapQuickRail.innerHTML = nextHtml;
+    quickRailHtmlCache = nextHtml;
+  }
 }
 
 function sortPlacesForContext(list) {
