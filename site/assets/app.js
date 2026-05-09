@@ -3894,20 +3894,20 @@ function emojiForTag(label) {
 function siblingCopy(key) {
   const ko = {
     kicker: "스미맵 패밀리",
-    title: "세이프루트",
+    title: "트립마킹",
     desc: "해외에서 소매치기, 날치기, 관광지 스캠처럼 치안 주의가 필요한 길목을 사용자 제보와 도시별 주의 신호로 빠르게 보여주는 형제 지도입니다.",
     badge: "치안 주의 지도",
-    note: "스미맵이 일본 생활 편의를 맡고, 세이프루트는 해외 이동 중 피해야 할 길목과 대처 루틴을 맡습니다.",
-    cta: "세이프루트 열기",
+    note: "스미맵이 일본 생활 편의를 맡고, 트립마킹은 해외 이동 중 피해야 할 길목과 대처 루틴을 맡습니다.",
+    cta: "트립마킹 열기",
     close: "닫기"
   };
   const ja = {
     kicker: "すみまっぷ ふぁみりー",
-    title: "せいふるーと",
+    title: "とりっぷまーきんぐ",
     desc: "かいがいで すり、ひったくり、かんこうち の すきゃむ など、ちあん の ちゅうい が ひつよう な みち を じょうほう から はやく みられる きょうだい ちずです。",
     badge: "ちあん ちゅうい ちず",
-    note: "すみまっぷ は にほん せいかつ の べんり を、せいふるーと は かいがい いどう の ちゅうい と たいおう を たすけます。",
-    cta: "せいふるーと を ひらく",
+    note: "すみまっぷ は にほん せいかつ の べんり を、とりっぷまーきんぐ は かいがい いどう の ちゅうい と たいおう を たすけます。",
+    cta: "とりっぷまーきんぐ を ひらく",
     close: "とじる"
   };
   return (isJapanese() ? ja : ko)[key] || ko[key] || "";
@@ -3948,7 +3948,7 @@ function renderSiblingDialog() {
         <div class="sibling-body">
           <span class="sibling-badge">路 ${escapeHtml(siblingCopy("badge"))}</span>
           <p class="sibling-note">${escapeHtml(siblingCopy("note"))}</p>
-          <a class="sibling-link" href="https://saferoute-4hu.pages.dev/" rel="noopener">
+          <a class="sibling-link" href="https://tripmarking.com/" rel="noopener">
             <span>${escapeHtml(siblingCopy("cta"))}</span>
             <span aria-hidden="true">↗</span>
           </a>
