@@ -1341,7 +1341,7 @@ function init() {
   refreshStatus();
   setSearchPanel(false);
   registerServiceWorkerWhenIdle();
-  startReportSync();
+  runAfterFirstPaint(startReportSync, 1200, 2200);
 }
 
 function bootMap() {
@@ -1375,12 +1375,9 @@ function setBaseMapLanguage(language, notify = true) {
 }
 
 function scheduleVectorMapUpgrade(mapLanguage, seq) {
+  if (navigator.connection?.saveData) return;
   const upgrade = () => upgradeToVectorBaseMap(mapLanguage, seq);
-  if ("requestIdleCallback" in window) {
-    window.requestIdleCallback(upgrade, { timeout: 2500 });
-  } else {
-    window.setTimeout(upgrade, 900);
-  }
+  runAfterFirstPaint(upgrade, 2400, 5200);
 }
 
 async function upgradeToVectorBaseMap(mapLanguage, seq) {
@@ -1465,10 +1462,23 @@ function loadScript(src) {
 function registerServiceWorkerWhenIdle() {
   if (!("serviceWorker" in navigator)) return;
   const register = () => navigator.serviceWorker.register("/sw.js").catch(() => {});
+  runAfterFirstPaint(register, 1600, 3500);
+}
+
+function runWhenIdle(callback, timeout = 2000) {
   if ("requestIdleCallback" in window) {
-    window.requestIdleCallback(register, { timeout: 3500 });
+    window.requestIdleCallback(callback, { timeout });
   } else {
-    window.setTimeout(register, 1600);
+    window.setTimeout(callback, Math.min(timeout, 1600));
+  }
+}
+
+function runAfterFirstPaint(callback, delay = 800, idleTimeout = 2000) {
+  const schedule = () => window.setTimeout(() => runWhenIdle(callback, idleTimeout), delay);
+  if ("requestAnimationFrame" in window) {
+    window.requestAnimationFrame(() => window.requestAnimationFrame(schedule));
+  } else {
+    schedule();
   }
 }
 
