@@ -1,136 +1,101 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
   <channel>
-    <title>Sumimap</title>
+    <title>스미맵</title>
     <link>https://sumimap.com/</link>
-    <description>Mobile-first Korean guide map for useful living spots in Japan.</description>
+    <description>일본 거주 한국인을 위한 충전, 화장실, 쉬기, 비 피하기, 한국어 대응 생활 지도.</description>
     <language>ko-KR</language>
-    <lastBuildDate>Fri, 08 May 2026 00:00:00 +0900</lastBuildDate>
+    <lastBuildDate>Sat, 09 May 2026 18:30:00 +0900</lastBuildDate>
     <item>
-      <title>스미맵 심사 준비 노트</title>
-      <link>https://sumimap.com/review-readiness/</link>
-      <guid>https://sumimap.com/review-readiness/</guid>
-      <pubDate>Sat, 09 May 2026 14:30:00 +0900</pubDate>
-      <description>스미맵의 주제 집중도, 운영자 경험, 사용자 제보 안전 기준, 광고 분리 원칙을 정리한 공개 문서.</description>
+      <title>도쿄에서 충전 가능한 곳 찾기</title>
+      <link>https://sumimap.com/tokyo-charging-spots/</link>
+      <guid>https://sumimap.com/tokyo-charging-spots/</guid>
+      <pubDate>Sat, 09 May 2026 18:30:00 +0900</pubDate>
+      <description>도쿄에서 콘센트, 충전 가능 카페, 역 주변 대기 장소를 찾는 한국인을 위한 스미맵 충전 검색 가이드.</description>
     </item>
     <item>
-      <title>Sumimap Japan Living Map</title>
+      <title>오사카에서 화장실 급할 때 확인할 곳</title>
+      <link>https://sumimap.com/osaka-restroom-guide/</link>
+      <guid>https://sumimap.com/osaka-restroom-guide/</guid>
+      <pubDate>Sat, 09 May 2026 18:30:00 +0900</pubDate>
+      <description>오사카 난바, 우메다, 역 주변에서 화장실이 급할 때 확인할 장소 신호와 스미맵 사용 순서.</description>
+    </item>
+    <item>
+      <title>후쿠오카에서 비 피하기 좋은 곳 찾기</title>
+      <link>https://sumimap.com/fukuoka-rain-shelter/</link>
+      <guid>https://sumimap.com/fukuoka-rain-shelter/</guid>
+      <pubDate>Sat, 09 May 2026 18:30:00 +0900</pubDate>
+      <description>후쿠오카 여행과 생활 중 갑작스러운 비, 실내 대기, 역 주변 이동을 위한 스미맵 비 피하기 가이드.</description>
+    </item>
+    <item>
+      <title>교토에서 한국어 대응 가능한 곳 찾기</title>
+      <link>https://sumimap.com/kyoto-korean-support/</link>
+      <guid>https://sumimap.com/kyoto-korean-support/</guid>
+      <pubDate>Sat, 09 May 2026 18:30:00 +0900</pubDate>
+      <description>교토에서 한국어 대응, 번역 부담이 적은 장소, 문의가 쉬운 생활 스팟을 찾는 한국인을 위한 안내.</description>
+    </item>
+    <item>
+      <title>일본 편의점 화장실·충전 이용 신호 읽기</title>
+      <link>https://sumimap.com/japan-convenience-store-restroom/</link>
+      <guid>https://sumimap.com/japan-convenience-store-restroom/</guid>
+      <pubDate>Sat, 09 May 2026 18:30:00 +0900</pubDate>
+      <description>일본 편의점에서 화장실, 충전, 프린트, 택배, 잠깐 대기 가능성을 판단하는 스미맵 생활 신호 가이드.</description>
+    </item>
+    <item>
+      <title>일본 역 주변 쉬기 좋은 곳과 생활 신호</title>
+      <link>https://sumimap.com/japan-station-rest-spots/</link>
+      <guid>https://sumimap.com/japan-station-rest-spots/</guid>
+      <pubDate>Sat, 09 May 2026 18:30:00 +0900</pubDate>
+      <description>일본 역 주변에서 쉬기, 충전, 화장실, 환승 전 대기 장소를 찾는 한국인을 위한 스미맵 역 주변 가이드.</description>
+    </item>
+    <item>
+      <title>도쿄 밤늦게 확인할 생활 스팟</title>
+      <link>https://sumimap.com/tokyo-late-night-living-spots/</link>
+      <guid>https://sumimap.com/tokyo-late-night-living-spots/</guid>
+      <pubDate>Sat, 09 May 2026 18:30:00 +0900</pubDate>
+      <description>도쿄 밤늦은 시간에 충전, 화장실, 쉬기 좋은 곳을 찾을 때 필요한 스미맵 야간 생활 가이드.</description>
+    </item>
+    <item>
+      <title>일본 생활 첫날 필요한 충전·화장실·쉬기 지도</title>
+      <link>https://sumimap.com/japan-first-day-living-map/</link>
+      <guid>https://sumimap.com/japan-first-day-living-map/</guid>
+      <pubDate>Sat, 09 May 2026 18:30:00 +0900</pubDate>
+      <description>일본 도착 첫날 충전, 화장실, 쉬기, 한국어 대응, 응대 불편 신호를 한 번에 보는 스미맵 첫날 가이드.</description>
+    </item>
+    <item>
+      <title>일본 거주 한국인을 위한 생활 지도 사용법</title>
+      <link>https://sumimap.com/japan-korean-resident-map/</link>
+      <guid>https://sumimap.com/japan-korean-resident-map/</guid>
+      <pubDate>Sat, 09 May 2026 18:30:00 +0900</pubDate>
+      <description>일본 거주 한국인, 유학생, 워홀러가 충전, 화장실, 쉬기, 한국어 대응 신호를 빠르게 확인하는 방법.</description>
+    </item>
+    <item>
+      <title>일본 생활 중 응대 불편 신호를 조심스럽게 읽는 법</title>
+      <link>https://sumimap.com/japan-response-discomfort-signal/</link>
+      <guid>https://sumimap.com/japan-response-discomfort-signal/</guid>
+      <pubDate>Sat, 09 May 2026 18:30:00 +0900</pubDate>
+      <description>일본 생활 중 응대 불편, 문의 부담, 한국어 대응 부족 신호를 과장 없이 확인하는 스미맵 안내.</description>
+    </item>
+    <item>
+      <title>스미맵 일본 생활 지도</title>
       <link>https://sumimap.com/</link>
       <guid>https://sumimap.com/</guid>
-      <pubDate>Fri, 08 May 2026 00:00:00 +0900</pubDate>
-      <description>Fast map for charging, restroom, rest, rain shelter, Korean support, and uncomfortable response signals in Japan.</description>
+      <pubDate>Sat, 09 May 2026 00:00:00 +0900</pubDate>
+      <description>충전, 화장실, 쉬기, 비 피하기, 한국어 대응, 응대 불편 신호를 빠르게 확인하는 일본 생활 지도.</description>
     </item>
     <item>
-      <title>Sumimap Usage Guide</title>
+      <title>스미맵 이용 가이드</title>
       <link>https://sumimap.com/guide/</link>
       <guid>https://sumimap.com/guide/</guid>
-      <pubDate>Fri, 08 May 2026 00:00:00 +0900</pubDate>
-      <description>Guide to report standards and living-signal interpretation for Korean residents in Japan.</description>
+      <pubDate>Sat, 09 May 2026 00:00:00 +0900</pubDate>
+      <description>일본 생활 중 곤란한 순간을 줄이기 위한 스미맵 사용 기준과 제보 해석 방식.</description>
     </item>
     <item>
-      <title>City Living Guide</title>
+      <title>도시별 생활 신호</title>
       <link>https://sumimap.com/cities/</link>
       <guid>https://sumimap.com/cities/</guid>
-      <pubDate>Fri, 08 May 2026 00:00:00 +0900</pubDate>
-      <description>City-level context for Tokyo, Osaka, Fukuoka, and Kyoto living spot signals.</description>
-    </item>
-    <item>
-      <title>Situation Entry Routes</title>
-      <link>https://sumimap.com/routes/</link>
-      <guid>https://sumimap.com/routes/</guid>
-      <pubDate>Fri, 08 May 2026 00:00:00 +0900</pubDate>
-      <description>Situation-based entry links for battery, restroom, rain shelter, and Korean support needs in Japan.</description>
-    </item>
-    <item>
-      <title>Battery and Charging Guide</title>
-      <link>https://sumimap.com/routes/battery/</link>
-      <guid>https://sumimap.com/routes/battery/</guid>
-      <pubDate>Fri, 08 May 2026 00:00:00 +0900</pubDate>
-      <description>Guide for finding charging-friendly living spots in Japan.</description>
-    </item>
-    <item>
-      <title>Restroom Situation Guide</title>
-      <link>https://sumimap.com/routes/restroom/</link>
-      <guid>https://sumimap.com/routes/restroom/</guid>
-      <pubDate>Fri, 08 May 2026 00:00:00 +0900</pubDate>
-      <description>Guide for restroom and facility-use signals in Japan.</description>
-    </item>
-    <item>
-      <title>Rain Shelter Guide</title>
-      <link>https://sumimap.com/routes/rain/</link>
-      <guid>https://sumimap.com/routes/rain/</guid>
-      <pubDate>Fri, 08 May 2026 00:00:00 +0900</pubDate>
-      <description>Guide for finding indoor waiting and rain shelter spots in Japan.</description>
-    </item>
-    <item>
-      <title>Korean Support Guide</title>
-      <link>https://sumimap.com/routes/korean/</link>
-      <guid>https://sumimap.com/routes/korean/</guid>
-      <pubDate>Fri, 08 May 2026 00:00:00 +0900</pubDate>
-      <description>Guide for Korean-language support and response signals in Japan.</description>
-    </item>
-    <item>
-      <title>Rest Spot Guide</title>
-      <link>https://sumimap.com/routes/rest/</link>
-      <guid>https://sumimap.com/routes/rest/</guid>
       <pubDate>Sat, 09 May 2026 00:00:00 +0900</pubDate>
-      <description>Guide for choosing short-stay rest spots, seating, waiting areas, and low-pressure places in Japan.</description>
-    </item>
-    <item>
-      <title>Station Area Living Guide</title>
-      <link>https://sumimap.com/routes/station/</link>
-      <guid>https://sumimap.com/routes/station/</guid>
-      <pubDate>Sat, 09 May 2026 00:00:00 +0900</pubDate>
-      <description>Guide for using stations as living anchors for charging, restrooms, rest, and rainy-day movement.</description>
-    </item>
-    <item>
-      <title>Convenience Store Signal Guide</title>
-      <link>https://sumimap.com/routes/convenience/</link>
-      <guid>https://sumimap.com/routes/convenience/</guid>
-      <pubDate>Sat, 09 May 2026 00:00:00 +0900</pubDate>
-      <description>Guide for interpreting restroom, print, delivery, charging, and waiting signals at Japanese convenience stores.</description>
-    </item>
-    <item>
-      <title>Late Night Living Spot Guide</title>
-      <link>https://sumimap.com/routes/late-night/</link>
-      <guid>https://sumimap.com/routes/late-night/</guid>
-      <pubDate>Sat, 09 May 2026 00:00:00 +0900</pubDate>
-      <description>Guide for choosing safer, lower-stress living spots at night in Japan.</description>
-    </item>
-    <item>
-      <title>First Day in Japan Route</title>
-      <link>https://sumimap.com/routes/first-day/</link>
-      <guid>https://sumimap.com/routes/first-day/</guid>
-      <pubDate>Sat, 09 May 2026 00:00:00 +0900</pubDate>
-      <description>Guide for setting first-day living anchors after arriving in Japan.</description>
-    </item>
-    <item>
-      <title>Uncomfortable Response Signal Guide</title>
-      <link>https://sumimap.com/routes/response/</link>
-      <guid>https://sumimap.com/routes/response/</guid>
-      <pubDate>Sat, 09 May 2026 00:00:00 +0900</pubDate>
-      <description>Guide for reading response-discomfort reports as cautious living signals, not aggressive claims.</description>
-    </item>
-    <item>
-      <title>Editorial Standards and Field Notes</title>
-      <link>https://sumimap.com/editorial/</link>
-      <guid>https://sumimap.com/editorial/</guid>
-      <pubDate>Fri, 08 May 2026 00:00:00 +0900</pubDate>
-      <description>How Sumimap interprets charging, restroom, rest, rain shelter, Korean support, and response-signal reports.</description>
-    </item>
-    <item>
-      <title>About Sumimap</title>
-      <link>https://sumimap.com/about/</link>
-      <guid>https://sumimap.com/about/</guid>
-      <pubDate>Fri, 08 May 2026 00:00:00 +0900</pubDate>
-      <description>Purpose, operating standards, and report signals behind Sumimap.</description>
-    </item>
-    <item>
-      <title>Operating Policy</title>
-      <link>https://sumimap.com/policy/</link>
-      <guid>https://sumimap.com/policy/</guid>
-      <pubDate>Fri, 08 May 2026 00:00:00 +0900</pubDate>
-      <description>Report publishing, false-report handling, and uncomfortable response signal policy.</description>
+      <description>도쿄, 오사카, 후쿠오카, 교토에서 생활 스팟을 다르게 읽는 방법.</description>
     </item>
   </channel>
 </rss>

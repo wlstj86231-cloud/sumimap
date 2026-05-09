@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "seo:keywords": "node scripts/seo-keyword-pages.mjs",
     "serve": "python -m http.server 4192 -d site"
   }
 }
