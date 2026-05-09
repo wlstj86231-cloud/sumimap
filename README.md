@@ -19,3 +19,7 @@ npm run serve
 - 스팸 방지: Cloudflare Turnstile
 
 초기 버전은 자유 댓글 없이 선택형 제보만 수집하도록 설계했습니다.
+
+## 공유 제보 API
+
+Cloudflare Pages Functions가 `/api/reports`를 제공합니다. Cloudflare Pages 프로젝트에 D1 바인딩 `REPORTS_DB`를 연결하고 `migrations/0001_reports.sql`을 적용하면, 한 사용자의 선택형 제보가 다른 사용자 지도에도 짧은 주기로 반영됩니다.

@@ -78,8 +78,13 @@ const japanBounds = {
 };
 
 const languageStorageKey = "sumimap:language";
+const reportClientStorageKey = "sumimap:reportClientId";
+const reportApiUrl = location.hostname === "appassets.androidplatform.net" ? "https://sumimap.com/api/reports" : "/api/reports";
+const reportSyncIntervalMs = 3500;
+const reportRetryIntervalMs = 15000;
 const supportedLanguages = new Set(["ko", "ja"]);
 let currentLanguage = readLanguagePreference();
+const reportClientId = readStableClientId(reportClientStorageKey);
 
 const jaText = {
   "지도 언어를 바꾸는 중...": "地図の言語を切り替えています...",
@@ -1300,6 +1305,11 @@ let sheetPointerMoved = false;
 let ignoreNextSheetToggleClick = false;
 let addressSearchSeq = 0;
 let locationPickPending = false;
+let reportSyncTimer = null;
+let reportSyncInFlight = false;
+let reportSyncAvailable = true;
+let reportLastFailureAt = 0;
+let reportServerFingerprint = "";
 
 startWhenReady();
 
@@ -1329,6 +1339,7 @@ function init() {
   refreshStatus();
   setSearchPanel(false);
   registerServiceWorkerWhenIdle();
+  startReportSync();
 }
 
 function bootMap() {
@@ -2636,7 +2647,7 @@ function renderReportFeed(reports) {
           <div class="feed-actions">
             <button type="button" data-report-id="${escapeAttr(report.id)}" data-report-vote="agree">${t("동의")}</button>
             <button type="button" data-report-id="${escapeAttr(report.id)}" data-report-vote="dispute">${t("허위 의심")}</button>
-            <button type="button" class="danger-action" data-report-delete="${escapeAttr(report.id)}">${t("삭제")}</button>
+            ${canDeleteReport(report) ? `<button type="button" class="danger-action" data-report-delete="${escapeAttr(report.id)}">${t("삭제")}</button>` : ""}
           </div>
         </article>
       `).join("")}
@@ -2743,20 +2754,31 @@ function submitReport(form) {
     showToast("주소검색으로 장소를 먼저 선택해줘.");
     return;
   }
+  const place = placesById.get(placeId);
+  if (!place) {
+    showToast("장소 정보를 다시 확인해줘.");
+    return;
+  }
+  const createdAt = new Date().toISOString();
 
   const report = {
     id: createId(),
     placeId,
+    place: snapshotPlaceForReport(place),
     tags: selected,
     recency: data.get("recency"),
-    createdAt: new Date().toISOString(),
+    createdAt,
+    updatedAt: createdAt,
     agrees: 0,
-    disputes: 0
+    disputes: 0,
+    clientId: reportClientId,
+    pending: true,
+    remote: false
   };
 
   state.reports.unshift(report);
   invalidateReportCaches();
-  writeJson("sumimap:reports", state.reports.slice(0, 100));
+  persistReports();
   state.selectedId = report.placeId;
   state.activePanel = "near";
   state.sheetMode = "expanded";
@@ -2771,6 +2793,7 @@ function submitReport(form) {
   renderSheet();
   renderMarkers();
   refreshStatus();
+  sendReportToServer(report);
 }
 
 function voteReport(reportId, vote) {
@@ -2779,33 +2802,197 @@ function voteReport(reportId, vote) {
 
   if (vote === "agree") {
     report.agrees += 1;
+    report.updatedAt = new Date().toISOString();
     showToast("동의가 반영됐어.");
   } else if (vote === "dispute") {
     report.disputes += 1;
+    report.updatedAt = new Date().toISOString();
     showToast(isHiddenReport(report) ? "허위 의심이 누적되어 신호 계산에서 빠졌어." : "허위 의심을 반영했어.");
   }
 
   invalidateReportCaches();
   state.reportFeedOpen = true;
-  writeJson("sumimap:reports", state.reports);
+  persistReports();
   renderSheet();
   renderMarkers();
   refreshStatus();
+  sendReportVote(reportId, vote);
 }
 
 function deleteReport(reportId) {
   const previousLength = state.reports.length;
   const target = state.reports.find((item) => item.id === reportId);
+  if (target && !canDeleteReport(target)) {
+    showToast("내가 남긴 제보만 삭제할 수 있어.");
+    return;
+  }
   state.reports = state.reports.filter((item) => item.id !== reportId);
   if (state.reports.length === previousLength) return;
 
   invalidateReportCaches();
   state.reportFeedOpen = target ? getVisibleReportsForPlace(target.placeId).length > 0 : false;
-  writeJson("sumimap:reports", state.reports);
+  persistReports();
   showToast("제보를 삭제했어.");
   renderSheet();
   renderMarkers();
   refreshStatus();
+  if (target?.remote) deleteRemoteReport(reportId);
+}
+
+function startReportSync() {
+  syncReports({ silent: true });
+  if (reportSyncTimer) window.clearInterval(reportSyncTimer);
+  reportSyncTimer = window.setInterval(() => {
+    if (document.hidden) return;
+    syncReports({ silent: true });
+  }, reportSyncIntervalMs);
+  window.addEventListener("focus", () => syncReports({ silent: true }));
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) syncReports({ silent: true });
+  });
+  window.addEventListener("online", () => syncReports({ silent: true, force: true }));
+}
+
+async function syncReports({ silent = true, force = false } = {}) {
+  if (!reportSyncAvailable || reportSyncInFlight) return;
+  if (!force && reportLastFailureAt && Date.now() - reportLastFailureAt < reportRetryIntervalMs) return;
+
+  reportSyncInFlight = true;
+  try {
+    const response = await fetch(reportApiUrl, {
+      headers: { Accept: "application/json" },
+      cache: "no-store"
+    });
+    if (response.status === 404 || response.status === 503) {
+      reportSyncAvailable = false;
+      return;
+    }
+    if (!response.ok) throw new Error(`reports ${response.status}`);
+    const payload = await response.json();
+    if (!payload?.ok || !Array.isArray(payload.reports)) throw new Error("invalid reports response");
+    mergeServerReports(payload.reports, true);
+    reportLastFailureAt = 0;
+    flushPendingReports();
+  } catch {
+    reportLastFailureAt = Date.now();
+    if (!silent) showToast("서버 동기화가 잠시 느려. 기기 안에는 먼저 반영했어.");
+  } finally {
+    reportSyncInFlight = false;
+  }
+}
+
+function mergeServerReports(rawReports, replaceServerSnapshot = false) {
+  if (!Array.isArray(rawReports)) return;
+  rawReports.forEach(upsertPlaceFromServerReport);
+  const serverReports = normalizeReports(rawReports.map((report) => ({
+    ...report,
+    id: report.id,
+    placeId: report.placeId || report.place_id,
+    createdAt: report.createdAt || report.created_at,
+    updatedAt: report.updatedAt || report.updated_at,
+    clientId: report.clientId || report.client_id,
+    remote: true,
+    pending: false
+  })));
+  const fingerprint = serverReports
+    .map((report) => `${report.id}:${report.updatedAt}:${report.agrees}:${report.disputes}`)
+    .join("|");
+  if (replaceServerSnapshot && fingerprint === reportServerFingerprint) return;
+
+  const serverIds = new Set(serverReports.map((report) => report.id));
+  const localOnly = state.reports.filter((report) => {
+    if (serverIds.has(report.id)) return false;
+    return !replaceServerSnapshot || !report.remote || report.pending;
+  });
+  state.reports = normalizeReports([...serverReports, ...localOnly])
+    .sort((a, b) => Date.parse(b.updatedAt || b.createdAt) - Date.parse(a.updatedAt || a.createdAt))
+    .slice(0, 120);
+  reportServerFingerprint = fingerprint;
+  invalidateReportCaches();
+  persistReports();
+  renderMapQuickRail();
+  renderSheet();
+  renderMarkers();
+  refreshStatus();
+}
+
+async function flushPendingReports() {
+  const pending = state.reports.filter((report) => report.pending && !report.remote).slice(0, 5);
+  for (const report of pending) {
+    await sendReportToServer(report, { silent: true });
+  }
+}
+
+async function sendReportToServer(report, { silent = false } = {}) {
+  if (!reportSyncAvailable) return;
+  try {
+    const response = await fetch(reportApiUrl, {
+      method: "POST",
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "X-Client-ID": reportClientId
+      },
+      body: JSON.stringify({
+        id: report.id,
+        placeId: report.placeId,
+        place: report.place || snapshotPlaceForReport(placesById.get(report.placeId)),
+        tags: report.tags,
+        recency: report.recency,
+        createdAt: report.createdAt
+      })
+    });
+    if (response.status === 404 || response.status === 503) {
+      reportSyncAvailable = false;
+      return;
+    }
+    if (!response.ok) throw new Error(`save report ${response.status}`);
+    const payload = await response.json();
+    if (payload?.report) mergeServerReports([payload.report], false);
+  } catch {
+    reportLastFailureAt = Date.now();
+    if (!silent) showToast("제보는 이 기기에 먼저 반영했고 서버 반영은 다시 시도할게.");
+  }
+}
+
+async function sendReportVote(reportId, vote) {
+  if (!reportSyncAvailable || !["agree", "dispute"].includes(vote)) return;
+  try {
+    const response = await fetch(`${reportApiUrl}/${encodeURIComponent(reportId)}/vote`, {
+      method: "POST",
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "X-Client-ID": reportClientId
+      },
+      body: JSON.stringify({ vote })
+    });
+    if (response.status === 404 || response.status === 503) {
+      reportSyncAvailable = false;
+      return;
+    }
+    if (!response.ok) throw new Error(`vote ${response.status}`);
+    const payload = await response.json();
+    if (payload?.report) mergeServerReports([payload.report], false);
+  } catch {
+    reportLastFailureAt = Date.now();
+  }
+}
+
+async function deleteRemoteReport(reportId) {
+  if (!reportSyncAvailable) return;
+  try {
+    const response = await fetch(`${reportApiUrl}/${encodeURIComponent(reportId)}`, {
+      method: "DELETE",
+      headers: {
+        Accept: "application/json",
+        "X-Client-ID": reportClientId
+      }
+    });
+    if (response.status === 404 || response.status === 503) reportSyncAvailable = false;
+  } catch {
+    reportLastFailureAt = Date.now();
+  }
 }
 
 function toggleSave(placeId) {
@@ -3747,6 +3934,101 @@ function isHiddenReport(report) {
   return report.disputes >= 3 && report.disputes > report.agrees;
 }
 
+function canDeleteReport(report) {
+  return !report.clientId || report.clientId === reportClientId;
+}
+
+function persistReports() {
+  writeJson("sumimap:reports", state.reports.slice(0, 120));
+}
+
+function snapshotPlaceForReport(place) {
+  if (!place) return null;
+  return {
+    id: place.id,
+    name: place.name,
+    area: place.area,
+    nameKo: place.nameKo || "",
+    areaKo: place.areaKo || "",
+    nameJa: place.nameJa || "",
+    areaJa: place.areaJa || "",
+    city: place.city,
+    category: place.category,
+    lat: place.lat,
+    lng: place.lng
+  };
+}
+
+function upsertPlaceFromServerReport(report) {
+  const snapshot = normalizeReportPlaceSnapshot(report);
+  if (!snapshot) return;
+  const existing = placesById.get(snapshot.id);
+  if (existing) {
+    if (existing.custom) {
+      existing.name = snapshot.name || existing.name;
+      existing.area = snapshot.area || existing.area;
+      existing.nameKo = snapshot.nameKo || existing.nameKo || "";
+      existing.areaKo = snapshot.areaKo || existing.areaKo || "";
+      existing.nameJa = snapshot.nameJa || existing.nameJa || "";
+      existing.areaJa = snapshot.areaJa || existing.areaJa || "";
+    }
+    return;
+  }
+
+  const place = placeFromReportSnapshot(snapshot);
+  places.unshift(place);
+  placesById.set(place.id, place);
+  validPlaceIds.add(place.id);
+}
+
+function placeFromReportSnapshot(snapshot) {
+  return {
+    id: snapshot.id,
+    name: snapshot.name || "제보 위치",
+    area: snapshot.area || `${snapshot.lat.toFixed(5)}, ${snapshot.lng.toFixed(5)}`,
+    nameKo: snapshot.nameKo || snapshot.name || "",
+    areaKo: snapshot.areaKo || snapshot.area || "",
+    nameJa: snapshot.nameJa || "",
+    areaJa: snapshot.areaJa || "",
+    city: cities[snapshot.city] ? snapshot.city : nearestCityKey(snapshot.lat, snapshot.lng),
+    kind: "사용자 제보",
+    lat: snapshot.lat,
+    lng: snapshot.lng,
+    category: categoriesByKey.has(snapshot.category) && snapshot.category !== "all" ? snapshot.category : "custom",
+    trust: "실시간 제보",
+    tags: ["주소 검색", "제보 대기"],
+    signals: { charge: 0, restroom: 0, rest: 0, korean: 0, caution: 0 },
+    walk: "지도 제보",
+    lastSeen: "실시간 제보",
+    crowd: "현장 확인",
+    bestFor: "사용자가 남긴 생활 스팟",
+    watchout: "새로 공유된 제보 위치예요. 운영 시간과 현장 안내는 직접 확인해 주세요.",
+    notes: ["다른 사용자가 남긴 공유 제보예요.", "신호와 허위 의심이 함께 쌓이면서 지도 표시가 조정됩니다."],
+    custom: true
+  };
+}
+
+function normalizeReportPlaceSnapshot(report) {
+  const source = report?.place && typeof report.place === "object" ? report.place : report;
+  const id = safeId(source?.id || report?.placeId || report?.place_id, "");
+  const lat = Number(source?.lat);
+  const lng = Number(source?.lng);
+  if (!id || !Number.isFinite(lat) || !Number.isFinite(lng) || !isPointInJapan(lat, lng)) return null;
+  return {
+    id,
+    name: String(source?.name || source?.placeName || source?.place_name || "제보 위치").slice(0, 80),
+    area: String(source?.area || source?.placeArea || source?.place_area || `${lat.toFixed(5)}, ${lng.toFixed(5)}`).slice(0, 160),
+    nameKo: String(source?.nameKo || source?.name_ko || "").slice(0, 80),
+    areaKo: String(source?.areaKo || source?.area_ko || "").slice(0, 160),
+    nameJa: String(source?.nameJa || source?.name_ja || "").slice(0, 80),
+    areaJa: String(source?.areaJa || source?.area_ja || "").slice(0, 160),
+    city: String(source?.city || "").slice(0, 24),
+    category: String(source?.category || "").slice(0, 24),
+    lat,
+    lng
+  };
+}
+
 function normalizeCustomPlaces(customPlaces) {
   if (!Array.isArray(customPlaces)) return [];
   return customPlaces
@@ -3787,15 +4069,28 @@ function normalizeReports(reports) {
   if (!Array.isArray(reports)) return [];
   const validPlaceIds = new Set(places.map((place) => place.id));
   return reports
-    .map((report, index) => ({
-      id: safeId(report?.id, `legacy-${index}-${report?.createdAt || Date.now()}`),
-      placeId: validPlaceIds.has(report?.placeId) ? report.placeId : "",
-      tags: Array.isArray(report?.tags) ? report.tags.filter((tag) => allowedReportLabels.has(tag)) : [],
-      recency: ["today", "week", "month", "old"].includes(report?.recency) ? report.recency : "old",
-      createdAt: report?.createdAt || new Date().toISOString(),
-      agrees: clampCount(report?.agrees),
-      disputes: clampCount(report?.disputes)
-    }))
+    .map((report, index) => {
+      const placeId = safeId(report?.placeId || report?.place_id, "");
+      const tags = Array.isArray(report?.tags)
+        ? report.tags
+        : typeof report?.tags === "string"
+          ? parseJsonArray(report.tags)
+          : [];
+      return {
+        id: safeId(report?.id, `legacy-${index}-${report?.createdAt || report?.created_at || Date.now()}`),
+        placeId: validPlaceIds.has(placeId) ? placeId : "",
+        place: normalizeReportPlaceSnapshot(report),
+        tags: tags.filter((tag) => allowedReportLabels.has(tag)),
+        recency: ["today", "week", "month", "old"].includes(report?.recency) ? report.recency : "old",
+        createdAt: report?.createdAt || report?.created_at || new Date().toISOString(),
+        updatedAt: report?.updatedAt || report?.updated_at || report?.createdAt || report?.created_at || new Date().toISOString(),
+        agrees: clampCount(report?.agrees),
+        disputes: clampCount(report?.disputes),
+        clientId: safeId(report?.clientId || report?.client_id || reportClientId, reportClientId),
+        pending: Boolean(report?.pending),
+        remote: Boolean(report?.remote)
+      };
+    })
     .filter((report) => report.placeId && report.tags.length)
     .slice(0, 100);
 }
@@ -3842,6 +4137,15 @@ function createId() {
   return `report-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
 
+function parseJsonArray(value) {
+  try {
+    const parsed = JSON.parse(value);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
 function formatRecency(recency) {
   return t({
     today: "오늘 확인",
@@ -3871,6 +4175,18 @@ function escapeAttr(value) {
 function readLanguagePreference() {
   const stored = readJson(languageStorageKey, "ko");
   return supportedLanguages.has(stored) ? stored : "ko";
+}
+
+function readStableClientId(key) {
+  const existing = safeId(readJson(key, ""), "");
+  if (existing) return existing;
+  const next = createId();
+  try {
+    localStorage.setItem(key, JSON.stringify(next));
+  } catch {
+    // A stable ID improves report ownership, but reporting still works without storage.
+  }
+  return next;
 }
 
 function isJapanese() {
