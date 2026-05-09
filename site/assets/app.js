@@ -3948,7 +3948,7 @@ function renderSiblingDialog() {
         <div class="sibling-body">
           <span class="sibling-badge">路 ${escapeHtml(siblingCopy("badge"))}</span>
           <p class="sibling-note">${escapeHtml(siblingCopy("note"))}</p>
-          <a class="sibling-link" href="https://saferoute.kr/" rel="noopener">
+          <a class="sibling-link" href="https://saferoute.pages.dev/" rel="noopener">
             <span>${escapeHtml(siblingCopy("cta"))}</span>
             <span aria-hidden="true">↗</span>
           </a>
