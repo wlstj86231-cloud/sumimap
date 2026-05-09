@@ -80,7 +80,7 @@ const japanBounds = {
 const languageStorageKey = "sumimap:language";
 const reportClientStorageKey = "sumimap:reportClientId";
 const reportApiUrl = location.hostname === "appassets.androidplatform.net" ? "https://sumimap.com/api/reports" : "/api/reports";
-const reportSyncIntervalMs = 3500;
+const reportSyncIntervalMs = 2000;
 const reportRetryIntervalMs = 15000;
 const supportedLanguages = new Set(["ko", "ja"]);
 let currentLanguage = readLanguagePreference();
