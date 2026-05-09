@@ -37,8 +37,12 @@
 /manifest.webmanifest
   Cache-Control: public, max-age=86400
 
+/ads.txt
+  Cache-Control: no-cache, no-store, must-revalidate
+  Content-Type: text/plain; charset=UTF-8
+
 /robots.txt
   Cache-Control: public, max-age=86400
 
 /sitemap.xml
-  Cache-Control: public, max-age=86400
+  Cache-Control: public, max-age=0, must-revalidate
