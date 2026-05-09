@@ -1351,13 +1351,17 @@ function init() {
 }
 
 function bootMap() {
+  const compactViewport = isCompactViewport();
+  const initialZoom = compactViewport ? Math.min(cities.tokyo.zoom, 11) : cities.tokyo.zoom;
   map = L.map("map", {
     zoomControl: false,
     attributionControl: true,
+    keyboard: false,
+    boxZoom: false,
     fadeAnimation: false,
     zoomAnimation: false,
     markerZoomAnimation: false
-  }).setView(cities.tokyo.center, cities.tokyo.zoom);
+  }).setView(cities.tokyo.center, initialZoom);
 
   setBaseMapLanguage(state.language, false);
 
@@ -1377,14 +1381,18 @@ function setBaseMapLanguage(language, notify = true) {
   const mapLanguage = language === "ja" ? "ja" : "ko";
   replaceBaseMap(rasterBaseMap(mapLanguage));
   if (notify) showToast("지도 언어를 바꿨어.");
-  scheduleVectorMapUpgrade(mapLanguage, seq);
+  scheduleVectorMapUpgrade(mapLanguage, seq, notify);
 }
 
-function scheduleVectorMapUpgrade(mapLanguage, seq) {
+function scheduleVectorMapUpgrade(mapLanguage, seq, userRequested = false) {
   const connection = navigator.connection;
   if (connection?.saveData || /^(slow-2g|2g)$/.test(connection?.effectiveType || "")) return;
+  if (!userRequested && navigator.deviceMemory && navigator.deviceMemory <= 3) return;
   const upgrade = () => upgradeToVectorBaseMap(mapLanguage, seq);
-  runAfterFirstPaint(upgrade, 2400, 5200);
+  const compactViewport = isCompactViewport();
+  const delay = userRequested ? 700 : compactViewport ? 12000 : 6200;
+  const timeout = userRequested ? 2600 : compactViewport ? 18000 : 9500;
+  runAfterFirstPaint(upgrade, delay, timeout);
 }
 
 async function upgradeToVectorBaseMap(mapLanguage, seq) {
@@ -1513,8 +1521,12 @@ function rasterBaseMap(language = "ko") {
     attribution: japanese ? "&copy; OpenStreetMap &copy; CARTO" : "&copy; OpenStreetMap",
     updateWhenIdle: true,
     updateWhenZooming: false,
-    keepBuffer: 1
+    keepBuffer: isCompactViewport() ? 0 : 1
   });
+}
+
+function isCompactViewport() {
+  return window.matchMedia?.("(max-width: 760px), (pointer: coarse)")?.matches || window.innerWidth <= 760;
 }
 
 async function localizedVectorStyle(language) {

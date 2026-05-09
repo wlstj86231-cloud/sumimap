@@ -1,8 +1,8 @@
-const CACHE_NAME = "sumimap-v52-tripmarking-link";
+const CACHE_NAME = "sumimap-v53-fastmap";
 const LOCAL_ASSETS = [
   "/",
-  "/assets/styles.css?v=20260509-sibling4",
-  "/assets/app.js?v=20260509-sibling4",
+  "/assets/styles.css?v=20260509-fastmap1",
+  "/assets/app.js?v=20260509-fastmap1",
   "/assets/vendor/leaflet/leaflet.css",
   "/assets/vendor/leaflet/leaflet.js",
   "/assets/vendor/leaflet/images/layers.png",
@@ -35,6 +35,19 @@ self.addEventListener("fetch", (event) => {
   if (url.origin !== location.origin) return;
   if (url.pathname.startsWith("/api/")) return;
 
+  if (event.request.mode === "navigate") {
+    event.respondWith(
+      fetch(event.request).then((response) => {
+        if (response.ok) {
+          const copy = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put("/", copy));
+        }
+        return response;
+      }).catch(() => caches.match("/").then((cached) => cached || caches.match(event.request)))
+    );
+    return;
+  }
+
   event.respondWith(
     caches.match(event.request).then((cached) => {
       if (cached) return cached;
@@ -45,7 +58,6 @@ self.addEventListener("fetch", (event) => {
         }
         return response;
       }).catch(() => {
-        if (event.request.mode === "navigate") return caches.match("/");
         throw new Error("offline");
       });
     })
