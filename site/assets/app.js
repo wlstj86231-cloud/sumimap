@@ -1313,6 +1313,7 @@ let reportSyncAvailable = true;
 let reportLastFailureAt = 0;
 let reportServerFingerprint = "";
 let searchRenderFrame = 0;
+let mapResizeTimer = 0;
 
 startWhenReady();
 
@@ -1376,7 +1377,8 @@ function setBaseMapLanguage(language, notify = true) {
 }
 
 function scheduleVectorMapUpgrade(mapLanguage, seq) {
-  if (navigator.connection?.saveData) return;
+  const connection = navigator.connection;
+  if (connection?.saveData || /^(slow-2g|2g)$/.test(connection?.effectiveType || "")) return;
   const upgrade = () => upgradeToVectorBaseMap(mapLanguage, seq);
   runAfterFirstPaint(upgrade, 2400, 5200);
 }
@@ -1910,8 +1912,16 @@ function setSheetMode(mode) {
   state.sheetMode = mode === "collapsed" ? "collapsed" : "expanded";
   syncSheetMode();
   if (map) {
-    window.setTimeout(() => map.invalidateSize(), 220);
+    scheduleMapResize(220);
   }
+}
+
+function scheduleMapResize(delay = 180) {
+  window.clearTimeout(mapResizeTimer);
+  mapResizeTimer = window.setTimeout(() => {
+    mapResizeTimer = 0;
+    map?.invalidateSize?.();
+  }, delay);
 }
 
 function syncSheetMode() {
