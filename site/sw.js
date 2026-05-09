@@ -1,8 +1,8 @@
-const CACHE_NAME = "sumimap-v53-fastmap";
+const CACHE_NAME = "sumimap-v54-ko-label-map";
 const LOCAL_ASSETS = [
   "/",
-  "/assets/styles.css?v=20260509-fastmap1",
-  "/assets/app.js?v=20260509-fastmap1",
+  "/assets/styles.css?v=20260509-fastmap2",
+  "/assets/app.js?v=20260509-fastmap2",
   "/assets/vendor/leaflet/leaflet.css",
   "/assets/vendor/leaflet/leaflet.js",
   "/assets/vendor/leaflet/images/layers.png",

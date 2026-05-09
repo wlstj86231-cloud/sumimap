@@ -10,7 +10,7 @@ const categories = [
   { key: "charge", label: "충전", emoji: "🔌" },
   { key: "restroom", label: "화장실", emoji: "🚻" },
   { key: "rest", label: "쉬기", emoji: "🪑" },
-  { key: "korean", label: "한국어", emoji: "🇰🇷" },
+  { key: "korean", label: "한국어", emoji: "💬" },
   { key: "caution", label: "응대 불편", emoji: "⚠️" }
 ];
 
@@ -18,7 +18,7 @@ const scenarios = [
   { key: "battery", label: "배터리 5%", filter: "charge", icon: "battery-low", emoji: "🔌", hint: "콘센트와 허락 여부 먼저" },
   { key: "toilet", label: "화장실 급함", filter: "restroom", icon: "toilet", emoji: "🚻", hint: "단독 이용 가능성 확인" },
   { key: "rain", label: "비 피하기", filter: "rest", icon: "cloud-rain", emoji: "☔", hint: "잠깐 머물기 좋은 곳" },
-  { key: "korean", label: "한국어 필요", filter: "korean", icon: "languages", emoji: "🇰🇷", hint: "한국어 대응 신호" },
+  { key: "korean", label: "한국어 필요", filter: "korean", icon: "languages", emoji: "💬", hint: "한국어 대응 신호" },
   { key: "caution", label: "응대 조심", filter: "caution", icon: "triangle-alert", emoji: "⚠️", hint: "불편 제보가 있는 곳" }
 ];
 
@@ -30,7 +30,7 @@ const reportTags = [
   { key: "rest", label: "잠깐 쉬기 좋음", emoji: "🪑" },
   { key: "long-stay", label: "장시간 비추천", emoji: "⏱️" },
   { key: "wifi", label: "와이파이", emoji: "📶" },
-  { key: "korean", label: "한국어 대응", emoji: "🇰🇷" },
+  { key: "korean", label: "한국어 대응", emoji: "💬" },
   { key: "caution", label: "응대 불편", emoji: "⚠️", danger: true },
   { key: "rain", label: "비 피하기 좋음", emoji: "☔" }
 ];
@@ -39,7 +39,7 @@ const dailyChecks = [
   { key: "charge", label: "충전 후보 저장", hint: "배터리 20% 전에 가까운 곳 하나를 잡아둬요.", filter: "charge", emoji: "🔌" },
   { key: "restroom", label: "화장실 후보 확인", hint: "역·상업시설·공원 중 하나를 미리 봐두면 편해요.", filter: "restroom", emoji: "🚻" },
   { key: "rest", label: "잠깐 머물 곳 확보", hint: "비·더위·대기 시간이 생길 때 갈 곳을 남겨둬요.", filter: "rest", emoji: "☔" },
-  { key: "korean", label: "한국어 신호 확인", hint: "초행 동선이면 한국어 대응 신호도 같이 확인해요.", filter: "korean", emoji: "🇰🇷" }
+  { key: "korean", label: "한국어 신호 확인", hint: "초행 동선이면 한국어 대응 신호도 같이 확인해요.", filter: "korean", emoji: "💬" }
 ];
 
 const allowedReportLabels = new Set(reportTags.map((tag) => tag.label));
@@ -70,6 +70,7 @@ const vectorMapStyleUrl = "https://tiles.openfreemap.org/styles/positron";
 const mapLibreCssUrl = "https://unpkg.com/maplibre-gl@5.24.0/dist/maplibre-gl.css";
 const mapLibreScriptUrl = "https://unpkg.com/maplibre-gl@5.24.0/dist/maplibre-gl.js";
 const mapLibreLeafletScriptUrl = "https://unpkg.com/@maplibre/maplibre-gl-leaflet/leaflet-maplibre-gl.js";
+const enableVectorBaseMap = false;
 const japanBounds = {
   minLat: 24,
   maxLat: 46,
@@ -86,6 +87,68 @@ const reportRetryIntervalMs = 15000;
 const supportedLanguages = new Set(["ko", "ja"]);
 let currentLanguage = readLanguagePreference();
 const reportClientId = readStableClientId(reportClientStorageKey);
+
+const koreanMapTextReplacements = [
+  [/東京都|Tokyo Metropolis|Tokyo Prefecture|Tokyo\b/gi, "도쿄"],
+  [/大阪府|Osaka Prefecture|Osaka\b/gi, "오사카"],
+  [/福岡県|Fukuoka Prefecture|Fukuoka\b/gi, "후쿠오카"],
+  [/京都府|Kyoto Prefecture|Kyoto\b/gi, "교토"],
+  [/新宿区|Shinjuku City|Shinjuku\b/gi, "신주쿠"],
+  [/渋谷区|Shibuya City|Shibuya\b/gi, "시부야"],
+  [/豊島区|Toshima City|Toshima\b/gi, "도시마"],
+  [/台東区|Taito City|Taito\b/gi, "다이토"],
+  [/千代田区|Chiyoda City|Chiyoda\b/gi, "치요다"],
+  [/中央区|Chuo City|Chuo Ward|Chuo\b/gi, "주오"],
+  [/港区|Minato City|Minato\b/gi, "미나토"],
+  [/品川区|Shinagawa City|Shinagawa\b/gi, "시나가와"],
+  [/浪速区|Naniwa Ward|Naniwa\b/gi, "나니와"],
+  [/北区|Kita Ward|Kita\b/gi, "기타"],
+  [/天王寺区|Tennoji Ward|Tennoji\b/gi, "텐노지"],
+  [/東成区|Higashinari Ward|Higashinari\b/gi, "히가시나리"],
+  [/博多区|Hakata Ward|Hakata\b/gi, "하카타"],
+  [/下京区|Shimogyo Ward|Shimogyo\b/gi, "시모교"],
+  [/中京区|Nakagyo Ward|Nakagyo\b/gi, "나카교"],
+  [/東山区|Higashiyama Ward|Higashiyama\b/gi, "히가시야마"],
+  [/新大久保|Shin[-\s]?Okubo\b/gi, "신오쿠보"],
+  [/池袋|Ikebukuro\b/gi, "이케부쿠로"],
+  [/上野|Ueno\b/gi, "우에노"],
+  [/秋葉原|Akihabara\b/gi, "아키하바라"],
+  [/高田馬場|Takadanobaba\b/gi, "다카다노바바"],
+  [/難波|Namba\b/gi, "난바"],
+  [/梅田|Umeda\b/gi, "우메다"],
+  [/鶴橋|Tsuruhashi\b/gi, "쓰루하시"],
+  [/新今宮|Shin[-\s]?Imamiya\b/gi, "신이마미야"],
+  [/天神|Tenjin\b/gi, "텐진"],
+  [/中洲|Nakasu\b/gi, "나카스"],
+  [/四条|Shijo\b/gi, "시조"],
+  [/河原町|Kawaramachi\b/gi, "가와라마치"],
+  [/祇園|Gion\b/gi, "기온"],
+  [/新宿三丁目/gi, "신주쿠3초메"],
+  [/西新宿/gi, "니시신주쿠"],
+  [/代々木/gi, "요요기"],
+  [/四谷/gi, "요쓰야"],
+  [/角筈/gi, "쓰노하즈"],
+  [/東京駅|Tokyo Station\b/gi, "도쿄역"],
+  [/京都駅|Kyoto Station\b/gi, "교토역"],
+  [/JR\s?/gi, "제이알 "],
+  [/京王|Keio\b/gi, "게이오"],
+  [/小田急|Odakyu\b/gi, "오다큐"],
+  [/東京メトロ|Metro\b/gi, "도쿄메트로"],
+  [/地下(\d+)階/g, "지하 $1층"],
+  [/東口/g, "동쪽 출구"],
+  [/西口/g, "서쪽 출구"],
+  [/南口/g, "남쪽 출구"],
+  [/北口/g, "북쪽 출구"],
+  [/Station\b|駅/g, "역"],
+  [/Ward\b|区/g, "구"],
+  [/City\b|市/g, "시"],
+  [/Prefecture\b|県|府/g, "현"],
+  [/丁目/g, "초메"],
+  [/線/g, "선"],
+  [/階/g, "층"],
+  [/Road\b|Street\b|Avenue\b/gi, "도로"],
+  [/Japan\b|日本国|日本/gi, "일본"]
+];
 
 const jaText = {
   "지도 언어를 바꾸는 중...": "地図の言語を切り替えています...",
@@ -1288,6 +1351,7 @@ const addressResults = document.querySelector("#addressResults");
 
 let map;
 let markerLayer;
+let mapLabelLayer;
 let userLocationLayer;
 let baseMapLayer;
 let baseMapSeq = 0;
@@ -1317,6 +1381,7 @@ let searchRenderFrame = 0;
 let mapResizeTimer = 0;
 let sheetHtmlCache = "";
 let markerRenderKey = "";
+let mapLabelRenderKey = "";
 let quickRailHtmlCache = "";
 
 startWhenReady();
@@ -1365,7 +1430,9 @@ function bootMap() {
 
   setBaseMapLanguage(state.language, false);
 
+  mapLabelLayer = L.layerGroup().addTo(map);
   markerLayer = L.layerGroup().addTo(map);
+  map.on("moveend zoomend", () => renderMapLabels());
   map.on("contextmenu", selectHeldMapPointForReport);
   map.on("click", () => {
     if (!searchPanel?.hidden) setSearchPanel(false);
@@ -1381,7 +1448,11 @@ function setBaseMapLanguage(language, notify = true) {
   const mapLanguage = language === "ja" ? "ja" : "ko";
   replaceBaseMap(rasterBaseMap(mapLanguage));
   if (notify) showToast("지도 언어를 바꿨어.");
-  scheduleVectorMapUpgrade(mapLanguage, seq, notify);
+  mapLabelRenderKey = "";
+  renderMapLabels();
+  if (enableVectorBaseMap) {
+    scheduleVectorMapUpgrade(mapLanguage, seq, notify);
+  }
 }
 
 function scheduleVectorMapUpgrade(mapLanguage, seq, userRequested = false) {
@@ -1507,18 +1578,15 @@ function replaceBaseMap(nextLayer) {
     map.removeLayer(baseMapLayer);
   }
   baseMapLayer = nextLayer.addTo(map);
+  mapLabelLayer?.eachLayer((layer) => layer.bringToFront?.());
   markerLayer?.eachLayer((layer) => layer.bringToFront?.());
 }
 
 function rasterBaseMap(language = "ko") {
-  const japanese = language === "ja";
-  const url = japanese
-    ? "https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png"
-    : "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
-  return L.tileLayer(url, {
+  return L.tileLayer("https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png", {
     maxZoom: 19,
-    subdomains: japanese ? "abcd" : "abc",
-    attribution: japanese ? "&copy; OpenStreetMap &copy; CARTO" : "&copy; OpenStreetMap",
+    subdomains: "abcd",
+    attribution: "&copy; OpenStreetMap &copy; CARTO",
     updateWhenIdle: true,
     updateWhenZooming: false,
     keepBuffer: isCompactViewport() ? 0 : 1
@@ -1978,7 +2046,7 @@ function applyStaticLanguage() {
   document.querySelector("#map")?.setAttribute("aria-label", t("스미맵 지도"));
   document.querySelector(".topbar")?.setAttribute("aria-label", t("상단 탐색"));
   document.querySelector(".brand")?.setAttribute("aria-label", t("스미맵 홈"));
-  document.querySelector(".brand-mark").textContent = japanese ? "す" : "住";
+  document.querySelector(".brand-mark").textContent = japanese ? "す" : "스";
   document.querySelector(".brand strong").textContent = t("스미맵");
   document.querySelector(".brand small").textContent = t("일본 생활 제보 지도");
 
@@ -1989,7 +2057,7 @@ function applyStaticLanguage() {
   siblingButton?.setAttribute("aria-label", japanese ? "きょうだいサービスをみる" : "형제 서비스 보기");
   feedbackButton?.setAttribute("aria-label", feedbackCopy("buttonLabel"));
   const languageCode = languageToggle?.querySelector(".language-code");
-  if (languageCode) languageCode.textContent = japanese ? "한" : "日";
+  if (languageCode) languageCode.textContent = japanese ? "한" : "일";
 
   if (placeSearch) placeSearch.placeholder = t("한국어 주소·역 이름 검색");
   searchClear?.setAttribute("aria-label", t("검색어 지우기"));
@@ -2716,7 +2784,10 @@ function filterChip(item) {
 function renderMarkers() {
   const visiblePlaces = getFilteredPlaces();
   const nextRenderKey = `${state.selectedId}|${visiblePlaces.map((place) => `${place.id}:${place.category}`).join("|")}`;
-  if (markerRenderKey === nextRenderKey) return;
+  if (markerRenderKey === nextRenderKey) {
+    renderMapLabels();
+    return;
+  }
   markerRenderKey = nextRenderKey;
   const visibleIds = new Set(visiblePlaces.map((place) => place.id));
 
@@ -2756,6 +2827,57 @@ function renderMarkers() {
     marker.addTo(markerLayer);
     markers.set(place.id, marker);
     markerClassNames.set(place.id, markerClassName);
+  });
+  renderMapLabels();
+}
+
+function renderMapLabels() {
+  if (!map || !mapLabelLayer) return;
+  const zoom = map.getZoom();
+  const bounds = map.getBounds?.()?.pad(0.12);
+  const visiblePlaces = getFilteredPlaces()
+    .filter((place) => !bounds || bounds.contains([place.lat, place.lng]))
+    .sort((a, b) => totalSignals(b) - totalSignals(a))
+    .slice(0, zoom >= 14 ? 32 : 14);
+  const cityLabels = Object.entries(cities)
+    .filter(([, city]) => !bounds || bounds.pad(0.8).contains(city.center))
+    .map(([key, city]) => ({ key, city }));
+  const nextKey = [
+    state.language,
+    state.filter,
+    state.query,
+    state.activeScenario,
+    Math.round(zoom * 10) / 10,
+    map.getCenter().lat.toFixed(2),
+    map.getCenter().lng.toFixed(2),
+    visiblePlaces.map((place) => place.id).join(",")
+  ].join("|");
+  if (mapLabelRenderKey === nextKey) return;
+  mapLabelRenderKey = nextKey;
+  mapLabelLayer.clearLayers();
+
+  cityLabels.forEach(({ key, city }) => {
+    const label = t(city.label);
+    L.marker(city.center, {
+      interactive: false,
+      keyboard: false,
+      icon: L.divIcon({
+        className: `sumimap-map-label city-label city-${key}`,
+        html: `<span>${escapeHtml(label)}</span>`
+      })
+    }).addTo(mapLabelLayer);
+  });
+
+  if (zoom < 13) return;
+  visiblePlaces.forEach((place) => {
+    L.marker([place.lat, place.lng], {
+      interactive: false,
+      keyboard: false,
+      icon: L.divIcon({
+        className: `sumimap-map-label place-label label-${place.category}`,
+        html: `<span>${categoryEmoji(place.category)} ${escapeHtml(shortPlaceName(placeText(place, "name")))}</span>`
+      })
+    }).addTo(mapLabelLayer);
   });
 }
 
@@ -3487,8 +3609,8 @@ function normalizeAddressCandidate(item) {
   const lat = Number(item?.lat);
   const lng = Number(item?.lon);
   if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
-  const address = String(item?.display_name || "").replace(/\s+/g, " ").trim();
-  const title =
+  const rawAddress = String(item?.display_name || "").replace(/\s+/g, " ").trim();
+  const rawTitle =
     item?.name ||
     item?.address?.amenity ||
     item?.address?.shop ||
@@ -3505,15 +3627,64 @@ function normalizeAddressCandidate(item) {
     item?.address?.county ||
     item?.address?.state ||
     t("검색한 위치");
+  const title = localizeMapCandidateText(rawTitle);
+  const address = compactAddressForLanguage(item, rawAddress, lat, lng);
 
   return {
     id: safeId(`addr-${item?.osm_type || "point"}-${item?.osm_id || `${lat.toFixed(5)}-${lng.toFixed(5)}`}`, createId()),
-    title: String(title).trim(),
-    address: address || `${lat.toFixed(5)}, ${lng.toFixed(5)}`,
+    title,
+    address,
     language: state.language,
     lat,
     lng
   };
+}
+
+function localizeMapCandidateText(value) {
+  const text = String(value || "").replace(/\s+/g, " ").trim();
+  if (!text) return t("검색한 위치");
+  if (isJapanese()) return hiraganaJapaneseText(text);
+  return readableKoreanMapText(text) || t("검색한 위치");
+}
+
+function compactAddressForLanguage(item, rawAddress, lat, lng) {
+  if (isJapanese()) return rawAddress || `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+  const address = item?.address || {};
+  const parts = [
+    address.amenity || address.shop || address.tourism || address.building || address.station,
+    address.road,
+    address.neighbourhood || address.quarter || address.suburb,
+    address.city || address.town || address.village || address.county,
+    address.state,
+    address.country
+  ]
+    .map(readableKoreanMapText)
+    .filter(Boolean);
+  const compact = [...new Set(parts)].join(", ");
+  return compact || readableKoreanMapText(rawAddress) || `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+}
+
+function koreanizeMapText(value) {
+  let result = String(value || "").replace(/\s+/g, " ").trim();
+  koreanMapTextReplacements.forEach(([pattern, replacement]) => {
+    result = result.replace(pattern, replacement);
+  });
+  return result
+    .replace(/\b\d{3}-\d{4}\b/g, "")
+    .replace(/\s*,\s*/g, ", ")
+    .replace(/,\s*,+/g, ",")
+    .replace(/^,\s*|\s*,$/g, "")
+    .trim();
+}
+
+function readableKoreanMapText(value) {
+  const text = koreanizeMapText(value);
+  if (!text) return "";
+  return hasUntranslatedMapText(text) ? "" : text;
+}
+
+function hasUntranslatedMapText(value) {
+  return /[A-Za-z]/.test(value) || /[\u3040-\u30ff\u3400-\u9fff]/.test(value);
 }
 
 function selectAddressCandidate(index) {
@@ -3704,9 +3875,11 @@ function assignLocalizedAddress(place, candidate) {
 
 function localizedAddressFields(candidate) {
   const suffix = candidate.language === "ja" ? "Ja" : "Ko";
+  const title = suffix === "Ko" ? readableKoreanMapText(candidate.title) || "검색한 위치" : candidate.title;
+  const address = suffix === "Ko" ? readableKoreanMapText(candidate.address) || "주소 확인 중" : candidate.address;
   return {
-    [`name${suffix}`]: candidate.title,
-    [`area${suffix}`]: candidate.address
+    [`name${suffix}`]: title,
+    [`area${suffix}`]: address
   };
 }
 
@@ -3896,7 +4069,7 @@ function emojiForTag(label) {
   if (label.includes("충전")) return "🔌";
   if (label.includes("화장실")) return "🚻";
   if (label.includes("비")) return "☔";
-  if (label.includes("한국어")) return "🇰🇷";
+  if (label.includes("한국어")) return "💬";
   if (label.includes("허락")) return "🙋";
   if (label.includes("응대") || label.includes("비추천")) return "⚠️";
   if (label.includes("쉬") || label.includes("대기") || label.includes("혼자")) return "🪑";
@@ -4535,11 +4708,16 @@ function placeText(place, field) {
     const suffix = isJapanese() ? "Ja" : "Ko";
     const localized = place[`${field}${suffix}`];
     if (typeof localized === "string" && localized.trim()) {
-      return isJapanese() ? hiraganaJapaneseText(localized) : localized;
+      return isJapanese() ? hiraganaJapaneseText(localized) : readableKoreanMapText(localized) || (field === "area" ? "주소 확인 중" : "검색한 위치");
     }
   }
   const text = String(place?.[field] || "");
-  if (!isJapanese()) return text;
+  if (!isJapanese()) {
+    if (place?.custom && (field === "name" || field === "area")) {
+      return readableKoreanMapText(text) || (field === "area" ? "주소 확인 중" : "검색한 위치");
+    }
+    return text;
+  }
   const translated = placeJapanese[place?.id]?.[field];
   return typeof translated === "string" ? hiraganaJapaneseText(translated) : t(text);
 }

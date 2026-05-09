@@ -1032,6 +1032,68 @@ a {
   background: var(--red);
 }
 
+.sumimap-map-label {
+  width: 0 !important;
+  height: 0 !important;
+  pointer-events: none;
+  background: transparent;
+  border: 0;
+}
+
+.sumimap-map-label span {
+  position: absolute;
+  left: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 148px;
+  overflow: hidden;
+  padding: 4px 8px;
+  border: 1px solid rgba(205, 219, 218, 0.86);
+  border-radius: 999px;
+  color: #162024;
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 6px 14px rgba(31, 42, 42, 0.12);
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 850;
+  line-height: 1.1;
+  letter-spacing: 0;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.city-label span {
+  transform: translate(-50%, -50%);
+  padding: 5px 10px;
+  border-color: rgba(27, 134, 94, 0.28);
+  color: #0f6d4e;
+  background: rgba(240, 252, 247, 0.9);
+  font-size: 13px;
+}
+
+.place-label span {
+  transform: translate(-50%, 18px);
+  color: #233034;
+}
+
+.label-charge span {
+  border-color: rgba(56, 129, 214, 0.22);
+}
+
+.label-restroom span,
+.label-korean span {
+  border-color: rgba(22, 163, 113, 0.22);
+}
+
+.label-rest span {
+  border-color: rgba(210, 138, 36, 0.22);
+}
+
+.label-caution span {
+  border-color: rgba(220, 83, 77, 0.22);
+}
+
 .static-body {
   overflow: auto;
   background: var(--paper);
