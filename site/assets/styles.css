@@ -166,6 +166,12 @@ a {
   position: relative;
 }
 
+.sibling-button {
+  color: var(--green);
+  background: linear-gradient(180deg, #ffffff 0%, #effaf5 100%);
+  border-color: rgba(17, 168, 122, 0.24);
+}
+
 .language-code {
   position: absolute;
   right: 6px;
@@ -2776,6 +2782,58 @@ textarea:focus-visible {
   display: grid;
   gap: 12px;
   padding: 0 18px 18px;
+}
+
+.sibling-card {
+  max-height: min(74dvh, 520px);
+}
+
+.sibling-body {
+  display: grid;
+  gap: 12px;
+  padding: 0 18px 18px;
+}
+
+.sibling-badge {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 10px;
+  border: 1px solid rgba(17, 168, 122, 0.18);
+  border-radius: 999px;
+  color: #0c6d51;
+  background: #f0faf5;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.sibling-note {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.sibling-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 54px;
+  padding: 14px 15px;
+  border: 1px solid rgba(17, 168, 122, 0.28);
+  border-radius: 8px;
+  color: #ffffff;
+  background: var(--green);
+  box-shadow: 0 10px 24px rgba(17, 168, 122, 0.22);
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.sibling-link span:last-child {
+  font-size: 20px;
+  line-height: 1;
 }
 
 .feedback-kind-row {

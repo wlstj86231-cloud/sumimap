@@ -1280,6 +1280,7 @@ const searchPanel = document.querySelector("#searchPanel");
 const searchToggle = document.querySelector("#searchToggle");
 const languageToggle = document.querySelector("#languageToggle");
 const feedbackButton = document.querySelector("#feedbackButton");
+const siblingButton = document.querySelector("#siblingButton");
 const searchClear = document.querySelector("#searchClear");
 const placeSearch = document.querySelector("#placeSearch");
 const addressSearchButton = document.querySelector("#addressSearchButton");
@@ -1576,6 +1577,7 @@ function bindEvents() {
   locateButton.addEventListener("click", locateUser);
 
   languageToggle?.addEventListener("click", toggleLanguage);
+  siblingButton?.addEventListener("click", openSiblingDialog);
   feedbackButton?.addEventListener("click", openFeedbackDialog);
 
   document.addEventListener("keydown", (event) => {
@@ -1588,6 +1590,7 @@ function bindEvents() {
   document.addEventListener("submit", handleFeedbackSubmit);
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape" && document.querySelector(".feedback-overlay")) {
+      closeSiblingDialog();
       closeFeedbackDialog();
     }
   });
@@ -1971,6 +1974,7 @@ function applyStaticLanguage() {
   searchToggle?.setAttribute("aria-label", t(searchPanel?.hidden ? "검색 열기" : "검색 닫기"));
   languageToggle?.setAttribute("aria-label", japanese ? t("한국어로 보기") : t("일본어로 번역"));
   languageToggle?.setAttribute("aria-pressed", String(japanese));
+  siblingButton?.setAttribute("aria-label", japanese ? "きょうだいサービスをみる" : "형제 서비스 보기");
   feedbackButton?.setAttribute("aria-label", feedbackCopy("buttonLabel"));
   const languageCode = languageToggle?.querySelector(".language-code");
   if (languageCode) languageCode.textContent = japanese ? "한" : "日";
@@ -3885,6 +3889,73 @@ function emojiForTag(label) {
   if (label.includes("응대") || label.includes("비추천")) return "⚠️";
   if (label.includes("쉬") || label.includes("대기") || label.includes("혼자")) return "🪑";
   return "📍";
+}
+
+function siblingCopy(key) {
+  const ko = {
+    kicker: "스미맵 패밀리",
+    title: "세이프루트",
+    desc: "해외에서 소매치기, 날치기, 관광지 스캠처럼 치안 주의가 필요한 길목을 사용자 제보와 도시별 주의 신호로 빠르게 보여주는 형제 지도입니다.",
+    badge: "치안 주의 지도",
+    note: "스미맵이 일본 생활 편의를 맡고, 세이프루트는 해외 이동 중 피해야 할 길목과 대처 루틴을 맡습니다.",
+    cta: "세이프루트 열기",
+    close: "닫기"
+  };
+  const ja = {
+    kicker: "すみまっぷ ふぁみりー",
+    title: "せいふるーと",
+    desc: "かいがいで すり、ひったくり、かんこうち の すきゃむ など、ちあん の ちゅうい が ひつよう な みち を じょうほう から はやく みられる きょうだい ちずです。",
+    badge: "ちあん ちゅうい ちず",
+    note: "すみまっぷ は にほん せいかつ の べんり を、せいふるーと は かいがい いどう の ちゅうい と たいおう を たすけます。",
+    cta: "せいふるーと を ひらく",
+    close: "とじる"
+  };
+  return (isJapanese() ? ja : ko)[key] || ko[key] || "";
+}
+
+function openSiblingDialog() {
+  document.querySelector(".feedback-overlay")?.remove();
+  document.body.insertAdjacentHTML("beforeend", renderSiblingDialog());
+  const overlay = document.querySelector(".sibling-overlay");
+  overlay?.addEventListener("click", handleSiblingDialogClick);
+  window.requestAnimationFrame(() => {
+    document.querySelector(".sibling-link")?.focus();
+  });
+}
+
+function closeSiblingDialog() {
+  document.querySelector(".sibling-overlay")?.remove();
+}
+
+function handleSiblingDialogClick(event) {
+  if (event.target === event.currentTarget || event.target.closest("[data-sibling-close]")) {
+    closeSiblingDialog();
+  }
+}
+
+function renderSiblingDialog() {
+  return `
+    <div class="feedback-overlay sibling-overlay">
+      <section class="feedback-card sibling-card" role="dialog" aria-modal="true" aria-labelledby="siblingTitle">
+        <div class="feedback-head">
+          <div>
+            <span class="feedback-kicker">${escapeHtml(siblingCopy("kicker"))}</span>
+            <h2 id="siblingTitle">${escapeHtml(siblingCopy("title"))}</h2>
+            <p>${escapeHtml(siblingCopy("desc"))}</p>
+          </div>
+          <button class="feedback-close" type="button" data-sibling-close aria-label="${escapeHtml(siblingCopy("close"))}">×</button>
+        </div>
+        <div class="sibling-body">
+          <span class="sibling-badge">路 ${escapeHtml(siblingCopy("badge"))}</span>
+          <p class="sibling-note">${escapeHtml(siblingCopy("note"))}</p>
+          <a class="sibling-link" href="https://saferoute.kr/" rel="noopener">
+            <span>${escapeHtml(siblingCopy("cta"))}</span>
+            <span aria-hidden="true">↗</span>
+          </a>
+        </div>
+      </section>
+    </div>
+  `;
 }
 
 function openFeedbackDialog() {
