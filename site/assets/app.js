@@ -4677,8 +4677,18 @@ function escapeAttr(value) {
 }
 
 function readLanguagePreference() {
-  const stored = readJson(languageStorageKey, "ko");
-  return supportedLanguages.has(stored) ? stored : "ko";
+  const requested = readRequestedLanguage();
+  return requested || "ko";
+}
+
+function readRequestedLanguage() {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const requested = params.get("lang") || params.get("language");
+    return supportedLanguages.has(requested) ? requested : "";
+  } catch {
+    return "";
+  }
 }
 
 function readStableClientId(key) {

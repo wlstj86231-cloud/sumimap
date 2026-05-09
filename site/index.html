@@ -6,6 +6,20 @@
     <title>스미맵 - 일본 생활 제보 지도</title>
     <meta name="description" content="일본에서 사는 한국인을 위한 충전, 화장실, 쉬기 좋은 곳, 한국어 대응, 응대 불편 제보 지도.">
     <meta name="theme-color" content="#f7f4ed">
+    <script>
+      (() => {
+        const params = new URLSearchParams(window.location.search);
+        const requested = params.get("lang") || params.get("language");
+        if (requested !== "ja") {
+          document.documentElement.lang = "ko";
+          try {
+            localStorage.setItem("sumimap:language", JSON.stringify("ko"));
+          } catch {
+            // Storage can be blocked in private modes; Korean still remains the default.
+          }
+        }
+      })();
+    </script>
     <link rel="canonical" href="https://sumimap.com/">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="스미맵">
@@ -24,11 +38,11 @@
     <link rel="dns-prefetch" href="https://basemaps.cartocdn.com">
     <link rel="dns-prefetch" href="https://nominatim.openstreetmap.org">
     <link rel="preload" href="/assets/vendor/leaflet/leaflet.css" as="style">
-    <link rel="preload" href="/assets/styles.css?v=20260509-fastmap2" as="style" fetchpriority="high">
+    <link rel="preload" href="/assets/styles.css?v=20260509-koonly1" as="style" fetchpriority="high">
     <link rel="preload" href="/assets/vendor/leaflet/leaflet.js" as="script" fetchpriority="high">
-    <link rel="modulepreload" href="/assets/app.js?v=20260509-fastmap2" fetchpriority="high">
+    <link rel="modulepreload" href="/assets/app.js?v=20260509-koonly1" fetchpriority="high">
     <link rel="stylesheet" href="/assets/vendor/leaflet/leaflet.css">
-    <link rel="stylesheet" href="/assets/styles.css?v=20260509-fastmap2">
+    <link rel="stylesheet" href="/assets/styles.css?v=20260509-koonly1">
     <script async fetchpriority="low" src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7217591196020054" crossorigin="anonymous"></script>
     <script type="application/ld+json">
       {
@@ -175,6 +189,6 @@
     </noscript>
 
     <script src="/assets/vendor/leaflet/leaflet.js" defer></script>
-    <script src="/assets/app.js?v=20260509-fastmap2" type="module"></script>
+    <script src="/assets/app.js?v=20260509-koonly1" type="module"></script>
   </body>
 </html>
