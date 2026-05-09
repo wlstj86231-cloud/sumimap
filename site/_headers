@@ -46,3 +46,8 @@
 
 /sitemap.xml
   Cache-Control: public, max-age=0, must-revalidate
+  Content-Type: application/xml; charset=UTF-8
+
+/feed.xml
+  Cache-Control: public, max-age=0, must-revalidate
+  Content-Type: application/xml; charset=UTF-8
