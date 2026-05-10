@@ -1048,6 +1048,229 @@ const places = [
   }
 ];
 
+const localMapLabels = [
+  { id: "tokyo-pref", type: "admin", ko: "도쿄도", ja: "とうきょうと", lat: 35.6895, lng: 139.6917, minZoom: 9.5, weight: 120 },
+  { id: "tokyo-chiyoda", type: "admin", ko: "도쿄도 치요다구", ja: "とうきょうと ちよだく", lat: 35.6938, lng: 139.7536, minZoom: 11, weight: 94 },
+  { id: "tokyo-chuo", type: "admin", ko: "도쿄도 주오구", ja: "とうきょうと ちゅうおうく", lat: 35.6706, lng: 139.7720, minZoom: 11, weight: 90 },
+  { id: "tokyo-minato", type: "admin", ko: "도쿄도 미나토구", ja: "とうきょうと みなとく", lat: 35.6581, lng: 139.7516, minZoom: 11, weight: 86 },
+  { id: "tokyo-shinjuku-ku", type: "admin", ko: "도쿄도 신주쿠구", ja: "とうきょうと しんじゅくく", lat: 35.6938, lng: 139.7034, minZoom: 11, weight: 108 },
+  { id: "tokyo-shibuya-ku", type: "admin", ko: "도쿄도 시부야구", ja: "とうきょうと しぶやく", lat: 35.6618, lng: 139.7041, minZoom: 11, weight: 104 },
+  { id: "tokyo-toshima-ku", type: "admin", ko: "도쿄도 도시마구", ja: "とうきょうと としまく", lat: 35.7263, lng: 139.7167, minZoom: 11, weight: 92 },
+  { id: "tokyo-taito-ku", type: "admin", ko: "도쿄도 다이토구", ja: "とうきょうと たいとうく", lat: 35.7126, lng: 139.7802, minZoom: 11, weight: 88 },
+  { id: "tokyo-shinagawa-ku", type: "admin", ko: "도쿄도 시나가와구", ja: "とうきょうと しながわく", lat: 35.6092, lng: 139.7301, minZoom: 11, weight: 82 },
+
+  { id: "tokyo-shinjuku", type: "neighborhood", ko: "신주쿠", ja: "しんじゅく", lat: 35.6909, lng: 139.7003, minZoom: 12, weight: 116 },
+  { id: "tokyo-shinjuku-east", type: "neighborhood", ko: "신주쿠 동쪽 출구", ja: "しんじゅく ひがしぐち", lat: 35.6915, lng: 139.7038, minZoom: 13, weight: 115 },
+  { id: "tokyo-kabukicho", type: "neighborhood", ko: "가부키초", ja: "かぶきちょう", lat: 35.6955, lng: 139.7027, minZoom: 13, weight: 104 },
+  { id: "tokyo-shinjuku-sanchome", type: "neighborhood", ko: "신주쿠 3초메", ja: "しんじゅく さんちょうめ", lat: 35.6902, lng: 139.7063, minZoom: 13, weight: 96 },
+  { id: "tokyo-shinokubo", type: "neighborhood", ko: "신오쿠보", ja: "しんおおくぼ", lat: 35.7007, lng: 139.7000, minZoom: 12.5, weight: 104 },
+  { id: "tokyo-okubo", type: "neighborhood", ko: "오쿠보", ja: "おおくぼ", lat: 35.7016, lng: 139.6953, minZoom: 13, weight: 84 },
+  { id: "tokyo-yoyogi", type: "neighborhood", ko: "요요기", ja: "よよぎ", lat: 35.6836, lng: 139.7021, minZoom: 13, weight: 78 },
+  { id: "tokyo-shibuya", type: "neighborhood", ko: "시부야", ja: "しぶや", lat: 35.6596, lng: 139.7005, minZoom: 12, weight: 112 },
+  { id: "tokyo-dogenzaka", type: "neighborhood", ko: "도겐자카", ja: "どうげんざか", lat: 35.6584, lng: 139.6972, minZoom: 13, weight: 82 },
+  { id: "tokyo-ueno", type: "neighborhood", ko: "우에노", ja: "うえの", lat: 35.7138, lng: 139.7770, minZoom: 12, weight: 98 },
+  { id: "tokyo-okachimachi", type: "neighborhood", ko: "오카치마치", ja: "おかちまち", lat: 35.7074, lng: 139.7746, minZoom: 13, weight: 82 },
+  { id: "tokyo-akihabara", type: "neighborhood", ko: "아키하바라", ja: "あきはばら", lat: 35.6984, lng: 139.7730, minZoom: 12.5, weight: 96 },
+  { id: "tokyo-ikebukuro", type: "neighborhood", ko: "이케부쿠로", ja: "いけぶくろ", lat: 35.7295, lng: 139.7109, minZoom: 12, weight: 104 },
+  { id: "tokyo-takadanobaba", type: "neighborhood", ko: "다카다노바바", ja: "たかだのばば", lat: 35.7123, lng: 139.7035, minZoom: 12.5, weight: 90 },
+  { id: "tokyo-yaesu", type: "neighborhood", ko: "도쿄역 야에스", ja: "とうきょうえき やえす", lat: 35.6806, lng: 139.7700, minZoom: 13, weight: 90 },
+  { id: "tokyo-nihonbashi", type: "neighborhood", ko: "니혼바시", ja: "にほんばし", lat: 35.6826, lng: 139.7749, minZoom: 13, weight: 74 },
+  { id: "tokyo-ginza", type: "neighborhood", ko: "긴자", ja: "ぎんざ", lat: 35.6719, lng: 139.7650, minZoom: 13, weight: 76 },
+  { id: "tokyo-shinagawa", type: "neighborhood", ko: "시나가와", ja: "しながわ", lat: 35.6285, lng: 139.7388, minZoom: 12.5, weight: 90 },
+
+  { id: "osaka-pref", type: "admin", ko: "오사카부", ja: "おおさかふ", lat: 34.6863, lng: 135.5200, minZoom: 9.5, weight: 118 },
+  { id: "osaka-city", type: "admin", ko: "오사카시", ja: "おおさかし", lat: 34.6937, lng: 135.5023, minZoom: 10.5, weight: 110 },
+  { id: "osaka-kita-ku", type: "admin", ko: "오사카시 기타구", ja: "おおさかし きたく", lat: 34.7054, lng: 135.5100, minZoom: 11.5, weight: 96 },
+  { id: "osaka-chuo-ku", type: "admin", ko: "오사카시 주오구", ja: "おおさかし ちゅうおうく", lat: 34.6813, lng: 135.5097, minZoom: 11.5, weight: 94 },
+  { id: "osaka-naniwa-ku", type: "admin", ko: "오사카시 나니와구", ja: "おおさかし なにわく", lat: 34.6652, lng: 135.4991, minZoom: 11.5, weight: 92 },
+  { id: "osaka-tennoji-ku", type: "admin", ko: "오사카시 덴노지구", ja: "おおさかし てんのうじく", lat: 34.6550, lng: 135.5187, minZoom: 11.5, weight: 86 },
+  { id: "osaka-ikuno-ku", type: "admin", ko: "오사카시 이쿠노구", ja: "おおさかし いくのく", lat: 34.6534, lng: 135.5340, minZoom: 11.5, weight: 76 },
+  { id: "osaka-nishinari-ku", type: "admin", ko: "오사카시 니시나리구", ja: "おおさかし にしなりく", lat: 34.6380, lng: 135.4940, minZoom: 11.5, weight: 72 },
+  { id: "osaka-namba", type: "neighborhood", ko: "난바", ja: "なんば", lat: 34.6657, lng: 135.5019, minZoom: 12, weight: 116 },
+  { id: "osaka-dotonbori", type: "neighborhood", ko: "도톤보리", ja: "どうとんぼり", lat: 34.6687, lng: 135.5032, minZoom: 13, weight: 104 },
+  { id: "osaka-shinsaibashi", type: "neighborhood", ko: "신사이바시", ja: "しんさいばし", lat: 34.6746, lng: 135.5008, minZoom: 13, weight: 96 },
+  { id: "osaka-umeda", type: "neighborhood", ko: "우메다", ja: "うめだ", lat: 34.7025, lng: 135.4959, minZoom: 12, weight: 110 },
+  { id: "osaka-station", type: "station", ko: "오사카역", ja: "おおさかえき", lat: 34.7025, lng: 135.4959, minZoom: 12.5, weight: 104 },
+  { id: "osaka-tsuruhashi", type: "neighborhood", ko: "쓰루하시", ja: "つるはし", lat: 34.6651, lng: 135.5306, minZoom: 12.5, weight: 98 },
+  { id: "osaka-tennoji", type: "neighborhood", ko: "덴노지", ja: "てんのうじ", lat: 34.6465, lng: 135.5133, minZoom: 12.5, weight: 94 },
+  { id: "osaka-shinimamiya", type: "neighborhood", ko: "신이마미야", ja: "しんいまみや", lat: 34.6500, lng: 135.5007, minZoom: 13, weight: 84 },
+  { id: "osaka-nipponbashi", type: "neighborhood", ko: "닛폰바시", ja: "にっぽんばし", lat: 34.6661, lng: 135.5061, minZoom: 13, weight: 80 },
+
+  { id: "fukuoka-pref", type: "admin", ko: "후쿠오카현", ja: "ふくおかけん", lat: 33.6064, lng: 130.4181, minZoom: 9.5, weight: 112 },
+  { id: "fukuoka-city", type: "admin", ko: "후쿠오카시", ja: "ふくおかし", lat: 33.5902, lng: 130.4017, minZoom: 10.5, weight: 106 },
+  { id: "fukuoka-hakata-ku", type: "admin", ko: "후쿠오카시 하카타구", ja: "ふくおかし はかたく", lat: 33.5898, lng: 130.4214, minZoom: 11.5, weight: 98 },
+  { id: "fukuoka-chuo-ku", type: "admin", ko: "후쿠오카시 주오구", ja: "ふくおかし ちゅうおうく", lat: 33.5893, lng: 130.3929, minZoom: 11.5, weight: 92 },
+  { id: "fukuoka-hakata", type: "neighborhood", ko: "하카타", ja: "はかた", lat: 33.5904, lng: 130.4206, minZoom: 12, weight: 112 },
+  { id: "fukuoka-tenjin", type: "neighborhood", ko: "텐진", ja: "てんじん", lat: 33.5908, lng: 130.3991, minZoom: 12, weight: 104 },
+  { id: "fukuoka-nakasu", type: "neighborhood", ko: "나카스", ja: "なかす", lat: 33.5929, lng: 130.4068, minZoom: 12.5, weight: 94 },
+  { id: "fukuoka-gion", type: "neighborhood", ko: "기온", ja: "ぎおん", lat: 33.5937, lng: 130.4142, minZoom: 13, weight: 76 },
+  { id: "fukuoka-canal", type: "neighborhood", ko: "캐널시티 하카타", ja: "きゃなるしてぃ はかた", lat: 33.5897, lng: 130.4107, minZoom: 13, weight: 82 },
+
+  { id: "kyoto-pref", type: "admin", ko: "교토부", ja: "きょうとふ", lat: 35.0116, lng: 135.7681, minZoom: 9.5, weight: 110 },
+  { id: "kyoto-city", type: "admin", ko: "교토시", ja: "きょうとし", lat: 35.0116, lng: 135.7681, minZoom: 10.5, weight: 106 },
+  { id: "kyoto-shimogyo-ku", type: "admin", ko: "교토시 시모교구", ja: "きょうとし しもぎょうく", lat: 34.9902, lng: 135.7558, minZoom: 11.5, weight: 92 },
+  { id: "kyoto-nakagyo-ku", type: "admin", ko: "교토시 나카교구", ja: "きょうとし なかぎょうく", lat: 35.0102, lng: 135.7519, minZoom: 11.5, weight: 90 },
+  { id: "kyoto-higashiyama-ku", type: "admin", ko: "교토시 히가시야마구", ja: "きょうとし ひがしやまく", lat: 34.9970, lng: 135.7760, minZoom: 11.5, weight: 88 },
+  { id: "kyoto-station", type: "station", ko: "교토역", ja: "きょうとえき", lat: 34.9859, lng: 135.7588, minZoom: 12, weight: 112 },
+  { id: "kyoto-shijo-kawaramachi", type: "neighborhood", ko: "시조가와라마치", ja: "しじょうかわらまち", lat: 35.0037, lng: 135.7687, minZoom: 12, weight: 108 },
+  { id: "kyoto-gion", type: "neighborhood", ko: "기온", ja: "ぎおん", lat: 35.0030, lng: 135.7751, minZoom: 12.5, weight: 98 },
+  { id: "kyoto-karasuma", type: "neighborhood", ko: "가라스마", ja: "からすま", lat: 35.0039, lng: 135.7593, minZoom: 13, weight: 84 },
+  { id: "kyoto-kiyomizu", type: "neighborhood", ko: "기요미즈", ja: "きよみず", lat: 34.9949, lng: 135.7850, minZoom: 13, weight: 78 },
+
+  { id: "tokyo-sumida-ku", type: "admin", ko: "도쿄도 스미다구", ja: "とうきょうと すみだく", lat: 35.7101, lng: 139.8107, minZoom: 11.5, weight: 78 },
+  { id: "tokyo-bunkyo-ku", type: "admin", ko: "도쿄도 분쿄구", ja: "とうきょうと ぶんきょうく", lat: 35.7081, lng: 139.7522, minZoom: 11.5, weight: 76 },
+  { id: "tokyo-nakano-ku", type: "admin", ko: "도쿄도 나카노구", ja: "とうきょうと なかのく", lat: 35.7074, lng: 139.6638, minZoom: 11.5, weight: 74 },
+  { id: "tokyo-meguro-ku", type: "admin", ko: "도쿄도 메구로구", ja: "とうきょうと めぐろく", lat: 35.6415, lng: 139.6982, minZoom: 11.5, weight: 72 },
+  { id: "tokyo-setagaya-ku", type: "admin", ko: "도쿄도 세타가야구", ja: "とうきょうと せたがやく", lat: 35.6466, lng: 139.6532, minZoom: 11.5, weight: 70 },
+  { id: "tokyo-nishi-shinjuku", type: "neighborhood", ko: "니시신주쿠", ja: "にししんじゅく", lat: 35.6932, lng: 139.6924, minZoom: 13, weight: 94 },
+  { id: "tokyo-higashi-shinjuku", type: "neighborhood", ko: "히가시신주쿠", ja: "ひがししんじゅく", lat: 35.6979, lng: 139.7076, minZoom: 13, weight: 88 },
+  { id: "tokyo-shinjuku-2chome", type: "neighborhood", ko: "신주쿠 2초메", ja: "しんじゅく にちょうめ", lat: 35.6891, lng: 139.7084, minZoom: 14, weight: 76 },
+  { id: "tokyo-golden-gai", type: "neighborhood", ko: "골든가이", ja: "ごーるでんがい", lat: 35.6937, lng: 139.7049, minZoom: 14, weight: 70 },
+  { id: "tokyo-waseda", type: "neighborhood", ko: "와세다", ja: "わせだ", lat: 35.7055, lng: 139.7210, minZoom: 13, weight: 72 },
+  { id: "tokyo-harajuku", type: "neighborhood", ko: "하라주쿠", ja: "はらじゅく", lat: 35.6702, lng: 139.7026, minZoom: 12.5, weight: 88 },
+  { id: "tokyo-omotesando", type: "neighborhood", ko: "오모테산도", ja: "おもてさんどう", lat: 35.6652, lng: 139.7126, minZoom: 13, weight: 82 },
+  { id: "tokyo-ebisu", type: "neighborhood", ko: "에비스", ja: "えびす", lat: 35.6467, lng: 139.7101, minZoom: 13, weight: 78 },
+  { id: "tokyo-daikanyama", type: "neighborhood", ko: "다이칸야마", ja: "だいかんやま", lat: 35.6480, lng: 139.7032, minZoom: 13, weight: 72 },
+  { id: "tokyo-nakameguro", type: "neighborhood", ko: "나카메구로", ja: "なかめぐろ", lat: 35.6443, lng: 139.6992, minZoom: 13, weight: 72 },
+  { id: "tokyo-roppongi", type: "neighborhood", ko: "롯폰기", ja: "ろっぽんぎ", lat: 35.6628, lng: 139.7311, minZoom: 12.5, weight: 84 },
+  { id: "tokyo-asakusa", type: "neighborhood", ko: "아사쿠사", ja: "あさくさ", lat: 35.7148, lng: 139.7967, minZoom: 12.5, weight: 86 },
+  { id: "tokyo-oshiage", type: "neighborhood", ko: "오시아게", ja: "おしあげ", lat: 35.7101, lng: 139.8129, minZoom: 13, weight: 72 },
+  { id: "tokyo-ueno-park", type: "neighborhood", ko: "우에노 공원", ja: "うえのこうえん", lat: 35.7156, lng: 139.7730, minZoom: 13, weight: 74 },
+  { id: "tokyo-kanda", type: "neighborhood", ko: "간다", ja: "かんだ", lat: 35.6917, lng: 139.7709, minZoom: 13, weight: 72 },
+
+  { id: "osaka-nishi-ku", type: "admin", ko: "오사카시 니시구", ja: "おおさかし にしく", lat: 34.6763, lng: 135.4865, minZoom: 11.5, weight: 82 },
+  { id: "osaka-yodogawa-ku", type: "admin", ko: "오사카시 요도가와구", ja: "おおさかし よどがわく", lat: 34.7210, lng: 135.4860, minZoom: 11.5, weight: 80 },
+  { id: "osaka-abeno-ku", type: "admin", ko: "오사카시 아베노구", ja: "おおさかし あべのく", lat: 34.6382, lng: 135.5184, minZoom: 11.5, weight: 78 },
+  { id: "osaka-amerikamura", type: "neighborhood", ko: "아메리카무라", ja: "あめりかむら", lat: 34.6724, lng: 135.4978, minZoom: 13, weight: 88 },
+  { id: "osaka-horie", type: "neighborhood", ko: "호리에", ja: "ほりえ", lat: 34.6732, lng: 135.4914, minZoom: 13, weight: 78 },
+  { id: "osaka-kuromon", type: "neighborhood", ko: "구로몬 시장", ja: "くろもんいちば", lat: 34.6653, lng: 135.5066, minZoom: 13, weight: 84 },
+  { id: "osaka-den-den-town", type: "neighborhood", ko: "덴덴타운", ja: "でんでんたうん", lat: 34.6597, lng: 135.5062, minZoom: 13, weight: 82 },
+  { id: "osaka-shinsekai", type: "neighborhood", ko: "신세카이", ja: "しんせかい", lat: 34.6525, lng: 135.5063, minZoom: 13, weight: 82 },
+  { id: "osaka-honmachi", type: "neighborhood", ko: "혼마치", ja: "ほんまち", lat: 34.6828, lng: 135.5004, minZoom: 13, weight: 78 },
+  { id: "osaka-yodoyabashi", type: "neighborhood", ko: "요도야바시", ja: "よどやばし", lat: 34.6924, lng: 135.5018, minZoom: 13, weight: 76 },
+  { id: "osaka-kitashinchi", type: "neighborhood", ko: "기타신치", ja: "きたしんち", lat: 34.6974, lng: 135.4962, minZoom: 13, weight: 74 },
+  { id: "osaka-nakazakicho", type: "neighborhood", ko: "나카자키초", ja: "なかざきちょう", lat: 34.7088, lng: 135.5058, minZoom: 13, weight: 70 },
+
+  { id: "fukuoka-higashi-ku", type: "admin", ko: "후쿠오카시 히가시구", ja: "ふくおかし ひがしく", lat: 33.6177, lng: 130.4179, minZoom: 11.5, weight: 74 },
+  { id: "fukuoka-minami-ku", type: "admin", ko: "후쿠오카시 미나미구", ja: "ふくおかし みなみく", lat: 33.5615, lng: 130.4265, minZoom: 11.5, weight: 72 },
+  { id: "fukuoka-sawara-ku", type: "admin", ko: "후쿠오카시 사와라구", ja: "ふくおかし さわらく", lat: 33.5812, lng: 130.3482, minZoom: 11.5, weight: 70 },
+  { id: "fukuoka-chikushi-exit", type: "neighborhood", ko: "하카타 지쿠시 출구", ja: "はかた ちくしぐち", lat: 33.5896, lng: 130.4238, minZoom: 13, weight: 86 },
+  { id: "fukuoka-nakasu-kawabata", type: "neighborhood", ko: "나카스카와바타", ja: "なかすかわばた", lat: 33.5948, lng: 130.4052, minZoom: 13, weight: 82 },
+  { id: "fukuoka-daimyo", type: "neighborhood", ko: "다이묘", ja: "だいみょう", lat: 33.5897, lng: 130.3935, minZoom: 13, weight: 80 },
+  { id: "fukuoka-akasaka", type: "neighborhood", ko: "아카사카", ja: "あかさか", lat: 33.5890, lng: 130.3900, minZoom: 13, weight: 74 },
+  { id: "fukuoka-yakuin", type: "neighborhood", ko: "야쿠인", ja: "やくいん", lat: 33.5817, lng: 130.4016, minZoom: 13, weight: 74 },
+  { id: "fukuoka-ohori", type: "neighborhood", ko: "오호리 공원", ja: "おおほりこうえん", lat: 33.5860, lng: 130.3767, minZoom: 13, weight: 72 },
+  { id: "fukuoka-nishijin", type: "neighborhood", ko: "니시진", ja: "にしじん", lat: 33.5839, lng: 130.3606, minZoom: 13, weight: 68 },
+  { id: "fukuoka-momochi", type: "neighborhood", ko: "모모치", ja: "ももち", lat: 33.5932, lng: 130.3517, minZoom: 13, weight: 66 },
+
+  { id: "kyoto-kamigyo-ku", type: "admin", ko: "교토시 가미교구", ja: "きょうとし かみぎょうく", lat: 35.0297, lng: 135.7567, minZoom: 11.5, weight: 76 },
+  { id: "kyoto-sakyo-ku", type: "admin", ko: "교토시 사쿄구", ja: "きょうとし さきょうく", lat: 35.0485, lng: 135.7786, minZoom: 11.5, weight: 74 },
+  { id: "kyoto-fushimi-ku", type: "admin", ko: "교토시 후시미구", ja: "きょうとし ふしみく", lat: 34.9360, lng: 135.7613, minZoom: 11.5, weight: 70 },
+  { id: "kyoto-kiyamachi", type: "neighborhood", ko: "기야마치", ja: "きやまち", lat: 35.0056, lng: 135.7705, minZoom: 13, weight: 84 },
+  { id: "kyoto-pontocho", type: "neighborhood", ko: "폰토초", ja: "ぽんとちょう", lat: 35.0067, lng: 135.7704, minZoom: 13.5, weight: 78 },
+  { id: "kyoto-nishiki", type: "neighborhood", ko: "니시키 시장", ja: "にしきいちば", lat: 35.0050, lng: 135.7649, minZoom: 13, weight: 82 },
+  { id: "kyoto-sanjo", type: "neighborhood", ko: "산조", ja: "さんじょう", lat: 35.0086, lng: 135.7696, minZoom: 13, weight: 80 },
+  { id: "kyoto-gojo", type: "neighborhood", ko: "고조", ja: "ごじょう", lat: 34.9968, lng: 135.7594, minZoom: 13, weight: 74 },
+  { id: "kyoto-ninenzaka", type: "neighborhood", ko: "니넨자카", ja: "にねんざか", lat: 34.9966, lng: 135.7800, minZoom: 13.5, weight: 72 },
+  { id: "kyoto-sannenzaka", type: "neighborhood", ko: "산넨자카", ja: "さんねんざか", lat: 34.9960, lng: 135.7816, minZoom: 13.5, weight: 72 },
+  { id: "kyoto-fushimi-inari", type: "neighborhood", ko: "후시미이나리", ja: "ふしみいなり", lat: 34.9671, lng: 135.7727, minZoom: 12.5, weight: 76 },
+  { id: "kyoto-arashiyama", type: "neighborhood", ko: "아라시야마", ja: "あらしやま", lat: 35.0094, lng: 135.6668, minZoom: 12.5, weight: 74 },
+
+  { id: "station-shinjuku", type: "station", ko: "신주쿠역", ja: "しんじゅくえき", lat: 35.6896, lng: 139.7006, minZoom: 13, weight: 112 },
+  { id: "station-shibuya", type: "station", ko: "시부야역", ja: "しぶやえき", lat: 35.6580, lng: 139.7016, minZoom: 13, weight: 108 },
+  { id: "station-shinokubo", type: "station", ko: "신오쿠보역", ja: "しんおおくぼえき", lat: 35.7013, lng: 139.7001, minZoom: 13.5, weight: 92 },
+  { id: "station-ueno", type: "station", ko: "우에노역", ja: "うえのえき", lat: 35.7138, lng: 139.7773, minZoom: 13, weight: 96 },
+  { id: "station-akihabara", type: "station", ko: "아키하바라역", ja: "あきはばらえき", lat: 35.6984, lng: 139.7731, minZoom: 13.5, weight: 92 },
+  { id: "station-ikebukuro", type: "station", ko: "이케부쿠로역", ja: "いけぶくろえき", lat: 35.7295, lng: 139.7109, minZoom: 13, weight: 98 },
+  { id: "station-tokyo", type: "station", ko: "도쿄역", ja: "とうきょうえき", lat: 35.6812, lng: 139.7671, minZoom: 13, weight: 98 },
+  { id: "station-namba", type: "station", ko: "난바역", ja: "なんばえき", lat: 34.6665, lng: 135.5005, minZoom: 13, weight: 106 },
+  { id: "station-umeda", type: "station", ko: "우메다역", ja: "うめだえき", lat: 34.7029, lng: 135.4985, minZoom: 13, weight: 100 },
+  { id: "station-tsuruhashi", type: "station", ko: "쓰루하시역", ja: "つるはしえき", lat: 34.6652, lng: 135.5308, minZoom: 13.5, weight: 88 },
+  { id: "station-shinimamiya", type: "station", ko: "신이마미야역", ja: "しんいまみやえき", lat: 34.6501, lng: 135.5008, minZoom: 13.5, weight: 84 },
+  { id: "station-hakata", type: "station", ko: "하카타역", ja: "はかたえき", lat: 33.5902, lng: 130.4206, minZoom: 13, weight: 108 },
+  { id: "station-tenjin", type: "station", ko: "텐진역", ja: "てんじんえき", lat: 33.5904, lng: 130.3992, minZoom: 13, weight: 96 },
+  { id: "station-gion-shijo", type: "station", ko: "기온시조역", ja: "ぎおんしじょうえき", lat: 35.0037, lng: 135.7725, minZoom: 13, weight: 96 },
+  { id: "station-kyoto-kawaramachi", type: "station", ko: "교토가와라마치역", ja: "きょうとかわらまちえき", lat: 35.0036, lng: 135.7685, minZoom: 13, weight: 94 },
+  { id: "station-karasuma", type: "station", ko: "가라스마역", ja: "からすまえき", lat: 35.0038, lng: 135.7591, minZoom: 13.5, weight: 82 },
+
+  { id: "block-kabukicho-1", type: "block", ko: "가부키초 1초메", ja: "かぶきちょう いっちょうめ", lat: 35.6949, lng: 139.7037, minZoom: 14.5, weight: 58 },
+  { id: "block-shinjuku-3", type: "block", ko: "신주쿠 3초메", ja: "しんじゅく さんちょうめ", lat: 35.6904, lng: 139.7062, minZoom: 14.5, weight: 56 },
+  { id: "block-nishi-shinjuku-1", type: "block", ko: "니시신주쿠 1초메", ja: "にししんじゅく いっちょうめ", lat: 35.6907, lng: 139.6972, minZoom: 14.5, weight: 54 },
+  { id: "block-yoyogi-1", type: "block", ko: "요요기 1초메", ja: "よよぎ いっちょうめ", lat: 35.6824, lng: 139.7016, minZoom: 14.5, weight: 50 },
+  { id: "block-jingumae", type: "block", ko: "진구마에", ja: "じんぐうまえ", lat: 35.6690, lng: 139.7078, minZoom: 14.5, weight: 54 },
+  { id: "block-shibuya-1", type: "block", ko: "시부야 1초메", ja: "しぶや いっちょうめ", lat: 35.6608, lng: 139.7045, minZoom: 14.5, weight: 54 },
+  { id: "block-dogenzaka-2", type: "block", ko: "도겐자카 2초메", ja: "どうげんざか にちょうめ", lat: 35.6592, lng: 139.6962, minZoom: 14.5, weight: 52 },
+  { id: "block-ueno-6", type: "block", ko: "우에노 6초메", ja: "うえの ろくちょうめ", lat: 35.7105, lng: 139.7766, minZoom: 14.5, weight: 52 },
+  { id: "block-sotokanda", type: "block", ko: "소토칸다", ja: "そとかんだ", lat: 35.7003, lng: 139.7713, minZoom: 14.5, weight: 50 },
+  { id: "block-asakusa-1", type: "block", ko: "아사쿠사 1초메", ja: "あさくさ いっちょうめ", lat: 35.7134, lng: 139.7932, minZoom: 14.5, weight: 50 },
+  { id: "block-dotonbori-1", type: "block", ko: "도톤보리 1초메", ja: "どうとんぼり いっちょうめ", lat: 34.6687, lng: 135.5030, minZoom: 14.5, weight: 58 },
+  { id: "block-namba-3", type: "block", ko: "난바 3초메", ja: "なんば さんちょうめ", lat: 34.6649, lng: 135.5013, minZoom: 14.5, weight: 56 },
+  { id: "block-sennichimae", type: "block", ko: "센니치마에", ja: "せんにちまえ", lat: 34.6658, lng: 135.5034, minZoom: 14.5, weight: 54 },
+  { id: "block-nipponbashi-4", type: "block", ko: "닛폰바시 4초메", ja: "にっぽんばし よんちょうめ", lat: 34.6599, lng: 135.5066, minZoom: 14.5, weight: 50 },
+  { id: "block-ebisuhigashi", type: "block", ko: "에비스히가시", ja: "えびすひがし", lat: 34.6525, lng: 135.5063, minZoom: 14.5, weight: 50 },
+  { id: "block-umeda-1", type: "block", ko: "우메다 1초메", ja: "うめだ いっちょうめ", lat: 34.6996, lng: 135.4973, minZoom: 14.5, weight: 54 },
+  { id: "block-sonezaki", type: "block", ko: "소네자키", ja: "そねざき", lat: 34.7014, lng: 135.5008, minZoom: 14.5, weight: 50 },
+  { id: "block-shinsaibashisuji", type: "block", ko: "신사이바시스지", ja: "しんさいばしすじ", lat: 34.6727, lng: 135.5011, minZoom: 14.5, weight: 54 },
+  { id: "block-hakata-ekimae", type: "block", ko: "하카타역앞", ja: "はかたえきまえ", lat: 33.5900, lng: 130.4172, minZoom: 14.5, weight: 56 },
+  { id: "block-hakata-ekihigashi", type: "block", ko: "하카타역동", ja: "はかたえきひがし", lat: 33.5887, lng: 130.4244, minZoom: 14.5, weight: 52 },
+  { id: "block-sumiyoshi", type: "block", ko: "스미요시", ja: "すみよし", lat: 33.5850, lng: 130.4112, minZoom: 14.5, weight: 48 },
+  { id: "block-tenjin-2", type: "block", ko: "덴진 2초메", ja: "てんじん にちょうめ", lat: 33.5905, lng: 130.3970, minZoom: 14.5, weight: 54 },
+  { id: "block-daimyo-1", type: "block", ko: "다이묘 1초메", ja: "だいみょう いっちょうめ", lat: 33.5886, lng: 130.3933, minZoom: 14.5, weight: 50 },
+  { id: "block-nakasu-4", type: "block", ko: "나카스 4초메", ja: "なかす よんちょうめ", lat: 33.5924, lng: 130.4068, minZoom: 14.5, weight: 48 },
+  { id: "block-gionmachi", type: "block", ko: "기온마치", ja: "ぎおんまち", lat: 33.5931, lng: 130.4143, minZoom: 14.5, weight: 48 },
+  { id: "block-kiyamachi-shijo", type: "block", ko: "기야마치 4조", ja: "きやまち しじょう", lat: 35.0039, lng: 135.7707, minZoom: 14.5, weight: 54 },
+  { id: "block-pontocho", type: "block", ko: "폰토초", ja: "ぽんとちょう", lat: 35.0067, lng: 135.7702, minZoom: 14.5, weight: 52 },
+  { id: "block-gionmachi-kyoto", type: "block", ko: "기온마치", ja: "ぎおんまち", lat: 35.0038, lng: 135.7754, minZoom: 14.5, weight: 50 },
+  { id: "block-yasaka", type: "block", ko: "야사카 주변", ja: "やさか しゅうへん", lat: 35.0037, lng: 135.7786, minZoom: 14.5, weight: 48 },
+  { id: "block-kyoto-station-north", type: "block", ko: "교토역 북쪽", ja: "きょうとえき きたがわ", lat: 34.9870, lng: 135.7590, minZoom: 14.5, weight: 52 },
+  { id: "block-kyoto-station-south", type: "block", ko: "교토역 남쪽", ja: "きょうとえき みなみがわ", lat: 34.9839, lng: 135.7590, minZoom: 14.5, weight: 50 },
+  { id: "block-ninenzaka", type: "block", ko: "니넨자카", ja: "にねんざか", lat: 34.9965, lng: 135.7801, minZoom: 14.5, weight: 48 },
+  { id: "block-sannenzaka", type: "block", ko: "산넨자카", ja: "さんねんざか", lat: 34.9960, lng: 135.7816, minZoom: 14.5, weight: 48 },
+  { id: "block-fushimi-inari-front", type: "block", ko: "후시미이나리역 앞", ja: "ふしみいなりえきまえ", lat: 34.9677, lng: 135.7708, minZoom: 14.5, weight: 48 },
+
+  { id: "road-yasukuni", type: "road", ko: "야스쿠니도리", ja: "やすくにどおり", lat: 35.6937, lng: 139.7068, minZoom: 14, weight: 70 },
+  { id: "road-shinjuku-dori", type: "road", ko: "신주쿠도리", ja: "しんじゅくどおり", lat: 35.6901, lng: 139.7086, minZoom: 14, weight: 68 },
+  { id: "road-koshu-kaido", type: "road", ko: "고슈카이도", ja: "こうしゅうかいどう", lat: 35.6878, lng: 139.6956, minZoom: 14, weight: 66 },
+  { id: "road-ome-kaido", type: "road", ko: "오메카이도", ja: "おうめかいどう", lat: 35.6974, lng: 139.6963, minZoom: 14, weight: 62 },
+  { id: "road-meiji-tokyo", type: "road", ko: "메이지도리", ja: "めいじどおり", lat: 35.6824, lng: 139.7067, minZoom: 14, weight: 66 },
+  { id: "road-aoyama-dori", type: "road", ko: "아오야마도리", ja: "あおやまどおり", lat: 35.6654, lng: 139.7157, minZoom: 14, weight: 62 },
+  { id: "road-roppongi-dori", type: "road", ko: "롯폰기도리", ja: "ろっぽんぎどおり", lat: 35.6617, lng: 139.7279, minZoom: 14, weight: 60 },
+  { id: "road-omotesando", type: "road", ko: "오모테산도", ja: "おもてさんどう", lat: 35.6665, lng: 139.7089, minZoom: 14, weight: 60 },
+  { id: "road-takeshita", type: "road", ko: "다케시타도리", ja: "たけしたどおり", lat: 35.6712, lng: 139.7049, minZoom: 14.5, weight: 54 },
+  { id: "road-chuo-dori-tokyo", type: "road", ko: "주오도리", ja: "ちゅうおうどおり", lat: 35.6956, lng: 139.7738, minZoom: 14, weight: 64 },
+  { id: "road-showa-dori", type: "road", ko: "쇼와도리", ja: "しょうわどおり", lat: 35.6996, lng: 139.7772, minZoom: 14, weight: 60 },
+  { id: "road-yamate-dori", type: "road", ko: "야마테도리", ja: "やまてどおり", lat: 35.6989, lng: 139.6878, minZoom: 14, weight: 58 },
+  { id: "road-kappabashi", type: "road", ko: "갓파바시도리", ja: "かっぱばしどおり", lat: 35.7149, lng: 139.7889, minZoom: 14, weight: 56 },
+  { id: "road-kototoi", type: "road", ko: "고토토이도리", ja: "ことといどおり", lat: 35.7188, lng: 139.7996, minZoom: 14, weight: 54 },
+  { id: "road-midosuji", type: "road", ko: "미도스지", ja: "みどうすじ", lat: 34.6770, lng: 135.5012, minZoom: 14, weight: 76 },
+  { id: "road-sennichimae", type: "road", ko: "센니치마에도리", ja: "せんにちまえどおり", lat: 34.6666, lng: 135.5036, minZoom: 14, weight: 70 },
+  { id: "road-dotonbori", type: "road", ko: "도톤보리도리", ja: "どうとんぼりどおり", lat: 34.6689, lng: 135.5035, minZoom: 14, weight: 66 },
+  { id: "road-sakaisuji", type: "road", ko: "사카이스지", ja: "さかいすじ", lat: 34.6706, lng: 135.5068, minZoom: 14, weight: 62 },
+  { id: "road-yotsubashi", type: "road", ko: "요쓰바시스지", ja: "よつばしすじ", lat: 34.6732, lng: 135.4978, minZoom: 14, weight: 58 },
+  { id: "road-nagahori", type: "road", ko: "나가호리도리", ja: "ながほりどおり", lat: 34.6750, lng: 135.5012, minZoom: 14, weight: 62 },
+  { id: "road-tanimachi", type: "road", ko: "다니마치스지", ja: "たにまちすじ", lat: 34.6768, lng: 135.5164, minZoom: 14, weight: 58 },
+  { id: "road-matsuyamachi", type: "road", ko: "마쓰야마치스지", ja: "まつやまちすじ", lat: 34.6708, lng: 135.5125, minZoom: 14, weight: 54 },
+  { id: "road-abiko", type: "road", ko: "아비코스지", ja: "あびこすじ", lat: 34.6427, lng: 135.5165, minZoom: 14, weight: 52 },
+  { id: "road-watanabe", type: "road", ko: "와타나베도리", ja: "わたなべどおり", lat: 33.5869, lng: 130.4020, minZoom: 14, weight: 68 },
+  { id: "road-taikou", type: "road", ko: "다이코도리", ja: "たいこうどおり", lat: 33.5884, lng: 130.4217, minZoom: 14, weight: 58 },
+  { id: "road-kokutai", type: "road", ko: "고쿠타이도로", ja: "こくたいどうろ", lat: 33.5872, lng: 130.3995, minZoom: 14, weight: 56 },
+  { id: "road-fukuoka-meiji", type: "road", ko: "메이지도리", ja: "めいじどおり", lat: 33.5912, lng: 130.3962, minZoom: 14, weight: 58 },
+  { id: "road-fukuoka-showa", type: "road", ko: "쇼와도리", ja: "しょうわどおり", lat: 33.5942, lng: 130.3992, minZoom: 14, weight: 56 },
+  { id: "road-hakata-ekimae", type: "road", ko: "하카타역앞도리", ja: "はかたえきまえどおり", lat: 33.5905, lng: 130.4170, minZoom: 14, weight: 56 },
+  { id: "road-oyafuko", type: "road", ko: "오야후코도리", ja: "おやふこうどおり", lat: 33.5935, lng: 130.3954, minZoom: 14.5, weight: 50 },
+  { id: "road-shijo", type: "road", ko: "시조도리", ja: "しじょうどおり", lat: 35.0036, lng: 135.7659, minZoom: 14, weight: 72 },
+  { id: "road-kawaramachi", type: "road", ko: "가와라마치도리", ja: "かわらまちどおり", lat: 35.0061, lng: 135.7685, minZoom: 14, weight: 68 },
+  { id: "road-karasuma", type: "road", ko: "가라스마도리", ja: "からすまどおり", lat: 35.0029, lng: 135.7590, minZoom: 14, weight: 64 },
+  { id: "road-higashioji", type: "road", ko: "히가시오지도리", ja: "ひがしおおじどおり", lat: 34.9998, lng: 135.7789, minZoom: 14, weight: 60 },
+  { id: "road-shichijo", type: "road", ko: "시치조도리", ja: "しちじょうどおり", lat: 34.9897, lng: 135.7617, minZoom: 14, weight: 54 },
+  { id: "road-sanjo", type: "road", ko: "산조도리", ja: "さんじょうどおり", lat: 35.0087, lng: 135.7669, minZoom: 14, weight: 62 },
+  { id: "road-gojo", type: "road", ko: "고조도리", ja: "ごじょうどおり", lat: 34.9964, lng: 135.7623, minZoom: 14, weight: 60 },
+  { id: "road-kiyamachi", type: "road", ko: "기야마치도리", ja: "きやまちどおり", lat: 35.0060, lng: 135.7706, minZoom: 14.5, weight: 58 },
+  { id: "road-pontocho", type: "road", ko: "폰토초도리", ja: "ぽんとちょうどおり", lat: 35.0067, lng: 135.7700, minZoom: 14.5, weight: 54 },
+  { id: "road-marutamachi", type: "road", ko: "마루타마치도리", ja: "まるたまちどおり", lat: 35.0175, lng: 135.7625, minZoom: 14, weight: 54 },
+  { id: "road-oike", type: "road", ko: "오이케도리", ja: "おいけどおり", lat: 35.0106, lng: 135.7628, minZoom: 14, weight: 56 }
+];
+
 const placeJapanese = {
   "tokyo-shinjuku-east": {
     name: "新宿東側 カフェ型スポット",
@@ -2835,6 +3058,7 @@ function renderMapLabels() {
   if (!map || !mapLabelLayer) return;
   const zoom = map.getZoom();
   const bounds = map.getBounds?.()?.pad(0.12);
+  const visibleLocalLabels = getVisibleLocalMapLabels(bounds, zoom);
   const visiblePlaces = getFilteredPlaces()
     .filter((place) => !bounds || bounds.contains([place.lat, place.lng]))
     .sort((a, b) => totalSignals(b) - totalSignals(a))
@@ -2848,8 +3072,9 @@ function renderMapLabels() {
     state.query,
     state.activeScenario,
     Math.round(zoom * 10) / 10,
-    map.getCenter().lat.toFixed(2),
-    map.getCenter().lng.toFixed(2),
+    map.getCenter().lat.toFixed(3),
+    map.getCenter().lng.toFixed(3),
+    visibleLocalLabels.map((label) => label.id).join(","),
     visiblePlaces.map((place) => place.id).join(",")
   ].join("|");
   if (mapLabelRenderKey === nextKey) return;
@@ -2868,6 +3093,19 @@ function renderMapLabels() {
     }).addTo(mapLabelLayer);
   });
 
+  visibleLocalLabels.forEach((label) => {
+    L.marker([label.lat, label.lng], {
+      interactive: false,
+      keyboard: false,
+      icon: L.divIcon({
+        className: `sumimap-map-label local-label ${label.type}-label`,
+        html: `<span>${escapeHtml(localMapLabelText(label))}</span>`
+      })
+    }).addTo(mapLabelLayer);
+  });
+
+  markerLayer?.eachLayer?.((layer) => layer.bringToFront?.());
+
   if (zoom < 13) return;
   visiblePlaces.forEach((place) => {
     L.marker([place.lat, place.lng], {
@@ -2879,6 +3117,72 @@ function renderMapLabels() {
       })
     }).addTo(mapLabelLayer);
   });
+}
+
+function getVisibleLocalMapLabels(bounds, zoom) {
+  const paddedBounds = bounds?.pad(0.24);
+  const compact = isCompactViewport();
+  const maxLabels = compact
+    ? (zoom >= 15 ? 46 : zoom >= 14 ? 34 : zoom >= 12 ? 22 : 12)
+    : (zoom >= 15 ? 74 : zoom >= 14 ? 58 : zoom >= 12 ? 36 : 16);
+  const boxes = [];
+  const accepted = [];
+  const candidates = localMapLabels
+    .filter((label) => zoom >= label.minZoom)
+    .filter((label) => !paddedBounds || paddedBounds.contains([label.lat, label.lng]))
+    .sort((a, b) => localMapLabelScore(b, zoom) - localMapLabelScore(a, zoom));
+
+  for (const label of candidates) {
+    if (accepted.length >= maxLabels) break;
+    const box = localMapLabelBox(label, zoom, compact);
+    if (box && boxes.some((current) => boxesOverlap(current, box))) continue;
+    if (box) boxes.push(box);
+    accepted.push(label);
+  }
+
+  return accepted;
+}
+
+function localMapLabelText(label) {
+  if (isJapanese()) return label.ja || label.ko || "";
+  return label.ko || label.ja || "";
+}
+
+function localMapLabelScore(label, zoom) {
+  const typeScore = {
+    admin: zoom < 11.6 ? 82 : 28,
+    neighborhood: zoom >= 12 ? 66 : 44,
+    station: zoom >= 13 ? 60 : 38,
+    road: zoom >= 14 ? 56 : 4,
+    block: zoom >= 14.5 ? 48 : 0
+  }[label.type] ?? 20;
+  return (label.weight ?? 0) + typeScore + Math.max(0, zoom - label.minZoom) * 2;
+}
+
+function localMapLabelBox(label, zoom, compact) {
+  if (!map?.latLngToLayerPoint) return null;
+  const textLength = [...localMapLabelText(label)].length;
+  const point = map.latLngToLayerPoint([label.lat, label.lng]);
+  const baseWidth = {
+    admin: 62,
+    neighborhood: 58,
+    station: 58,
+    road: 54,
+    block: 46
+  }[label.type] ?? 54;
+  const width = Math.min(compact ? 132 : 168, Math.max(baseWidth, textLength * (label.type === "road" ? 7.4 : 8.5) + 22));
+  const height = label.type === "road" || label.type === "block" ? 17 : 22;
+  const gap = compact ? (label.type === "road" || label.type === "block" ? 3 : 6) : (label.type === "road" || label.type === "block" ? 4 : 8);
+  return {
+    left: point.x - width / 2 - gap,
+    right: point.x + width / 2 + gap,
+    top: point.y - height / 2 - gap,
+    bottom: point.y + height / 2 + gap
+  };
+}
+
+function boxesOverlap(a, b) {
+  return a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
 }
 
 function selectPlace(placeId, moveMap) {

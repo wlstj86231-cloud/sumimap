@@ -1077,6 +1077,53 @@ a {
   color: #233034;
 }
 
+.local-label span {
+  transform: translate(-50%, -50%);
+}
+
+.admin-label span {
+  padding: 4px 9px;
+  border-color: rgba(46, 83, 83, 0.22);
+  color: #40545a;
+  background: rgba(249, 252, 251, 0.82);
+  box-shadow: 0 4px 10px rgba(31, 42, 42, 0.08);
+  font-size: 11px;
+}
+
+.neighborhood-label span {
+  border-color: rgba(18, 135, 93, 0.23);
+  color: #123b31;
+  background: rgba(245, 255, 250, 0.9);
+}
+
+.station-label span {
+  border-color: rgba(224, 150, 62, 0.3);
+  color: #8a4b16;
+  background: rgba(255, 248, 235, 0.9);
+}
+
+.block-label span {
+  padding: 3px 7px;
+  border-color: rgba(68, 84, 90, 0.14);
+  color: #36474d;
+  background: rgba(255, 255, 255, 0.66);
+  box-shadow: 0 2px 8px rgba(31, 42, 42, 0.06);
+  font-size: 10px;
+  font-weight: 780;
+}
+
+.road-label span {
+  max-width: 156px;
+  padding: 3px 8px;
+  border-color: rgba(91, 100, 112, 0.18);
+  border-radius: 7px;
+  color: #5b6470;
+  background: rgba(255, 255, 255, 0.76);
+  box-shadow: none;
+  font-size: 10px;
+  transform: translate(-50%, -50%) rotate(-2deg);
+}
+
 .label-charge span {
   border-color: rgba(56, 129, 214, 0.22);
 }
@@ -1092,6 +1139,33 @@ a {
 
 .label-caution span {
   border-color: rgba(220, 83, 77, 0.22);
+}
+
+@media (max-width: 520px) {
+  .sumimap-map-label span {
+    max-width: 132px;
+    padding: 4px 7px;
+    font-size: 10px;
+  }
+
+  .city-label span {
+    font-size: 12px;
+  }
+
+  .admin-label span {
+    font-size: 10px;
+  }
+
+  .road-label span {
+    max-width: 120px;
+    padding: 3px 6px;
+    font-size: 9.5px;
+  }
+
+  .block-label span {
+    max-width: 116px;
+    font-size: 9.5px;
+  }
 }
 
 .static-body {
