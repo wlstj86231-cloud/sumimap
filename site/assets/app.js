@@ -66,6 +66,7 @@ const filterThresholds = {
 
 const geocodeSearchUrl = "https://nominatim.openstreetmap.org/search";
 const reverseGeocodeUrl = "https://nominatim.openstreetmap.org/reverse";
+const rasterBaseMapUrl = "https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png";
 const vectorMapStyleUrl = "https://tiles.openfreemap.org/styles/positron";
 const mapLibreCssUrl = "https://unpkg.com/maplibre-gl@5.24.0/dist/maplibre-gl.css";
 const mapLibreScriptUrl = "https://unpkg.com/maplibre-gl@5.24.0/dist/maplibre-gl.js";
@@ -1602,6 +1603,7 @@ let reportLastFailureAt = 0;
 let reportServerFingerprint = "";
 let searchRenderFrame = 0;
 let mapResizeTimer = 0;
+let mapLabelFrame = 0;
 let sheetHtmlCache = "";
 let markerRenderKey = "";
 let mapLabelRenderKey = "";
@@ -1651,11 +1653,15 @@ function bootMap() {
     markerZoomAnimation: false
   }).setView(cities.tokyo.center, initialZoom);
 
-  setBaseMapLanguage(state.language, false);
-
+  const labelPane = map.createPane("sumimapLabelPane");
+  labelPane.classList.add("sumimap-label-pane");
+  labelPane.style.zIndex = "550";
+  labelPane.style.pointerEvents = "none";
   mapLabelLayer = L.layerGroup().addTo(map);
   markerLayer = L.layerGroup().addTo(map);
-  map.on("moveend zoomend", () => renderMapLabels());
+  setBaseMapLanguage(state.language, false);
+
+  map.on("moveend zoomend", () => scheduleMapLabels());
   map.on("contextmenu", selectHeldMapPointForReport);
   map.on("click", () => {
     if (!searchPanel?.hidden) setSearchPanel(false);
@@ -1669,10 +1675,11 @@ function setBaseMapLanguage(language, notify = true) {
   const seq = baseMapSeq + 1;
   baseMapSeq = seq;
   const mapLanguage = language === "ja" ? "ja" : "ko";
+  document.querySelector("#map")?.setAttribute("data-map-language", mapLanguage);
   replaceBaseMap(rasterBaseMap(mapLanguage));
   if (notify) showToast("지도 언어를 바꿨어.");
   mapLabelRenderKey = "";
-  renderMapLabels();
+  scheduleMapLabels();
   if (enableVectorBaseMap) {
     scheduleVectorMapUpgrade(mapLanguage, seq, notify);
   }
@@ -1801,12 +1808,10 @@ function replaceBaseMap(nextLayer) {
     map.removeLayer(baseMapLayer);
   }
   baseMapLayer = nextLayer.addTo(map);
-  mapLabelLayer?.eachLayer((layer) => layer.bringToFront?.());
-  markerLayer?.eachLayer((layer) => layer.bringToFront?.());
 }
 
 function rasterBaseMap(language = "ko") {
-  return L.tileLayer("https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png", {
+  return L.tileLayer(rasterBaseMapUrl, {
     maxZoom: 19,
     subdomains: "abcd",
     attribution: "&copy; OpenStreetMap &copy; CARTO",
@@ -1825,19 +1830,10 @@ async function localizedVectorStyle(language) {
   const response = await fetch(vectorMapStyleUrl, { headers: { Accept: "application/json" } });
   if (!response.ok) throw new Error(`map style ${response.status}`);
   const style = await response.json();
-  const labelExpression = language === "ja" ? "" : mapLabelExpression(language);
+  const labelExpression = mapLabelExpression(language);
 
   style.layers = style.layers.map((layer) => {
     if (layer.type !== "symbol" || !layer.layout?.["text-field"]) return layer;
-    if (language === "ja") {
-      return {
-        ...layer,
-        layout: {
-          ...layer.layout,
-          visibility: "none"
-        }
-      };
-    }
     return {
       ...layer,
       layout: {
@@ -1853,8 +1849,8 @@ async function localizedVectorStyle(language) {
 
 function mapLabelExpression(language) {
   const fields = language === "ja"
-    ? ["name:ja_kana", "name:en", "name_en", "name:latin", "name:romaji"]
-    : ["name:ko", "name_ko", "name:en", "name_en", "name:latin", "name"];
+    ? ["name:ja", "name_ja", "name:ja_kana", "name"]
+    : ["name:ko", "name_ko"];
   return ["coalesce", ...fields.map((field) => ["get", field])];
 }
 
@@ -1997,7 +1993,7 @@ function bindEvents() {
     button.addEventListener("click", () => {
       const city = cities[button.dataset.city];
       if (!city) return;
-      map.setView(city.center, city.zoom);
+      setMapView(city.center, city.zoom);
       showToast(`${t(city.label)} ${t("중심으로 이동했어.")}`);
       setSearchPanel(false);
     });
@@ -2097,7 +2093,7 @@ function bindEvents() {
       if (!place) return;
       state.selectedId = place.id;
       rememberPlace(state.selectedId);
-      map.setView([place.lat, place.lng], 15);
+      setMapView([place.lat, place.lng], 15);
       renderSheet();
       renderMarkers();
       return;
@@ -2175,7 +2171,7 @@ function setPanel(panel) {
 
   if (panel === "near") {
     const place = getSelectedPlace();
-    if (place) map.setView([place.lat, place.lng], 14);
+    if (place) setMapView([place.lat, place.lng], 14);
   }
 
   renderSheet();
@@ -2231,6 +2227,21 @@ function scheduleMapResize(delay = 180) {
     mapResizeTimer = 0;
     map?.invalidateSize?.();
   }, delay);
+}
+
+function setMapView(center, zoom) {
+  if (!map || !center) return;
+  map.setView(center, zoom, { animate: false });
+  scheduleMapLabels();
+}
+
+function scheduleMapLabels() {
+  if (mapLabelFrame) return;
+  const schedule = window.requestAnimationFrame || ((callback) => window.setTimeout(callback, 16));
+  mapLabelFrame = schedule(() => {
+    mapLabelFrame = 0;
+    renderMapLabels();
+  });
 }
 
 function syncSheetMode() {
@@ -2308,7 +2319,7 @@ function applyEntryParams() {
   const panel = params.get("panel");
 
   if (cities[cityKey]) {
-    map.setView(cities[cityKey].center, cities[cityKey].zoom);
+    setMapView(cities[cityKey].center, cities[cityKey].zoom);
   }
 
   if (scenariosByKey.has(scenarioKey)) {
@@ -2325,7 +2336,7 @@ function applyEntryParams() {
     state.selectedId = place.id;
     state.activePanel = "near";
     state.sheetMode = "expanded";
-    map.setView([place.lat, place.lng], 15);
+    setMapView([place.lat, place.lng], 15);
     rememberPlace(place.id);
   } else {
     syncSelectedWithFiltered();
@@ -3008,7 +3019,7 @@ function renderMarkers() {
   const visiblePlaces = getFilteredPlaces();
   const nextRenderKey = `${state.selectedId}|${visiblePlaces.map((place) => `${place.id}:${place.category}`).join("|")}`;
   if (markerRenderKey === nextRenderKey) {
-    renderMapLabels();
+    scheduleMapLabels();
     return;
   }
   markerRenderKey = nextRenderKey;
@@ -3051,7 +3062,7 @@ function renderMarkers() {
     markers.set(place.id, marker);
     markerClassNames.set(place.id, markerClassName);
   });
-  renderMapLabels();
+  scheduleMapLabels();
 }
 
 function renderMapLabels() {
@@ -3084,6 +3095,7 @@ function renderMapLabels() {
   cityLabels.forEach(({ key, city }) => {
     const label = t(city.label);
     L.marker(city.center, {
+      pane: "sumimapLabelPane",
       interactive: false,
       keyboard: false,
       icon: L.divIcon({
@@ -3095,6 +3107,7 @@ function renderMapLabels() {
 
   visibleLocalLabels.forEach((label) => {
     L.marker([label.lat, label.lng], {
+      pane: "sumimapLabelPane",
       interactive: false,
       keyboard: false,
       icon: L.divIcon({
@@ -3104,11 +3117,10 @@ function renderMapLabels() {
     }).addTo(mapLabelLayer);
   });
 
-  markerLayer?.eachLayer?.((layer) => layer.bringToFront?.());
-
   if (zoom < 13) return;
   visiblePlaces.forEach((place) => {
     L.marker([place.lat, place.lng], {
+      pane: "sumimapLabelPane",
       interactive: false,
       keyboard: false,
       icon: L.divIcon({
@@ -3120,15 +3132,16 @@ function renderMapLabels() {
 }
 
 function getVisibleLocalMapLabels(bounds, zoom) {
-  const paddedBounds = bounds?.pad(0.24);
   const compact = isCompactViewport();
+  const paddedBounds = bounds?.pad(compact ? 0.36 : 0.32);
   const maxLabels = compact
-    ? (zoom >= 15 ? 46 : zoom >= 14 ? 34 : zoom >= 12 ? 22 : 12)
-    : (zoom >= 15 ? 74 : zoom >= 14 ? 58 : zoom >= 12 ? 36 : 16);
+    ? (zoom >= 15 ? 70 : zoom >= 14 ? 56 : zoom >= 13 ? 40 : zoom >= 12 ? 30 : 18)
+    : (zoom >= 15 ? 110 : zoom >= 14 ? 90 : zoom >= 13 ? 64 : zoom >= 12 ? 48 : 24);
   const boxes = [];
   const accepted = [];
   const candidates = localMapLabels
-    .filter((label) => zoom >= label.minZoom)
+    .filter((label) => localMapLabelText(label))
+    .filter((label) => zoom >= localMapLabelMinZoom(label))
     .filter((label) => !paddedBounds || paddedBounds.contains([label.lat, label.lng]))
     .sort((a, b) => localMapLabelScore(b, zoom) - localMapLabelScore(a, zoom));
 
@@ -3144,8 +3157,18 @@ function getVisibleLocalMapLabels(bounds, zoom) {
 }
 
 function localMapLabelText(label) {
-  if (isJapanese()) return label.ja || label.ko || "";
-  return label.ko || label.ja || "";
+  return isJapanese() ? label.ja || "" : label.ko || "";
+}
+
+function localMapLabelMinZoom(label) {
+  const minZoom = Number(label.minZoom) || 12;
+  const advanceByType = {
+    station: 0.25,
+    road: 0.65,
+    block: 0.45,
+    neighborhood: 0.15
+  }[label.type] || 0;
+  return Math.max(9, minZoom - advanceByType);
 }
 
 function localMapLabelScore(label, zoom) {
@@ -3156,12 +3179,14 @@ function localMapLabelScore(label, zoom) {
     road: zoom >= 14 ? 56 : 4,
     block: zoom >= 14.5 ? 48 : 0
   }[label.type] ?? 20;
-  return (label.weight ?? 0) + typeScore + Math.max(0, zoom - label.minZoom) * 2;
+  return (label.weight ?? 0) + typeScore + Math.max(0, zoom - localMapLabelMinZoom(label)) * 2;
 }
 
 function localMapLabelBox(label, zoom, compact) {
   if (!map?.latLngToLayerPoint) return null;
-  const textLength = [...localMapLabelText(label)].length;
+  const text = localMapLabelText(label);
+  if (!text) return null;
+  const textLength = [...text].length;
   const point = map.latLngToLayerPoint([label.lat, label.lng]);
   const baseWidth = {
     admin: 62,
@@ -3170,9 +3195,9 @@ function localMapLabelBox(label, zoom, compact) {
     road: 54,
     block: 46
   }[label.type] ?? 54;
-  const width = Math.min(compact ? 132 : 168, Math.max(baseWidth, textLength * (label.type === "road" ? 7.4 : 8.5) + 22));
-  const height = label.type === "road" || label.type === "block" ? 17 : 22;
-  const gap = compact ? (label.type === "road" || label.type === "block" ? 3 : 6) : (label.type === "road" || label.type === "block" ? 4 : 8);
+  const width = Math.min(compact ? 128 : 164, Math.max(baseWidth, textLength * (label.type === "road" ? 6.8 : 8) + 16));
+  const height = label.type === "road" || label.type === "block" ? 15 : 20;
+  const gap = compact ? (label.type === "road" || label.type === "block" ? 2 : 4) : (label.type === "road" || label.type === "block" ? 3 : 5);
   return {
     left: point.x - width / 2 - gap,
     right: point.x + width / 2 + gap,
@@ -3195,7 +3220,7 @@ function selectPlace(placeId, moveMap) {
   state.reportFeedOpen = false;
   setActiveNav("near");
   if (moveMap) {
-    map.setView([place.lat, place.lng], 15);
+    setMapView([place.lat, place.lng], 15);
   }
   renderSheet();
   renderMarkers();
@@ -3213,7 +3238,7 @@ function applyScenario(scenarioKey) {
   if (list.length) {
     state.selectedId = list[0].id;
     rememberPlace(list[0].id);
-    map.setView([list[0].lat, list[0].lng], 14);
+    setMapView([list[0].lat, list[0].lng], 14);
   }
   showToast(`${t(scenario.label)} ${t("상황으로 좁혔어.")}`);
   renderMapQuickRail();
@@ -4004,7 +4029,7 @@ function activateReportPlace(place, zoom = 16, message = "") {
   state.sheetMode = "expanded";
   state.activeScenario = "";
   rememberPlace(place.id);
-  map.setView([place.lat, place.lng], zoom);
+  setMapView([place.lat, place.lng], zoom);
   setSearchPanel(false);
   setActiveNav("report");
   renderMapQuickRail();
@@ -4297,7 +4322,7 @@ function locateUser() {
     ({ coords }) => {
       const position = [coords.latitude, coords.longitude];
       updateUserLocationLayer(coords.latitude, coords.longitude, true);
-      map.setView(position, 15);
+      setMapView(position, 15);
       locateButton.classList.remove("is-loading");
       const list = getFilteredPlaces();
       if (list.length) {
