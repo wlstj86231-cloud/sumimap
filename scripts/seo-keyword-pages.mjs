@@ -70,6 +70,38 @@ const pages = [
     buildDate: "Fri, 03 Jul 2026 08:45:00 +0900"
   },
   {
+    slug: "cities/fukuoka",
+    title: "후쿠오카 생활 스팟 지도 가이드 - 스미맵",
+    h1: "후쿠오카에서 하카타·텐진 생활 신호를 빠르게 보는 법",
+    description: "후쿠오카 하카타, 텐진, 나카스 주변에서 화장실, 충전, 비 피하기, 한국어 안내 신호를 확인하는 스미맵 도시 가이드.",
+    intent: "후쿠오카 화장실 급함, 하카타 충전 가능한 곳, 텐진 비 피하기",
+    city: "후쿠오카",
+    signal: "생활 편의",
+    emoji: "🌊",
+    mapHref: "/?city=fukuoka&utm_source=city-page&utm_medium=internal&utm_campaign=fukuoka-city",
+    related: ["/fukuoka-rain-shelter/", "/spots/fukuoka/hakata-restroom-001/", "/routes/rain/", "/routes/restroom/"],
+    situations: ["하카타역에서 공항, 신칸센, 버스 이동 전 화장실 후보를 빨리 정해야 하는 상황", "텐진 중심가에서 쇼핑 중 충전과 와이파이를 함께 확인해야 하는 상황", "나카스 주변에서 비를 피하면서 다음 동선을 짧게 다시 잡아야 하는 상황"],
+    note: "후쿠오카는 하카타와 텐진 사이 이동이 짧아 보여도 공항, 쇼핑, 버스 동선이 겹치면 판단이 빨라야 합니다. 스미맵은 화장실, 충전, 비 피하기 신호를 도시 안에서 따로 보되, 급한 순간에는 가장 가까운 두 번째 후보까지 남기도록 연결합니다.",
+    lastmod: "2026-07-03",
+    buildDate: "Fri, 03 Jul 2026 10:20:00 +0900"
+  },
+  {
+    slug: "cities/kyoto",
+    title: "교토 생활 스팟 지도 가이드 - 스미맵",
+    h1: "교토에서 관광 혼잡과 생활 편의를 분리해서 보는 법",
+    description: "교토역, 시조가와라마치, 기온 주변에서 화장실, 쉬기, 비 피하기, 응대 조심 신호를 읽는 스미맵 도시 가이드.",
+    intent: "교토 화장실 급함, 교토역 쉬기 좋은 곳, 교토 한국어 대응",
+    city: "교토",
+    signal: "생활 편의",
+    emoji: "⛩️",
+    mapHref: "/?city=kyoto&utm_source=city-page&utm_medium=internal&utm_campaign=kyoto-city",
+    related: ["/kyoto-korean-support/", "/spots/kyoto/station-rest-001/", "/routes/station/", "/routes/response/"],
+    situations: ["교토역에서 짐을 들고 환승이나 버스 동선을 다시 잡아야 하는 상황", "시조가와라마치 주변에서 화장실과 실내 대기 후보를 함께 봐야 하는 상황", "기온처럼 현장 매너와 이용 조건을 먼저 확인해야 하는 관광 생활권에 들어가는 상황"],
+    note: "교토는 관광 정보가 많지만 생활 중 급한 문제는 다른 기준으로 봐야 합니다. 스미맵은 명소 추천이 아니라 화장실, 쉬기, 비 피하기, 응대 조심 신호를 분리해 초행자가 관광 혼잡 때문에 생활 판단을 놓치지 않도록 정리합니다.",
+    lastmod: "2026-07-03",
+    buildDate: "Fri, 03 Jul 2026 10:20:00 +0900"
+  },
+  {
     slug: "spots/tokyo/shinjuku-cafe-charging-001",
     title: "신주쿠 동쪽 카페형 충전 스팟 확인 기준 - 스미맵",
     h1: "신주쿠 동쪽에서 충전 가능한 카페형 스팟을 볼 때",
@@ -102,6 +134,38 @@ const pages = [
     buildDate: "Fri, 03 Jul 2026 08:45:00 +0900"
   },
   {
+    slug: "spots/fukuoka/hakata-restroom-001",
+    title: "하카타역 주변 화장실 확인 스팟 사용 기준 - 스미맵",
+    h1: "후쿠오카 하카타에서 화장실 후보를 빠르게 고를 때",
+    description: "후쿠오카 하카타역 주변에서 화장실 가능성, 출퇴근 혼잡, 잠깐 쉬기 신호를 확인하는 스미맵 장소 상세 가이드.",
+    intent: "하카타역 화장실, 후쿠오카 화장실 급함, 하카타역 쉬기 좋은 곳",
+    city: "후쿠오카 하카타",
+    signal: "화장실 가능",
+    emoji: "🚻",
+    mapHref: "/?place=fukuoka-hakata-restroom&utm_source=spot-page&utm_medium=internal&utm_campaign=hakata-restroom",
+    related: ["/cities/fukuoka/", "/fukuoka-rain-shelter/", "/routes/restroom/", "/routes/station/"],
+    situations: ["하카타역에서 공항이나 신칸센 이동 전에 급하게 화장실 후보를 정해야 하는 상황", "출퇴근 시간대 혼잡 때문에 가장 가까운 후보만 믿기 어려운 상황", "화장실과 잠깐 쉬기 신호를 함께 보며 짐을 정리해야 하는 상황"],
+    note: "하카타역 주변 화장실 스팟은 공항과 버스, 신칸센 이동이 겹치는 시간대에 특히 판단 가치가 있습니다. 가까운 장소 하나만 보는 대신 운영 시간과 혼잡, 잠깐 쉬기 가능성을 같이 확인하면 다음 이동을 덜 흔들리게 잡을 수 있습니다.",
+    lastmod: "2026-07-03",
+    buildDate: "Fri, 03 Jul 2026 10:20:00 +0900"
+  },
+  {
+    slug: "spots/kyoto/station-rest-001",
+    title: "교토역 대기와 휴식 스팟 사용 기준 - 스미맵",
+    h1: "교토역에서 짐을 들고 잠깐 쉬어야 할 때",
+    description: "교토역 주변에서 잠깐 쉬기, 비 피하기, 화장실 가능성을 함께 확인하는 스미맵 장소 상세 가이드.",
+    intent: "교토역 쉬기 좋은 곳, 교토역 비 피하기, 교토역 화장실",
+    city: "교토역",
+    signal: "잠깐 쉬기",
+    emoji: "🪑",
+    mapHref: "/?place=kyoto-station-rest&utm_source=spot-page&utm_medium=internal&utm_campaign=kyoto-station-rest",
+    related: ["/cities/kyoto/", "/kyoto-korean-support/", "/routes/rest/", "/routes/station/"],
+    situations: ["교토역에서 짐이 많아 버스나 열차 동선을 잠깐 다시 잡아야 하는 상황", "비가 오거나 성수기 혼잡 때문에 실내 대기 후보를 먼저 보고 싶은 상황", "화장실과 잠깐 쉬기 신호를 같은 위치에서 함께 확인하고 싶은 상황"],
+    note: "교토역은 관광객과 환승 동선이 겹쳐 가까워 보이는 장소도 체감 이동이 길어질 수 있습니다. 스미맵의 교토역 휴식 스팟은 오래 머무는 추천이 아니라 짐을 정리하고 다음 이동을 판단하기 위한 짧은 회복 후보로 보는 편이 맞습니다.",
+    lastmod: "2026-07-03",
+    buildDate: "Fri, 03 Jul 2026 10:20:00 +0900"
+  },
+  {
     slug: "fukuoka-rain-shelter",
     title: "후쿠오카에서 비 피하기 좋은 곳 찾기 - 스미맵",
     h1: "후쿠오카에서 갑자기 비가 올 때 들어갈 곳을 빠르게 고르는 법",
@@ -111,7 +175,7 @@ const pages = [
     signal: "비 피하기",
     emoji: "☔",
     mapHref: "/?case=rain&city=fukuoka&utm_source=seo-keyword&utm_medium=internal&utm_campaign=fukuoka-rain",
-    related: ["/routes/rain/", "/routes/rest/", "/routes/station/"],
+    related: ["/cities/fukuoka/", "/spots/fukuoka/hakata-restroom-001/", "/routes/rain/", "/routes/rest/"],
     situations: ["텐진이나 하카타 주변에서 우산 없이 이동하다 비를 만난 상황", "잠깐만 기다리면 되는지, 오래 머물러야 하는지 판단이 필요한 상황", "짐이 젖기 전에 실내 동선을 먼저 잡아야 하는 상황"],
     note: "비를 피하는 장소는 단순히 지붕이 있는 곳이 아닙니다. 짐을 정리할 공간, 오래 서 있어도 부담이 적은지, 다음 이동으로 이어지기 쉬운지가 함께 중요합니다."
   },
@@ -125,7 +189,7 @@ const pages = [
     signal: "한국어 대응",
     emoji: "🇰🇷",
     mapHref: "/?case=korean&city=kyoto&utm_source=seo-keyword&utm_medium=internal&utm_campaign=kyoto-korean",
-    related: ["/routes/korean/", "/routes/response/", "/guide/"],
+    related: ["/cities/kyoto/", "/spots/kyoto/station-rest-001/", "/routes/korean/", "/routes/response/"],
     situations: ["예약, 결제, 문의 내용을 일본어로 설명하기 어려운 상황", "부모님이나 동행자가 있어 안내가 쉬운 장소가 필요한 상황", "번역 앱으로는 뉘앙스가 잘 전달되지 않는 상황"],
     note: "한국어 대응 신호는 '한국어가 완벽하다'는 보증이 아닙니다. 스미맵은 한국어 안내, 쉬운 영어, 번역 앱으로 처리 가능한 정도까지 넓게 보되 과장하지 않는 쪽으로 정리합니다."
   },
@@ -252,10 +316,16 @@ function relatedTitle(url) {
     "/tokyo-charging-spots/": "도쿄에서 충전 가능한 곳 찾기",
     "/tokyo-late-night-living-spots/": "도쿄 밤늦게 확인할 생활 스팟",
     "/osaka-restroom-guide/": "오사카에서 화장실 급할 때 확인할 곳",
+    "/fukuoka-rain-shelter/": "후쿠오카에서 비 피하기 좋은 곳",
+    "/kyoto-korean-support/": "교토에서 한국어 대응 가능한 곳",
     "/cities/tokyo/": "도쿄 생활 스팟 지도 가이드",
     "/cities/osaka/": "오사카 생활 스팟 지도 가이드",
+    "/cities/fukuoka/": "후쿠오카 생활 스팟 지도 가이드",
+    "/cities/kyoto/": "교토 생활 스팟 지도 가이드",
     "/spots/tokyo/shinjuku-cafe-charging-001/": "신주쿠 동쪽 카페형 충전 스팟",
-    "/spots/osaka/tennoji-restroom-001/": "텐노지 주변 화장실 확인 스팟"
+    "/spots/osaka/tennoji-restroom-001/": "텐노지 주변 화장실 확인 스팟",
+    "/spots/fukuoka/hakata-restroom-001/": "하카타역 주변 화장실 확인 스팟",
+    "/spots/kyoto/station-rest-001/": "교토역 대기와 휴식 스팟"
   };
   return titles[url] || url;
 }
