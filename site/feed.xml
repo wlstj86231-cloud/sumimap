@@ -21,6 +21,34 @@
       <description>오사카 난바, 우메다, 역 주변에서 화장실이 급할 때 확인할 장소 신호와 스미맵 사용 순서.</description>
     </item>
     <item>
+      <title>도쿄 생활 스팟 지도 가이드</title>
+      <link>https://sumimap.com/cities/tokyo/</link>
+      <guid>https://sumimap.com/cities/tokyo/</guid>
+      <pubDate>Fri, 03 Jul 2026 08:45:00 +0900</pubDate>
+      <description>도쿄 신주쿠, 우에노, 도쿄역, 아키하바라 주변에서 충전, 화장실, 쉬기 좋은 생활 신호를 확인하는 스미맵 도시 가이드.</description>
+    </item>
+    <item>
+      <title>오사카 생활 스팟 지도 가이드</title>
+      <link>https://sumimap.com/cities/osaka/</link>
+      <guid>https://sumimap.com/cities/osaka/</guid>
+      <pubDate>Fri, 03 Jul 2026 08:45:00 +0900</pubDate>
+      <description>오사카 난바, 우메다, 텐노지 주변에서 화장실, 충전, 비 피하기, 한국어 대응 신호를 읽는 스미맵 도시 가이드.</description>
+    </item>
+    <item>
+      <title>신주쿠 동쪽 카페형 충전 스팟 확인 기준</title>
+      <link>https://sumimap.com/spots/tokyo/shinjuku-cafe-charging-001/</link>
+      <guid>https://sumimap.com/spots/tokyo/shinjuku-cafe-charging-001/</guid>
+      <pubDate>Fri, 03 Jul 2026 08:45:00 +0900</pubDate>
+      <description>신주쿠 동쪽 출구 주변에서 콘센트, 와이파이, 직원 허락 필요 여부를 확인하는 스미맵 장소 상세 가이드.</description>
+    </item>
+    <item>
+      <title>텐노지 주변 화장실 확인 스팟 사용 기준</title>
+      <link>https://sumimap.com/spots/osaka/tennoji-restroom-001/</link>
+      <guid>https://sumimap.com/spots/osaka/tennoji-restroom-001/</guid>
+      <pubDate>Fri, 03 Jul 2026 08:45:00 +0900</pubDate>
+      <description>오사카 텐노지 주변에서 화장실 가능성, 행사일 혼잡, 잠깐 쉬기 신호를 확인하는 스미맵 장소 상세 가이드.</description>
+    </item>
+    <item>
       <title>후쿠오카에서 비 피하기 좋은 곳 찾기</title>
       <link>https://sumimap.com/fukuoka-rain-shelter/</link>
       <guid>https://sumimap.com/fukuoka-rain-shelter/</guid>

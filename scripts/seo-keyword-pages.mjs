@@ -38,6 +38,70 @@ const pages = [
     note: "화장실 정보는 오래된 기억보다 최근 제보와 위치 맥락이 중요합니다. 스미맵은 '그냥 있다'가 아니라 단독 이용 가능성, 직원 확인 필요, 붐비는 시간대를 함께 읽도록 구성했습니다."
   },
   {
+    slug: "cities/tokyo",
+    title: "도쿄 생활 스팟 지도 가이드 - 스미맵",
+    h1: "도쿄에서 충전·화장실·쉬기를 빠르게 고르는 법",
+    description: "도쿄 신주쿠, 우에노, 도쿄역, 아키하바라 주변에서 충전, 화장실, 쉬기 좋은 생활 신호를 확인하는 스미맵 도시 가이드.",
+    intent: "도쿄 충전 가능한 곳, 도쿄 화장실 급함, 신주쿠 쉬기 좋은 곳",
+    city: "도쿄",
+    signal: "생활 편의",
+    emoji: "🗼",
+    mapHref: "/?city=tokyo&utm_source=city-page&utm_medium=internal&utm_campaign=tokyo-city",
+    related: ["/tokyo-charging-spots/", "/tokyo-late-night-living-spots/", "/spots/tokyo/shinjuku-cafe-charging-001/", "/routes/battery/"],
+    situations: ["신주쿠나 시부야처럼 출구가 많은 역에서 배터리가 부족한 상황", "도쿄역이나 우에노 주변에서 화장실 후보를 빠르게 비교해야 하는 상황", "한국어 대응 또는 잠깐 쉬기 좋은 생활권을 여행 정보와 분리해서 보고 싶은 상황"],
+    note: "도쿄는 후보가 많아 보일수록 실제 선택이 늦어지는 도시입니다. 스미맵은 큰 역 이름보다 출구, 혼잡, 충전 허락, 화장실 동선을 같이 보게 만들어 첫 후보가 막혔을 때 바로 두 번째 후보로 넘어가도록 구성했습니다.",
+    lastmod: "2026-07-03",
+    buildDate: "Fri, 03 Jul 2026 08:45:00 +0900"
+  },
+  {
+    slug: "cities/osaka",
+    title: "오사카 생활 스팟 지도 가이드 - 스미맵",
+    h1: "오사카에서 지하상가·화장실·충전 신호를 같이 보는 법",
+    description: "오사카 난바, 우메다, 텐노지 주변에서 화장실, 충전, 비 피하기, 한국어 대응 신호를 읽는 스미맵 도시 가이드.",
+    intent: "오사카 화장실 급할 때, 난바 충전 가능한 곳, 우메다 비 피하기",
+    city: "오사카",
+    signal: "생활 편의",
+    emoji: "🏙️",
+    mapHref: "/?city=osaka&utm_source=city-page&utm_medium=internal&utm_campaign=osaka-city",
+    related: ["/osaka-restroom-guide/", "/spots/osaka/tennoji-restroom-001/", "/routes/restroom/", "/routes/rain/"],
+    situations: ["난바나 우메다에서 지하 동선과 출구가 헷갈리는 상황", "화장실이 급하지만 쇼핑몰, 역, 카페 중 어느 쪽이 빠른지 판단해야 하는 상황", "비가 오거나 더운 날 실내 대기와 충전 후보를 함께 봐야 하는 상황"],
+    note: "오사카는 지하상가와 역 주변 시설이 많아 보이지만 초행자는 방향을 잃기 쉽습니다. 스미맵은 난바, 우메다, 텐노지 같은 생활권에서 화장실과 쉬기, 충전을 한 화면에서 비교하도록 잡았습니다.",
+    lastmod: "2026-07-03",
+    buildDate: "Fri, 03 Jul 2026 08:45:00 +0900"
+  },
+  {
+    slug: "spots/tokyo/shinjuku-cafe-charging-001",
+    title: "신주쿠 동쪽 카페형 충전 스팟 확인 기준 - 스미맵",
+    h1: "신주쿠 동쪽에서 충전 가능한 카페형 스팟을 볼 때",
+    description: "신주쿠 동쪽 출구 주변에서 콘센트, 와이파이, 직원 허락 필요 여부를 확인하는 스미맵 장소 상세 가이드.",
+    intent: "신주쿠 충전 카페, 신주쿠 콘센트, 신주쿠 와이파이 카페",
+    city: "도쿄 신주쿠",
+    signal: "충전 가능",
+    emoji: "🔌",
+    mapHref: "/?place=tokyo-shinjuku-east&utm_source=spot-page&utm_medium=internal&utm_campaign=shinjuku-charging",
+    related: ["/cities/tokyo/", "/tokyo-charging-spots/", "/routes/battery/", "/routes/station/"],
+    situations: ["신주쿠 동쪽 출구 주변에서 길찾기 배터리가 부족한 상황", "콘센트가 보여도 고객용인지 직원에게 확인해야 하는지 애매한 상황", "와이파이와 잠깐 쉬기를 같이 해결하고 싶은 상황"],
+    note: "신주쿠 동쪽 카페형 스팟은 충전 가능 신호가 있더라도 무단 사용을 뜻하지 않습니다. 주문, 좌석 조건, 직원 확인, 혼잡 시간대를 같이 보고 짧게 회복하는 후보로 다루는 편이 안전합니다.",
+    lastmod: "2026-07-03",
+    buildDate: "Fri, 03 Jul 2026 08:45:00 +0900"
+  },
+  {
+    slug: "spots/osaka/tennoji-restroom-001",
+    title: "텐노지 주변 화장실 확인 스팟 사용 기준 - 스미맵",
+    h1: "오사카 텐노지에서 화장실 후보를 빠르게 고를 때",
+    description: "오사카 텐노지 주변에서 화장실 가능성, 행사일 혼잡, 잠깐 쉬기 신호를 확인하는 스미맵 장소 상세 가이드.",
+    intent: "텐노지 화장실, 오사카 화장실 급함, 텐노지 쉬기 좋은 곳",
+    city: "오사카 텐노지",
+    signal: "화장실 가능",
+    emoji: "🚻",
+    mapHref: "/?place=osaka-tennoji-restroom&utm_source=spot-page&utm_medium=internal&utm_campaign=tennoji-restroom",
+    related: ["/cities/osaka/", "/osaka-restroom-guide/", "/routes/restroom/", "/routes/station/"],
+    situations: ["텐노지 역 주변에서 급하게 화장실 후보를 골라야 하는 상황", "행사일이나 주말에 대기 시간이 길어질지 먼저 확인해야 하는 상황", "화장실과 잠깐 쉬기 신호를 같은 동선에서 보고 싶은 상황"],
+    note: "텐노지 주변 화장실 스팟은 단독 이용 가능 여부보다 시간대와 주변 행사 영향을 같이 보는 것이 중요합니다. 스미맵은 화장실 가능 신호와 잠깐 쉬기 신호를 함께 보여 급한 상황에서도 두 번째 후보를 남기게 합니다.",
+    lastmod: "2026-07-03",
+    buildDate: "Fri, 03 Jul 2026 08:45:00 +0900"
+  },
+  {
     slug: "fukuoka-rain-shelter",
     title: "후쿠오카에서 비 피하기 좋은 곳 찾기 - 스미맵",
     h1: "후쿠오카에서 갑자기 비가 올 때 들어갈 곳을 빠르게 고르는 법",
@@ -184,13 +248,21 @@ function relatedTitle(url) {
     "/routes/convenience/": "편의점 생활 신호",
     "/routes/late-night/": "야간 생활 스팟",
     "/routes/first-day/": "일본 첫날 동선",
-    "/routes/response/": "응대 불편 신호"
+    "/routes/response/": "응대 불편 신호",
+    "/tokyo-charging-spots/": "도쿄에서 충전 가능한 곳 찾기",
+    "/tokyo-late-night-living-spots/": "도쿄 밤늦게 확인할 생활 스팟",
+    "/osaka-restroom-guide/": "오사카에서 화장실 급할 때 확인할 곳",
+    "/cities/tokyo/": "도쿄 생활 스팟 지도 가이드",
+    "/cities/osaka/": "오사카 생활 스팟 지도 가이드",
+    "/spots/tokyo/shinjuku-cafe-charging-001/": "신주쿠 동쪽 카페형 충전 스팟",
+    "/spots/osaka/tennoji-restroom-001/": "텐노지 주변 화장실 확인 스팟"
   };
   return titles[url] || url;
 }
 
 function renderPage(page) {
   const url = pageUrl(page);
+  const pageLastmod = page.lastmod || lastmod;
   const relatedLinks = page.related
     .map((href) => `<li><a href="${href}">${escapeHtml(relatedTitle(href))}</a></li>`)
     .join("\n");
@@ -201,8 +273,8 @@ function renderPage(page) {
     headline: page.title.replace(" - 스미맵", ""),
     description: page.description,
     inLanguage: "ko-KR",
-    datePublished: lastmod,
-    dateModified: lastmod,
+    datePublished: page.datePublished || pageLastmod,
+    dateModified: pageLastmod,
     author: { "@type": "Organization", name: "스미맵 편집부" },
     publisher: { "@type": "Organization", name: "스미맵", url: siteUrl },
     mainEntityOfPage: url,
@@ -289,7 +361,7 @@ function upsertSitemap() {
       const loc = block.match(/<loc>(.*?)<\/loc>/)?.[1];
       return loc && !generatedLocs.has(loc);
     });
-  const generatedBlocks = pages.map((page) => `  <url><loc>${pageUrl(page)}</loc><lastmod>${lastmod}</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>`);
+  const generatedBlocks = pages.map((page) => `  <url><loc>${pageUrl(page)}</loc><lastmod>${page.lastmod || lastmod}</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>`);
   const next = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${existingBlocks.map((block) => `  ${block}`).join("\n")}\n${generatedBlocks.join("\n")}\n</urlset>\n`;
   fs.writeFileSync(sitemapPath, next);
 }
@@ -307,7 +379,7 @@ function renderFeedItem(title, href, description, date = buildDate) {
 
 function writeFeed() {
   const items = [
-    ...pages.map((page) => renderFeedItem(page.title.replace(" - 스미맵", ""), `/${page.slug}/`, page.description)),
+    ...pages.map((page) => renderFeedItem(page.title.replace(" - 스미맵", ""), `/${page.slug}/`, page.description, page.buildDate || buildDate)),
     ...coreFeedItems.map(([title, href, description]) => renderFeedItem(title, href, description, "Sat, 09 May 2026 00:00:00 +0900"))
   ].join("\n");
   const feed = `<?xml version="1.0" encoding="UTF-8"?>
