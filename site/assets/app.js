@@ -83,7 +83,7 @@ const languageStorageKey = "sumimap:language";
 const reportClientStorageKey = "sumimap:reportClientId";
 const reportApiUrl = location.hostname === "appassets.androidplatform.net" ? "https://sumimap.com/api/reports" : "/api/reports";
 const feedbackApiUrl = location.hostname === "appassets.androidplatform.net" ? "https://sumimap.com/api/feedback" : "/api/feedback";
-const reportSyncIntervalMs = 2000;
+const reportSyncIntervalMs = 30000;
 const reportRetryIntervalMs = 15000;
 const supportedLanguages = new Set(["ko", "ja"]);
 let currentLanguage = readLanguagePreference();
@@ -1661,7 +1661,7 @@ function bootMap() {
   markerLayer = L.layerGroup().addTo(map);
   setBaseMapLanguage(state.language, false);
 
-  map.on("moveend zoomend", () => scheduleMapLabels());
+  map.on("moveend zoomend", () => renderMarkers());
   map.on("contextmenu", selectHeldMapPointForReport);
   map.on("click", () => {
     if (!searchPanel?.hidden) setSearchPanel(false);
@@ -3016,8 +3016,8 @@ function filterChip(item) {
 }
 
 function renderMarkers() {
-  const visiblePlaces = getFilteredPlaces();
-  const nextRenderKey = `${state.selectedId}|${visiblePlaces.map((place) => `${place.id}:${place.category}`).join("|")}`;
+  const visiblePlaces = getMarkerRenderPlaces();
+  const nextRenderKey = `${state.selectedId}|${markerViewportKey()}|${visiblePlaces.map((place) => `${place.id}:${place.category}`).join("|")}`;
   if (markerRenderKey === nextRenderKey) {
     scheduleMapLabels();
     return;
@@ -3063,6 +3063,31 @@ function renderMarkers() {
     markerClassNames.set(place.id, markerClassName);
   });
   scheduleMapLabels();
+}
+
+function getMarkerRenderPlaces() {
+  const filtered = getFilteredPlaces();
+  if (!map?.getBounds) return filtered;
+
+  const bounds = map.getBounds().pad(isCompactViewport() ? 0.3 : 0.24);
+  const visible = filtered.filter((place) => bounds.contains([place.lat, place.lng]));
+  const selected = state.selectedId ? filtered.find((place) => place.id === state.selectedId) : null;
+  if (selected && !visible.some((place) => place.id === selected.id)) {
+    visible.push(selected);
+  }
+  return visible;
+}
+
+function markerViewportKey() {
+  if (!map?.getBounds) return "no-map";
+  const bounds = map.getBounds();
+  return [
+    Math.round(map.getZoom() * 10) / 10,
+    bounds.getSouth().toFixed(2),
+    bounds.getWest().toFixed(2),
+    bounds.getNorth().toFixed(2),
+    bounds.getEast().toFixed(2)
+  ].join(":");
 }
 
 function renderMapLabels() {
@@ -3135,8 +3160,8 @@ function getVisibleLocalMapLabels(bounds, zoom) {
   const compact = isCompactViewport();
   const paddedBounds = bounds?.pad(compact ? 0.36 : 0.32);
   const maxLabels = compact
-    ? (zoom >= 15 ? 70 : zoom >= 14 ? 56 : zoom >= 13 ? 40 : zoom >= 12 ? 30 : 18)
-    : (zoom >= 15 ? 110 : zoom >= 14 ? 90 : zoom >= 13 ? 64 : zoom >= 12 ? 48 : 24);
+    ? (zoom >= 15 ? 32 : zoom >= 14 ? 24 : zoom >= 13 ? 16 : zoom >= 12 ? 10 : 6)
+    : (zoom >= 15 ? 48 : zoom >= 14 ? 36 : zoom >= 13 ? 24 : zoom >= 12 ? 16 : 8);
   const boxes = [];
   const accepted = [];
   const candidates = localMapLabels
