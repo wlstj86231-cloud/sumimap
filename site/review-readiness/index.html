@@ -14,6 +14,12 @@
     <meta name="google-adsense-account" content="ca-pub-7217591196020054">
     <link rel="alternate" type="application/rss+xml" title="스미맵 RSS" href="https://sumimap.com/feed.xml">
     <link rel="stylesheet" href="/assets/styles.css?v=20260509-perf3">
+    <style>
+      .readiness-table { width: 100%; border-collapse: collapse; margin: 1rem 0 1.25rem; font-size: .95rem; }
+      .readiness-table th, .readiness-table td { border: 1px solid #d8e7e1; padding: .75rem; text-align: left; vertical-align: top; }
+      .readiness-table th { background: #f2faf6; }
+      .readiness-note { border: 1px solid #d8e7e1; border-radius: 8px; background: #f7fbf8; padding: 1rem; }
+    </style>
   </head>
   <body class="static-body">
     <main class="static-shell">
@@ -45,10 +51,60 @@
         <article class="static-section">
           <h2>광고와 기능의 분리</h2>
           <p>광고는 지도 조작, 제보, 저장, 번역, 위치 확인을 방해하지 않는 위치에만 배치하는 것을 원칙으로 합니다. 생활 편의 정보와 광고가 섞여 사용자가 특정 장소를 공식 추천처럼 오해하지 않도록 관리합니다.</p>
+          <p>2026-07-03 기준으로 홈 지도와 정책성 페이지는 광고 스크립트를 제외했고, 검색으로 읽는 가이드·도시·장소 문서에만 광고를 허용했습니다.</p>
+        </article>
+        <article class="static-section">
+          <h2>광고 허용·제외 점검표</h2>
+          <table class="readiness-table">
+            <thead>
+              <tr>
+                <th>구분</th>
+                <th>대표 URL</th>
+                <th>현재 상태</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>광고 제외</td>
+                <td><code>/</code>, <code>/about/</code>, <code>/editorial/</code>, <code>/policy/</code>, <code>/privacy/</code>, <code>/terms/</code>, <code>/contact/</code>, <code>/review-readiness/</code></td>
+                <td>지도 조작, 정책, 문의, 개인정보, 심사 준비 문서는 AdSense script absent.</td>
+              </tr>
+              <tr>
+                <td>광고 허용</td>
+                <td><code>/guide/</code>, <code>/routes/</code>, <code>/routes/*</code>, <code>/cities/</code>, <code>/cities/*</code>, <code>/spots/*</code>, 검색용 생활 가이드 문서</td>
+                <td>일본 생활 편의 맥락을 설명하는 정적 콘텐츠 문서에만 AdSense script present.</td>
+              </tr>
+              <tr>
+                <td>기능 상태</td>
+                <td>지도 패널, 제보, 저장, 필터, 위치 확인, 빈 결과</td>
+                <td>홈 앱 안의 기능 상태는 광고 삽입 대상이 아니며, 지도 첫 화면 광고를 사용하지 않음.</td>
+              </tr>
+            </tbody>
+          </table>
+        </article>
+        <article class="static-section">
+          <h2>공개 색인 상태</h2>
+          <table class="readiness-table">
+            <tbody>
+              <tr>
+                <th>sitemap</th>
+                <td><code>https://sumimap.com/sitemap.xml</code>에 39개 URL이 있으며 중복 URL 없음.</td>
+              </tr>
+              <tr>
+                <th>feed</th>
+                <td><code>https://sumimap.com/feed.xml</code>에 21개 콘텐츠 항목이 있으며 도시·장소·상황별 문서가 반영됨.</td>
+              </tr>
+              <tr>
+                <th>대표 공개 확인</th>
+                <td><code>/</code> 광고 제외, <code>/guide/</code>, <code>/routes/battery/</code>, <code>/cities/tokyo/</code>, <code>/spots/tokyo/shinjuku-cafe-charging-001/</code> 광고 허용 상태로 확인.</td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="readiness-note">AdSense 검토 요청 전 기준은 “지도 앱으로 광고를 밀어 넣는 구조”가 아니라 “지도는 사용성 중심, 광고는 설명 가능한 콘텐츠 문서 중심”입니다.</p>
         </article>
         <article class="static-section">
           <h2>함께 확인할 문서</h2>
-          <p><a href="/about/">소개</a> · <a href="/editorial/">편집 기준</a> · <a href="/guide/">이용 가이드</a> · <a href="/routes/">상황별 문서</a> · <a href="/privacy/">개인정보 처리방침</a> · <a href="/contact/">문의</a></p>
+          <p><a href="/about/">소개</a> · <a href="/editorial/">편집 기준</a> · <a href="/policy/">제보 정책</a> · <a href="/guide/">이용 가이드</a> · <a href="/routes/">상황별 문서</a> · <a href="/cities/">도시별 문서</a> · <a href="/privacy/">개인정보 처리방침</a> · <a href="/contact/">문의</a></p>
         </article>
       </section>
     </main>
