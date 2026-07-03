@@ -29,6 +29,8 @@ const contentEntryPrefixes = [
   "/spots/"
 ];
 
+const minContentTextLength = 900;
+
 const ignoredLinkExtensions = new Set([
   ".css",
   ".js",
@@ -177,6 +179,25 @@ function textLength(html) {
     .length;
 }
 
+function expectedCanonicalForRoute(route) {
+  return `${siteUrl}${route}`;
+}
+
+function duplicateGroups(pages, key) {
+  const groups = new Map();
+  for (const page of pages) {
+    const value = (page[key] || "").trim();
+    if (!value) continue;
+    const routes = groups.get(value) || [];
+    routes.push(page.route);
+    groups.set(value, routes);
+  }
+
+  return [...groups.entries()]
+    .filter(([, routes]) => routes.length > 1)
+    .map(([value, routes]) => ({ value, routes }));
+}
+
 async function main() {
   const htmlFiles = (await collectFiles(siteRoot))
     .filter((filePath) => filePath.endsWith(".html"))
@@ -224,6 +245,9 @@ async function main() {
     if (!page.title) errors.push(`missing title: ${route}`);
     if (!page.description) errors.push(`missing meta description: ${route}`);
     if (!page.canonical) errors.push(`missing canonical: ${route}`);
+    if (page.canonical && page.canonical !== expectedCanonicalForRoute(route)) {
+      errors.push(`canonical mismatch on ${route}: ${page.canonical}`);
+    }
     if (blockedAdPaths.has(route) && page.hasAds) errors.push(`ad script on blocked page: ${route}`);
 
     if (isContentPath(route) && !sitemapSet.has(route)) warnings.push(`content page missing from sitemap: ${route}`);
@@ -231,6 +255,7 @@ async function main() {
     if (isContentPath(route) && !blockedAdPaths.has(route) && !page.hasAds) warnings.push(`content page without ad script: ${route}`);
     if (isContentPath(route) && page.internalLinks.length < 3) warnings.push(`content page has fewer than 3 internal links: ${route}`);
     if (isContentPath(route) && page.paragraphCount < 4) warnings.push(`content page has fewer than 4 paragraphs: ${route}`);
+    if (isContentPath(route) && page.textLength < minContentTextLength) warnings.push(`content page has short text: ${route} (${page.textLength} chars)`);
 
     for (const link of page.internalLinks) {
       if (!htmlRouteSet.has(link)) errors.push(`broken internal link from ${route} to ${link}`);
@@ -243,8 +268,18 @@ async function main() {
   for (const route of [...new Set(duplicateFeed)]) errors.push(`duplicate feed route: ${route}`);
 
   const pages = [...htmlRoutes.values()];
+  const crawlablePages = pages.filter((page) => !isVerificationPath(page.route));
   const contentPages = pages.filter((page) => isContentPath(page.route));
   const contentEntries = pages.filter((page) => isContentEntry(page.route));
+  const duplicateTitles = duplicateGroups(contentPages, "title");
+  const duplicateDescriptions = duplicateGroups(contentPages, "description");
+  const duplicateCanonicals = duplicateGroups(crawlablePages, "canonical");
+  const thinContentPages = contentPages.filter((page) => page.textLength < minContentTextLength);
+
+  for (const group of duplicateTitles) warnings.push(`duplicate content title: ${group.routes.join(", ")}`);
+  for (const group of duplicateDescriptions) warnings.push(`duplicate content description: ${group.routes.join(", ")}`);
+  for (const group of duplicateCanonicals) errors.push(`duplicate canonical ${group.value}: ${group.routes.join(", ")}`);
+
   const blockedWithAds = pages.filter((page) => blockedAdPaths.has(page.route) && page.hasAds);
   const contentWithAds = contentPages.filter((page) => page.hasAds);
   const summary = {
@@ -257,6 +292,10 @@ async function main() {
     feedItems: feedRoutes.length,
     adAllowedContentPagesWithAds: contentWithAds.length,
     blockedPagesWithAds: blockedWithAds.length,
+    thinContentPages: thinContentPages.length,
+    duplicateContentTitleGroups: duplicateTitles.length,
+    duplicateContentDescriptionGroups: duplicateDescriptions.length,
+    duplicateCanonicalGroups: duplicateCanonicals.length,
     errors: errors.length,
     warnings: warnings.length
   };

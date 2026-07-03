@@ -356,5 +356,82 @@
       <pubDate>Sat, 09 May 2026 00:00:00 +0900</pubDate>
       <description>도쿄, 오사카, 후쿠오카, 교토에서 생활 스팟을 다르게 읽는 방법.</description>
     </item>
+    <item>
+      <title>스미맵 상황별 바로가기</title>
+      <link>https://sumimap.com/routes/</link>
+      <guid>https://sumimap.com/routes/</guid>
+      <pubDate>Fri, 03 Jul 2026 21:30:00 +0900</pubDate>
+      <description>충전, 화장실, 비 피하기, 한국어 대응, 쉬기, 역 주변 생활처럼 곤란한 순간별로 스미맵을 여는 문서 허브.</description>
+    </item>
+    <item>
+      <title>충전 상황 가이드</title>
+      <link>https://sumimap.com/routes/battery/</link>
+      <guid>https://sumimap.com/routes/battery/</guid>
+      <pubDate>Fri, 03 Jul 2026 21:30:00 +0900</pubDate>
+      <description>일본에서 배터리가 부족할 때 콘센트, 카페, 보조배터리, 역 주변 후보를 어떤 순서로 확인할지 정리한 스미맵 상황 가이드.</description>
+    </item>
+    <item>
+      <title>화장실 상황 가이드</title>
+      <link>https://sumimap.com/routes/restroom/</link>
+      <guid>https://sumimap.com/routes/restroom/</guid>
+      <pubDate>Fri, 03 Jul 2026 21:30:00 +0900</pubDate>
+      <description>일본에서 화장실이 급할 때 가까운 장소보다 실제 접근 가능성과 이용 조건을 먼저 보는 스미맵 상황 가이드.</description>
+    </item>
+    <item>
+      <title>비 피하기 상황 가이드</title>
+      <link>https://sumimap.com/routes/rain/</link>
+      <guid>https://sumimap.com/routes/rain/</guid>
+      <pubDate>Fri, 03 Jul 2026 21:30:00 +0900</pubDate>
+      <description>비가 올 때 실내 대기, 쉬기, 화장실, 충전을 함께 확인하는 스미맵 상황 가이드.</description>
+    </item>
+    <item>
+      <title>한국어 대응 상황 가이드</title>
+      <link>https://sumimap.com/routes/korean/</link>
+      <guid>https://sumimap.com/routes/korean/</guid>
+      <pubDate>Fri, 03 Jul 2026 21:30:00 +0900</pubDate>
+      <description>한국어 메뉴와 실제 응대 가능성을 구분해 읽는 스미맵 언어 대응 상황 가이드.</description>
+    </item>
+    <item>
+      <title>쉬기 상황 가이드</title>
+      <link>https://sumimap.com/routes/rest/</link>
+      <guid>https://sumimap.com/routes/rest/</guid>
+      <pubDate>Fri, 03 Jul 2026 21:30:00 +0900</pubDate>
+      <description>일본에서 잠깐 앉아 쉬어야 할 때 의자보다 체류 조건과 다음 이동을 먼저 보는 스미맵 휴식 가이드.</description>
+    </item>
+    <item>
+      <title>역 주변 생활 가이드</title>
+      <link>https://sumimap.com/routes/station/</link>
+      <guid>https://sumimap.com/routes/station/</guid>
+      <pubDate>Fri, 03 Jul 2026 21:30:00 +0900</pubDate>
+      <description>역 안과 역 밖의 충전, 화장실, 쉬기, 비 피하기 후보를 구분해서 보는 스미맵 역세권 생활 가이드.</description>
+    </item>
+    <item>
+      <title>편의점 생활 기능 가이드</title>
+      <link>https://sumimap.com/routes/convenience/</link>
+      <guid>https://sumimap.com/routes/convenience/</guid>
+      <pubDate>Fri, 03 Jul 2026 21:30:00 +0900</pubDate>
+      <description>일본 편의점에서 화장실, 충전, 프린트, 택배, 짧은 대기 가능성을 지점별 생활 신호로 읽는 스미맵 가이드.</description>
+    </item>
+    <item>
+      <title>늦은 밤 생활 가이드</title>
+      <link>https://sumimap.com/routes/late-night/</link>
+      <guid>https://sumimap.com/routes/late-night/</guid>
+      <pubDate>Fri, 03 Jul 2026 21:30:00 +0900</pubDate>
+      <description>일본에서 늦은 밤 이동할 때 영업 중 여부보다 안전하게 머물고 다시 이동할 수 있는지를 보는 스미맵 가이드.</description>
+    </item>
+    <item>
+      <title>일본 첫날 생활 루트</title>
+      <link>https://sumimap.com/routes/first-day/</link>
+      <guid>https://sumimap.com/routes/first-day/</guid>
+      <pubDate>Fri, 03 Jul 2026 21:30:00 +0900</pubDate>
+      <description>일본에 도착한 첫날 충전, 화장실, 쉬기, 비 피하기, 한국어 대응 기준점을 먼저 잡는 스미맵 생활 루트.</description>
+    </item>
+    <item>
+      <title>응대 불편 제보 해석 가이드</title>
+      <link>https://sumimap.com/routes/response/</link>
+      <guid>https://sumimap.com/routes/response/</guid>
+      <pubDate>Fri, 03 Jul 2026 21:30:00 +0900</pubDate>
+      <description>응대 불편 제보를 비난이 아니라 다음 사용자의 선택 부담을 줄이는 생활 신호로 해석하는 스미맵 운영 가이드.</description>
+    </item>
   </channel>
 </rss>
