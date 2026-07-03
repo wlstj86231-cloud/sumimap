@@ -18,18 +18,22 @@ export function onRequestOptions() {
 
 export async function onRequestGet({ env }) {
   const db = env.REPORTS_DB;
-  if (!db) return json({ ok: false, error: "REPORTS_DB binding missing" }, 503);
+  if (!db) return json({ ok: true, reports: [], mode: "local-only" });
 
-  const { results } = await db.prepare(`
-    SELECT id, place_id, tags, recency, created_at, updated_at, agrees, disputes, client_id,
-           place_name, place_area, name_ko, area_ko, name_ja, area_ja, lat, lng, city, category
-    FROM reports
-    WHERE deleted_at IS NULL
-    ORDER BY updated_at DESC
-    LIMIT 200
-  `).all();
+  try {
+    const { results } = await db.prepare(`
+      SELECT id, place_id, tags, recency, created_at, updated_at, agrees, disputes, client_id,
+             place_name, place_area, name_ko, area_ko, name_ja, area_ja, lat, lng, city, category
+      FROM reports
+      WHERE deleted_at IS NULL
+      ORDER BY updated_at DESC
+      LIMIT 200
+    `).all();
 
-  return json({ ok: true, reports: results.map(serializeReport) });
+    return json({ ok: true, reports: results.map(serializeReport) });
+  } catch {
+    return json({ ok: true, reports: [], mode: "local-only" });
+  }
 }
 
 export async function onRequestPost({ request, env }) {
