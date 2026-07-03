@@ -4402,6 +4402,29 @@ html {
   pointer-events: none;
 }
 
+.app-shell.is-map-moving .topbar,
+.app-shell.is-map-moving .search-panel,
+.app-shell.is-map-moving .map-quick-rail,
+.app-shell.is-map-moving .bottom-sheet,
+.app-shell.is-map-moving .bottom-nav,
+.app-shell.is-map-moving .status-pill {
+  backdrop-filter: none;
+  box-shadow: 0 1px 4px rgba(16, 26, 31, 0.08);
+  transition: none !important;
+}
+
+.app-shell.is-map-moving .sumimap-label-pane {
+  display: none;
+}
+
+.app-shell.is-map-moving .sumimap-marker:not(.is-selected) {
+  visibility: hidden;
+}
+
+.app-shell.is-map-moving .leaflet-tile {
+  will-change: transform;
+}
+
 .static-experience {
   border-color: rgba(15, 164, 120, 0.22);
   background: #f4fbf8;

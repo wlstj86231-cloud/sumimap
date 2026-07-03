@@ -1559,6 +1559,7 @@ const reportTagsByKey = new Map(reportTags.map((tag) => [tag.key, tag]));
 const reportTagsByLabel = new Map(reportTags.map((tag) => [tag.label, tag]));
 
 const sheet = document.querySelector("#sheet");
+const appShell = document.querySelector(".app-shell");
 const toast = document.querySelector("#toast");
 const statusPill = document.querySelector("#statusPill");
 const mapQuickRail = document.querySelector("#mapQuickRail");
@@ -1604,10 +1605,13 @@ let reportServerFingerprint = "";
 let searchRenderFrame = 0;
 let mapResizeTimer = 0;
 let mapLabelFrame = 0;
+let mapInteractionTimer = 0;
+let pendingMapRenderFrame = 0;
 let sheetHtmlCache = "";
 let markerRenderKey = "";
 let mapLabelRenderKey = "";
 let quickRailHtmlCache = "";
+let mapInteractionActive = false;
 
 startWhenReady();
 
@@ -1661,7 +1665,9 @@ function bootMap() {
   markerLayer = L.layerGroup().addTo(map);
   setBaseMapLanguage(state.language, false);
 
-  map.on("moveend zoomend", () => renderMarkers());
+  map.on("movestart zoomstart dragstart", beginMapInteraction);
+  map.on("moveend zoomend dragend", finishMapInteraction);
+  map.on("moveend zoomend", scheduleMapRenderAfterInteraction);
   map.on("contextmenu", selectHeldMapPointForReport);
   map.on("click", () => {
     if (!searchPanel?.hidden) setSearchPanel(false);
@@ -2229,6 +2235,40 @@ function scheduleMapResize(delay = 180) {
   }, delay);
 }
 
+function beginMapInteraction() {
+  window.clearTimeout(mapInteractionTimer);
+  if (mapInteractionActive) return;
+  mapInteractionActive = true;
+  appShell?.classList.add("is-map-moving");
+  if (mapLabelLayer) {
+    mapLabelLayer.clearLayers();
+    mapLabelRenderKey = "";
+  }
+}
+
+function finishMapInteraction() {
+  window.clearTimeout(mapInteractionTimer);
+  mapInteractionTimer = window.setTimeout(() => {
+    mapInteractionTimer = 0;
+    mapInteractionActive = false;
+    appShell?.classList.remove("is-map-moving");
+    renderMarkers();
+  }, isCompactViewport() ? 120 : 70);
+}
+
+function scheduleMapRenderAfterInteraction() {
+  if (mapInteractionActive) {
+    finishMapInteraction();
+    return;
+  }
+  if (pendingMapRenderFrame) return;
+  const schedule = window.requestAnimationFrame || ((callback) => window.setTimeout(callback, 16));
+  pendingMapRenderFrame = schedule(() => {
+    pendingMapRenderFrame = 0;
+    renderMarkers();
+  });
+}
+
 function setMapView(center, zoom) {
   if (!map || !center) return;
   map.setView(center, zoom, { animate: false });
@@ -2236,12 +2276,17 @@ function setMapView(center, zoom) {
 }
 
 function scheduleMapLabels() {
+  if (mapInteractionActive) {
+    mapLabelRenderKey = "";
+    return;
+  }
   if (mapLabelFrame) return;
-  const schedule = window.requestAnimationFrame || ((callback) => window.setTimeout(callback, 16));
-  mapLabelFrame = schedule(() => {
+  mapLabelFrame = window.setTimeout(() => {
     mapLabelFrame = 0;
-    renderMapLabels();
-  });
+    runWhenIdle(() => {
+      if (!mapInteractionActive) renderMapLabels();
+    }, isCompactViewport() ? 900 : 600);
+  }, isCompactViewport() ? 140 : 80);
 }
 
 function syncSheetMode() {
@@ -3016,6 +3061,10 @@ function filterChip(item) {
 }
 
 function renderMarkers() {
+  if (mapInteractionActive) {
+    markerRenderKey = "";
+    return;
+  }
   const visiblePlaces = getMarkerRenderPlaces();
   const nextRenderKey = `${state.selectedId}|${markerViewportKey()}|${visiblePlaces.map((place) => `${place.id}:${place.category}`).join("|")}`;
   if (markerRenderKey === nextRenderKey) {
@@ -3067,15 +3116,32 @@ function renderMarkers() {
 
 function getMarkerRenderPlaces() {
   const filtered = getFilteredPlaces();
-  if (!map?.getBounds) return filtered;
+  if (!map?.getBounds) return limitMarkerPlaces(filtered, filtered);
 
   const bounds = map.getBounds().pad(isCompactViewport() ? 0.3 : 0.24);
   const visible = filtered.filter((place) => bounds.contains([place.lat, place.lng]));
-  const selected = state.selectedId ? filtered.find((place) => place.id === state.selectedId) : null;
+  return limitMarkerPlaces(visible, filtered);
+}
+
+function limitMarkerPlaces(list, fallbackList = list) {
+  let visible = list;
+  const maxMarkers = maxMarkerCountForZoom(map?.getZoom?.() || 12);
+  if (visible.length > maxMarkers) {
+    visible = visible.slice(0, maxMarkers);
+  }
+  const selected = state.selectedId ? fallbackList.find((place) => place.id === state.selectedId) : null;
   if (selected && !visible.some((place) => place.id === selected.id)) {
     visible.push(selected);
   }
   return visible;
+}
+
+function maxMarkerCountForZoom(zoom) {
+  const compact = isCompactViewport();
+  if (zoom < 11) return compact ? 12 : 18;
+  if (zoom < 13) return compact ? 20 : 30;
+  if (zoom < 15) return compact ? 32 : 48;
+  return compact ? 42 : 64;
 }
 
 function markerViewportKey() {
@@ -3091,6 +3157,7 @@ function markerViewportKey() {
 }
 
 function renderMapLabels() {
+  if (mapInteractionActive) return;
   if (!map || !mapLabelLayer) return;
   const zoom = map.getZoom();
   const bounds = map.getBounds?.()?.pad(0.12);
