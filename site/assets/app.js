@@ -2443,7 +2443,7 @@ function renderNearby() {
     <button class="sheet-grip" type="button" data-sheet-toggle aria-label="${escapeAttr(t("패널 열고 닫기"))}"></button>
     ${introHead}
     ${renderContextTools()}
-    ${place ? renderPlaceBrief(place) : renderMapFirstHint(list)}
+    ${place ? `${renderPlaceBrief(place)}${renderHomeContentGuide()}` : renderMapFirstHint(list)}
   `;
 }
 
@@ -2837,7 +2837,35 @@ function renderMapFirstHint(list) {
         <div><span>${t("장소")}</span><strong>${countLabel(list.length, "곳")}</strong></div>
         <div><span>${t("빠른 상황")}</span><strong>${scenarios.slice(0, 3).map((item) => item.emoji).join(" ")}</strong></div>
       </div>
+      ${renderHomeContentGuide()}
     </section>
+  `;
+}
+
+function renderHomeContentGuide() {
+  const links = [
+    { href: "/guide/", label: "이용 가이드", body: "제보와 표시 기준" },
+    { href: "/routes/battery/", label: "충전 가능한 곳", body: "콘센트 확인 순서" },
+    { href: "/routes/restroom/", label: "화장실 급할 때", body: "역·카페·시설 확인" },
+    { href: "/cities/tokyo/", label: "도쿄 생활 지도", body: "출구와 환승 중심" }
+  ];
+
+  return `
+    <div class="home-content-card" aria-label="${escapeAttr(t("생활 가이드"))}">
+      <div>
+        <span>${t("지도와 함께 읽는 생활 가이드")}</span>
+        <strong>${t("충전·화장실·비 피하기를 상황별로 확인하세요")}</strong>
+        <p>${t("스미맵은 장소를 공식 추천처럼 단정하지 않고, 방문 전 확인할 신호와 이용 순서를 정리합니다.")}</p>
+      </div>
+      <div class="home-content-links">
+        ${links.map((link) => `
+          <a href="${link.href}">
+            <span>${t(link.label)}</span>
+            <em>${t(link.body)}</em>
+          </a>
+        `).join("")}
+      </div>
+    </div>
   `;
 }
 
