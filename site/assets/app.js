@@ -2845,16 +2845,16 @@ function renderMapFirstHint(list) {
 function renderHomeContentGuide() {
   const links = [
     { href: "/guide/", label: "이용 가이드", body: "제보와 표시 기준" },
-    { href: "/routes/battery/", label: "충전 가능한 곳", body: "콘센트 확인 순서" },
     { href: "/routes/restroom/", label: "화장실 급할 때", body: "역·카페·시설 확인" },
-    { href: "/cities/tokyo/", label: "도쿄 생활 지도", body: "출구와 환승 중심" }
+    { href: "/cities/nagoya/", label: "나고야 생활 지도", body: "역·지하 동선 중심" },
+    { href: "/spots/sapporo/sapporo-station-winter-restroom-001/", label: "삿포로 겨울 화장실", body: "실내 연결 기준" }
   ];
 
   return `
     <div class="home-content-card" aria-label="${escapeAttr(t("생활 가이드"))}">
       <div>
         <span>${t("지도와 함께 읽는 생활 가이드")}</span>
-        <strong>${t("충전·화장실·비 피하기를 상황별로 확인하세요")}</strong>
+        <strong>${t("도시별 생활 신호와 장소 상세를 함께 확인하세요")}</strong>
         <p>${t("스미맵은 장소를 공식 추천처럼 단정하지 않고, 방문 전 확인할 신호와 이용 순서를 정리합니다.")}</p>
       </div>
       <div class="home-content-links">

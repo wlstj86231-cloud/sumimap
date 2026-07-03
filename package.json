@@ -6,6 +6,7 @@
   "scripts": {
     "content:inventory": "node scripts/content-inventory.mjs",
     "seo:keywords": "node scripts/seo-keyword-pages.mjs",
+    "seo:local-details": "node scripts/seo-local-detail-pages.mjs",
     "serve": "python -m http.server 4192 -d site"
   }
 }

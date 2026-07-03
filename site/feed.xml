@@ -3,9 +3,114 @@
   <channel>
     <title>스미맵</title>
     <link>https://sumimap.com/</link>
-    <description>일본 거주 한국인을 위한 충전, 화장실, 쉬기, 비 피하기, 한국어 대응 생활 지도.</description>
+    <description>일본 생활 중 필요한 충전, 화장실, 쉬기, 비 피하기, 한국어 대응 신호를 정리한 스미맵 콘텐츠 피드.</description>
     <language>ko-KR</language>
-    <lastBuildDate>Sat, 09 May 2026 18:30:00 +0900</lastBuildDate>
+    <lastBuildDate>Fri, 03 Jul 2026 20:40:00 +0900</lastBuildDate>
+    <item>
+      <title>신주쿠역 화장실 급할 때 보는 출구 기준</title>
+      <link>https://sumimap.com/spots/tokyo/shinjuku-station-restroom-002/</link>
+      <guid>https://sumimap.com/spots/tokyo/shinjuku-station-restroom-002/</guid>
+      <pubDate>Fri, 03 Jul 2026 20:40:00 +0900</pubDate>
+      <description>도쿄 신주쿠역 주변에서 화장실이 급할 때 출구, 층, 혼잡, 두 번째 후보를 함께 확인하는 스미맵 장소 상세 가이드.</description>
+    </item>
+    <item>
+      <title>시부야 카페 충전 후보 확인 기준</title>
+      <link>https://sumimap.com/spots/tokyo/shibuya-cafe-charging-002/</link>
+      <guid>https://sumimap.com/spots/tokyo/shibuya-cafe-charging-002/</guid>
+      <pubDate>Fri, 03 Jul 2026 20:40:00 +0900</pubDate>
+      <description>도쿄 시부야 주변에서 콘센트, 주문 조건, 좌석 회전, 와이파이를 함께 보는 스미맵 충전 장소 상세 가이드.</description>
+    </item>
+    <item>
+      <title>우에노 비 피하기 실내 대기 기준</title>
+      <link>https://sumimap.com/spots/tokyo/ueno-rain-shelter-001/</link>
+      <guid>https://sumimap.com/spots/tokyo/ueno-rain-shelter-001/</guid>
+      <pubDate>Fri, 03 Jul 2026 20:40:00 +0900</pubDate>
+      <description>우에노역과 공원 주변에서 갑자기 비가 올 때 실내 대기, 화장실, 충전 후보를 함께 보는 스미맵 장소 상세 가이드.</description>
+    </item>
+    <item>
+      <title>우메다 화장실 동선 확인 기준</title>
+      <link>https://sumimap.com/spots/osaka/umeda-restroom-002/</link>
+      <guid>https://sumimap.com/spots/osaka/umeda-restroom-002/</guid>
+      <pubDate>Fri, 03 Jul 2026 20:40:00 +0900</pubDate>
+      <description>오사카 우메다 주변에서 역, 지하상가, 상업시설 화장실 후보를 비교하는 스미맵 장소 상세 가이드.</description>
+    </item>
+    <item>
+      <title>난바 충전 가능한 후보를 고르는 기준</title>
+      <link>https://sumimap.com/spots/osaka/namba-charging-001/</link>
+      <guid>https://sumimap.com/spots/osaka/namba-charging-001/</guid>
+      <pubDate>Fri, 03 Jul 2026 20:40:00 +0900</pubDate>
+      <description>오사카 난바 주변에서 카페 충전, 보조배터리 대여, 지하상가 대기 후보를 비교하는 스미맵 장소 상세 가이드.</description>
+    </item>
+    <item>
+      <title>텐노지 비 피하기와 쉬기 후보 기준</title>
+      <link>https://sumimap.com/spots/osaka/tennoji-rain-shelter-002/</link>
+      <guid>https://sumimap.com/spots/osaka/tennoji-rain-shelter-002/</guid>
+      <pubDate>Fri, 03 Jul 2026 20:40:00 +0900</pubDate>
+      <description>오사카 텐노지 주변에서 비 피하기, 실내 대기, 화장실, 짐 정리 후보를 함께 보는 스미맵 장소 상세 가이드.</description>
+    </item>
+    <item>
+      <title>교토역 충전 후보와 보조배터리 판단 기준</title>
+      <link>https://sumimap.com/spots/kyoto/kyoto-station-charging-001/</link>
+      <guid>https://sumimap.com/spots/kyoto/kyoto-station-charging-001/</guid>
+      <pubDate>Fri, 03 Jul 2026 20:40:00 +0900</pubDate>
+      <description>교토역 주변에서 충전, 보조배터리 대여, 버스 동선, 실내 대기를 함께 확인하는 스미맵 장소 상세 가이드.</description>
+    </item>
+    <item>
+      <title>기온 주변 화장실과 관광 매너 확인 기준</title>
+      <link>https://sumimap.com/spots/kyoto/gion-restroom-001/</link>
+      <guid>https://sumimap.com/spots/kyoto/gion-restroom-001/</guid>
+      <pubDate>Fri, 03 Jul 2026 20:40:00 +0900</pubDate>
+      <description>교토 기온 주변에서 관광 혼잡, 매장 이용 부담, 공공 동선, 현장 안내를 함께 보는 스미맵 장소 상세 가이드.</description>
+    </item>
+    <item>
+      <title>하카타역 충전 후보와 공항 이동 전 체크</title>
+      <link>https://sumimap.com/spots/fukuoka/hakata-charging-001/</link>
+      <guid>https://sumimap.com/spots/fukuoka/hakata-charging-001/</guid>
+      <pubDate>Fri, 03 Jul 2026 20:40:00 +0900</pubDate>
+      <description>후쿠오카 하카타역 주변에서 충전, 와이파이, 짐 정리, 공항 이동 동선을 함께 확인하는 스미맵 장소 상세 가이드.</description>
+    </item>
+    <item>
+      <title>텐진 비 피하기와 실내 대기 후보 기준</title>
+      <link>https://sumimap.com/spots/fukuoka/tenjin-rain-shelter-001/</link>
+      <guid>https://sumimap.com/spots/fukuoka/tenjin-rain-shelter-001/</guid>
+      <pubDate>Fri, 03 Jul 2026 20:40:00 +0900</pubDate>
+      <description>후쿠오카 텐진 주변에서 비 피하기, 실내 대기, 쇼핑 동선, 화장실 후보를 함께 보는 스미맵 장소 상세 가이드.</description>
+    </item>
+    <item>
+      <title>삿포로역 겨울 화장실과 실내 대기 기준</title>
+      <link>https://sumimap.com/spots/sapporo/sapporo-station-winter-restroom-001/</link>
+      <guid>https://sumimap.com/spots/sapporo/sapporo-station-winter-restroom-001/</guid>
+      <pubDate>Fri, 03 Jul 2026 20:40:00 +0900</pubDate>
+      <description>삿포로역 주변에서 눈, 추위, 지하 보행공간, 화장실, 실내 대기 후보를 함께 보는 스미맵 장소 상세 가이드.</description>
+    </item>
+    <item>
+      <title>나고야 생활 스팟 지도 가이드</title>
+      <link>https://sumimap.com/cities/nagoya/</link>
+      <guid>https://sumimap.com/cities/nagoya/</guid>
+      <pubDate>Fri, 03 Jul 2026 20:40:00 +0900</pubDate>
+      <description>나고야역, 사카에, 오스 주변에서 충전, 화장실, 비 피하기, 첫날 생활 동선을 확인하는 스미맵 도시 가이드.</description>
+    </item>
+    <item>
+      <title>삿포로 생활 스팟 지도 가이드</title>
+      <link>https://sumimap.com/cities/sapporo/</link>
+      <guid>https://sumimap.com/cities/sapporo/</guid>
+      <pubDate>Fri, 03 Jul 2026 20:40:00 +0900</pubDate>
+      <description>삿포로역, 오도리, 스스키노 주변에서 겨울 화장실, 실내 대기, 충전, 비·눈 피하기 신호를 정리한 스미맵 도시 가이드.</description>
+    </item>
+    <item>
+      <title>나고야역 첫날 생활 동선 가이드</title>
+      <link>https://sumimap.com/nagoya-station-living-guide/</link>
+      <guid>https://sumimap.com/nagoya-station-living-guide/</guid>
+      <pubDate>Fri, 03 Jul 2026 20:40:00 +0900</pubDate>
+      <description>나고야역 도착 직후 충전, 화장실, 지하상가, 숙소 이동을 함께 보는 스미맵 생활 가이드.</description>
+    </item>
+    <item>
+      <title>삿포로 겨울 화장실과 실내 동선 가이드</title>
+      <link>https://sumimap.com/sapporo-winter-restroom-guide/</link>
+      <guid>https://sumimap.com/sapporo-winter-restroom-guide/</guid>
+      <pubDate>Fri, 03 Jul 2026 20:40:00 +0900</pubDate>
+      <description>삿포로 겨울 여행과 생활 중 화장실, 지하 보행공간, 실내 대기, 눈길 이동 부담을 함께 보는 스미맵 가이드.</description>
+    </item>
     <item>
       <title>도쿄에서 충전 가능한 곳 찾기</title>
       <link>https://sumimap.com/tokyo-charging-spots/</link>
