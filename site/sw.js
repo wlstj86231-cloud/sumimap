@@ -1,8 +1,8 @@
-const CACHE_NAME = "sumimap-v58-map-performance";
+const CACHE_NAME = "sumimap-v59-fast-marker-pane";
 const LOCAL_ASSETS = [
   "/",
-  "/assets/styles.css?v=20260703-mapperf1",
-  "/assets/app.js?v=20260703-mapperf1",
+  "/assets/styles.css?v=20260703-render1",
+  "/assets/app.js?v=20260703-render1",
   "/assets/vendor/leaflet/leaflet.css",
   "/assets/vendor/leaflet/leaflet.js",
   "/assets/vendor/leaflet/images/layers.png",

@@ -1662,7 +1662,13 @@ function bootMap() {
   labelPane.style.zIndex = "550";
   labelPane.style.pointerEvents = "none";
   mapLabelLayer = L.layerGroup().addTo(map);
-  markerLayer = L.layerGroup().addTo(map);
+  markerLayer = map.createPane("sumimapFastMarkerPane");
+  markerLayer.classList.add("sumimap-fast-marker-pane");
+  markerLayer.style.zIndex = "600";
+  markerLayer.addEventListener("click", handleMarkerLayerClick);
+  markerLayer.addEventListener("keydown", handleMarkerLayerKeydown);
+  L.DomEvent.disableClickPropagation(markerLayer);
+  L.DomEvent.disableScrollPropagation(markerLayer);
   setBaseMapLanguage(state.language, false);
 
   map.on("movestart zoomstart dragstart", beginMapInteraction);
@@ -3068,6 +3074,7 @@ function renderMarkers() {
   const visiblePlaces = getMarkerRenderPlaces();
   const nextRenderKey = `${state.selectedId}|${markerViewportKey()}|${visiblePlaces.map((place) => `${place.id}:${place.category}`).join("|")}`;
   if (markerRenderKey === nextRenderKey) {
+    syncMarkerPositions(visiblePlaces);
     scheduleMapLabels();
     return;
   }
@@ -3076,7 +3083,7 @@ function renderMarkers() {
 
   markers.forEach((marker, placeId) => {
     if (!visibleIds.has(placeId)) {
-      markerLayer.removeLayer(marker);
+      marker.remove();
       markers.delete(placeId);
       markerClassNames.delete(placeId);
     }
@@ -3088,30 +3095,55 @@ function renderMarkers() {
 
     if (existing) {
       if (markerClassNames.get(place.id) !== markerClassName) {
-        existing.setIcon(L.divIcon({
-          className: markerClassName,
-          html: markerLabel(place.category)
-        }));
+        existing.className = markerClassName;
+        existing.innerHTML = markerLabel(place.category);
         markerClassNames.set(place.id, markerClassName);
       }
+      positionMarkerElement(existing, [place.lat, place.lng]);
       return;
     }
 
-    const marker = L.marker([place.lat, place.lng], {
-      icon: L.divIcon({
-        className: markerClassName,
-        html: markerLabel(place.category)
-      })
-    });
-    marker.on("click", (event) => {
-      if (event?.originalEvent) L.DomEvent.stopPropagation(event.originalEvent);
-      selectPlace(place.id, false);
-    });
-    marker.addTo(markerLayer);
+    const marker = document.createElement("button");
+    marker.type = "button";
+    marker.className = markerClassName;
+    marker.dataset.placeMarker = place.id;
+    marker.setAttribute("aria-label", placeText(place, "name"));
+    marker.innerHTML = markerLabel(place.category);
+    positionMarkerElement(marker, [place.lat, place.lng]);
+    markerLayer.appendChild(marker);
     markers.set(place.id, marker);
     markerClassNames.set(place.id, markerClassName);
   });
   scheduleMapLabels();
+}
+
+function syncMarkerPositions(visiblePlaces) {
+  visiblePlaces.forEach((place) => {
+    const marker = markers.get(place.id);
+    if (marker) positionMarkerElement(marker, [place.lat, place.lng]);
+  });
+}
+
+function positionMarkerElement(marker, latLng) {
+  if (!map?.latLngToLayerPoint) return;
+  const point = map.latLngToLayerPoint(latLng);
+  marker.style.transform = `translate3d(${Math.round(point.x)}px, ${Math.round(point.y)}px, 0)`;
+}
+
+function handleMarkerLayerClick(event) {
+  const marker = event.target.closest("[data-place-marker]");
+  if (!marker || !markerLayer?.contains(marker)) return;
+  event.preventDefault();
+  event.stopPropagation();
+  selectPlace(marker.dataset.placeMarker, false);
+}
+
+function handleMarkerLayerKeydown(event) {
+  if (event.key !== "Enter" && event.key !== " ") return;
+  const marker = event.target.closest("[data-place-marker]");
+  if (!marker || !markerLayer?.contains(marker)) return;
+  event.preventDefault();
+  selectPlace(marker.dataset.placeMarker, false);
 }
 
 function getMarkerRenderPlaces() {
