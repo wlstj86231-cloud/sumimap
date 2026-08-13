@@ -15,7 +15,7 @@ const blockedAdPaths = new Set([
   "/privacy/",
   "/terms/",
   "/contact/",
-  "/review-readiness/"
+  "/sources/"
 ]);
 
 const nonContentPaths = new Set([
@@ -25,11 +25,40 @@ const nonContentPaths = new Set([
 const contentEntryPrefixes = [
   "/guide/",
   "/routes/",
-  "/cities/",
-  "/spots/"
+  "/cities/"
 ];
 
 const minContentTextLength = 900;
+const maxShingleSimilarity = 0.34;
+const retiredRoutePrefixes = ["/spots/"];
+const forbiddenPublicPhrases = [
+  "AdSense",
+  "애드센스",
+  "심사 준비",
+  "검토 준비",
+  "검색 유입",
+  "광고 안정성"
+];
+const officialHosts = new Set([
+  "www.moj.go.jp",
+  "www.japan.travel",
+  "www.jma.go.jp",
+  "www.digitalservice.metro.tokyo.lg.jp",
+  "www.seikatubunka.metro.tokyo.lg.jp",
+  "www.jreast.co.jp",
+  "www.city.osaka.lg.jp",
+  "subway.osakametro.co.jp",
+  "www.city.kyoto.lg.jp",
+  "subway.city.fukuoka.lg.jp",
+  "www.jrkyushu.co.jp",
+  "www.city.fukuoka.lg.jp",
+  "www.city.sapporo.jp",
+  "barrierfree.city.nagoya.jp",
+  "kotsu.city.nagoya.jp",
+  "www.city.nagoya.jp",
+  "chargespot.jp",
+  "www.chargespot.jp"
+]);
 
 const ignoredLinkExtensions = new Set([
   ".css",
@@ -121,8 +150,27 @@ function extractLinks(html) {
   return [...new Set(links)].sort();
 }
 
+function extractExternalLinks(html) {
+  const links = [];
+  const regex = /\bhref=["'](https?:\/\/[^"']+)["']/gi;
+  let match;
+  while ((match = regex.exec(html)) !== null) {
+    try {
+      const url = new URL(decodeEntities(match[1]));
+      if (url.origin !== siteUrl) links.push(url.toString());
+    } catch {
+      // Malformed URLs are handled as missing sources below.
+    }
+  }
+  return [...new Set(links)];
+}
+
 function isVerificationPath(route) {
   return route.startsWith("/google") || /^\/[a-f0-9]{16,}\.html$/i.test(route);
+}
+
+function isNoIndexPath(route) {
+  return route === "/404.html";
 }
 
 function isContentPath(route) {
@@ -170,13 +218,32 @@ function countParagraphs(html) {
 }
 
 function textLength(html) {
+  return plainText(html).length;
+}
+
+function plainText(html) {
   return html
     .replace(/<script[\s\S]*?<\/script>/gi, " ")
     .replace(/<style[\s\S]*?<\/style>/gi, " ")
     .replace(/<[^>]+>/g, " ")
     .replace(/\s+/g, " ")
-    .trim()
-    .length;
+    .trim();
+}
+
+function shingles(text, size = 7) {
+  const words = text.toLowerCase().replace(/[^\p{L}\p{N}\s]/gu, " ").split(/\s+/).filter(Boolean);
+  const values = new Set();
+  for (let index = 0; index <= words.length - size; index += 1) {
+    values.add(words.slice(index, index + size).join(" "));
+  }
+  return values;
+}
+
+function jaccard(left, right) {
+  if (!left.size || !right.size) return 0;
+  let intersection = 0;
+  for (const value of left) if (right.has(value)) intersection += 1;
+  return intersection / (left.size + right.size - intersection);
 }
 
 function expectedCanonicalForRoute(route) {
@@ -208,6 +275,8 @@ async function main() {
     const route = routeFromHtmlFile(filePath);
     const html = await fs.readFile(filePath, "utf8");
     const links = extractLinks(html);
+    const externalLinks = extractExternalLinks(html);
+    const text = plainText(html);
     htmlRoutes.set(route, {
       route,
       file: path.relative(root, filePath).replaceAll(path.sep, "/"),
@@ -217,7 +286,11 @@ async function main() {
       hasAds: /pagead2\.googlesyndication\.com\/pagead\/js\/adsbygoogle\.js|adsbygoogle/i.test(html),
       paragraphCount: countParagraphs(html),
       textLength: textLength(html),
-      internalLinks: links
+      internalLinks: links,
+      externalLinks,
+      officialLinks: externalLinks.filter((link) => officialHosts.has(new URL(link).hostname)),
+      text,
+      shingles: shingles(text)
     });
   }
 
@@ -244,11 +317,17 @@ async function main() {
     if (isVerificationPath(route)) continue;
     if (!page.title) errors.push(`missing title: ${route}`);
     if (!page.description) errors.push(`missing meta description: ${route}`);
-    if (!page.canonical) errors.push(`missing canonical: ${route}`);
+    if (!isNoIndexPath(route) && !page.canonical) errors.push(`missing canonical: ${route}`);
     if (page.canonical && page.canonical !== expectedCanonicalForRoute(route)) {
       errors.push(`canonical mismatch on ${route}: ${page.canonical}`);
     }
     if (blockedAdPaths.has(route) && page.hasAds) errors.push(`ad script on blocked page: ${route}`);
+    if (!isNoIndexPath(route) && !sitemapSet.has(route)) errors.push(`crawlable page missing from sitemap: ${route}`);
+    if (sitemapSet.has(route) && isNoIndexPath(route)) errors.push(`noindex page listed in sitemap: ${route}`);
+
+    for (const phrase of forbiddenPublicPhrases) {
+      if (page.text.includes(phrase)) errors.push(`reviewer-facing phrase on ${route}: ${phrase}`);
+    }
 
     if (isContentPath(route) && !sitemapSet.has(route)) warnings.push(`content page missing from sitemap: ${route}`);
     if (isContentPath(route) && !feedSet.has(route)) warnings.push(`content page missing from feed: ${route}`);
@@ -256,6 +335,9 @@ async function main() {
     if (isContentPath(route) && page.internalLinks.length < 3) warnings.push(`content page has fewer than 3 internal links: ${route}`);
     if (isContentPath(route) && page.paragraphCount < 4) warnings.push(`content page has fewer than 4 paragraphs: ${route}`);
     if (isContentPath(route) && page.textLength < minContentTextLength) warnings.push(`content page has short text: ${route} (${page.textLength} chars)`);
+    if (isContentPath(route) && page.officialLinks.length < 2) errors.push(`content page has fewer than 2 direct official sources: ${route}`);
+    if (isContentPath(route) && !page.text.includes("자료 대조일")) errors.push(`content page missing source review date label: ${route}`);
+    if (isContentPath(route) && !page.text.includes("공식 원문")) errors.push(`content page missing official-source explanation: ${route}`);
 
     for (const link of page.internalLinks) {
       if (!htmlRouteSet.has(link)) errors.push(`broken internal link from ${route} to ${link}`);
@@ -280,6 +362,19 @@ async function main() {
   for (const group of duplicateDescriptions) warnings.push(`duplicate content description: ${group.routes.join(", ")}`);
   for (const group of duplicateCanonicals) errors.push(`duplicate canonical ${group.value}: ${group.routes.join(", ")}`);
 
+  for (let left = 0; left < contentPages.length; left += 1) {
+    for (let right = left + 1; right < contentPages.length; right += 1) {
+      const similarity = jaccard(contentPages[left].shingles, contentPages[right].shingles);
+      if (similarity > maxShingleSimilarity) {
+        errors.push(`high content similarity ${similarity.toFixed(3)}: ${contentPages[left].route}, ${contentPages[right].route}`);
+      }
+    }
+  }
+
+  for (const route of htmlRouteSet) {
+    if (retiredRoutePrefixes.some((prefix) => route.startsWith(prefix))) errors.push(`retired thin-content route still exists: ${route}`);
+  }
+
   const blockedWithAds = pages.filter((page) => blockedAdPaths.has(page.route) && page.hasAds);
   const contentWithAds = contentPages.filter((page) => page.hasAds);
   const summary = {
@@ -296,6 +391,7 @@ async function main() {
     duplicateContentTitleGroups: duplicateTitles.length,
     duplicateContentDescriptionGroups: duplicateDescriptions.length,
     duplicateCanonicalGroups: duplicateCanonicals.length,
+    sourceBackedContentPages: contentPages.filter((page) => page.officialLinks.length >= 2).length,
     errors: errors.length,
     warnings: warnings.length
   };

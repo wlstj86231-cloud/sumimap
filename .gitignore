@@ -1,3 +1,5 @@
 node_modules/
 .wrangler/
+.playwright-cli/
+output/
 .DS_Store

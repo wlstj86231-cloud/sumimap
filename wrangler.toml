@@ -1,5 +1,3 @@
 name = "sumimap"
 pages_build_output_dir = "site"
-
-# Bind a D1 database as REPORTS_DB in Cloudflare Pages settings.
-# The report API in functions/api/reports.js stores shared public reports there.
+compatibility_date = "2026-08-13"

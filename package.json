@@ -4,9 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "build": "node scripts/generate-core-pages.mjs && node scripts/build-public-indexes.mjs",
+    "check": "npm run build && npm run content:inventory && node scripts/verify-static.mjs",
+    "check:links": "node scripts/verify-official-links.mjs",
     "content:inventory": "node scripts/content-inventory.mjs",
-    "seo:keywords": "node scripts/seo-keyword-pages.mjs",
-    "seo:local-details": "node scripts/seo-local-detail-pages.mjs",
     "serve": "python -m http.server 4192 -d site"
   }
 }

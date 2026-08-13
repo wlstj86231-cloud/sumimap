@@ -4,14 +4,14 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>스미맵 개인정보 처리방침</title>
-    <meta name="description" content="스미맵 개인정보 처리방침.">
+    <meta name="description" content="스미맵의 브라우저 저장, 위치 사용, 외부 지도 서비스와 Google 광고 관련 개인정보 처리 안내.">
     <link rel="canonical" href="https://sumimap.com/privacy/">
+    <link rel="icon" href="/assets/icon.svg" type="image/svg+xml">
     <meta property="og:type" content="article">
     <meta property="og:site_name" content="스미맵">
     <meta property="og:title" content="스미맵 개인정보 처리방침">
-    <meta property="og:description" content="스미맵 개인정보 처리방침.">
+    <meta property="og:description" content="브라우저 저장 항목, 위치 권한, 외부 서비스와 광고 쿠키 사용 안내.">
     <meta property="og:url" content="https://sumimap.com/privacy/">
-    <meta name="google-adsense-account" content="ca-pub-7217591196020054">
     <link rel="alternate" type="application/rss+xml" title="스미맵 RSS" href="https://sumimap.com/feed.xml">
     <link rel="stylesheet" href="/assets/styles.css?v=20260509-perf3">
   </head>
@@ -20,30 +20,52 @@
       <nav class="static-nav">
         <a class="brand" href="/">
           <span class="brand-mark">住</span>
-          <span><strong>스미맵</strong><small>일본 생활 제보 지도</small></span>
+          <span><strong>스미맵</strong><small>일본 생활 안내 지도</small></span>
         </a>
         <a href="/">지도 열기</a>
       </nav>
       <section class="static-hero">
         <h1>개인정보 처리방침</h1>
-        <p>스미맵은 최소한의 정보만 사용해 장소 신호를 운영하는 것을 원칙으로 합니다.</p>
+        <p>스미맵은 자체 서버에 사용자의 계정, 연락처, 위치 기록 또는 지도 사용 내역을 저장하지 않습니다.</p>
       </section>
       <section class="static-content">
         <article class="static-section">
-          <h2>수집하는 정보</h2>
-          <p>저장 장소, 최근 본 곳, 언어 설정은 사용자의 브라우저 로컬 저장소에 남습니다. 사용자가 남긴 공개 제보는 다른 이용자에게 같은 지도 신호로 보이도록 서버에 저장될 수 있습니다.</p>
+          <h2>스미맵 서버에서 수집하는 정보</h2>
+          <p>스미맵은 회원가입과 로그인 기능을 제공하지 않으며, 자체 서버에 사용자 프로필, 문의 내용, 정확한 위치, 저장한 장소 또는 최근 본 장소를 수집·보관하는 기능을 운영하지 않습니다. 지도 화면의 장소 평가는 사용자가 입력한 내용을 서버로 전송해 자동 공개하는 구조가 아닙니다.</p>
+          <p>다만 웹사이트 제공과 보안을 담당하는 호스팅 사업자는 통상적인 접속 과정에서 IP 주소, 브라우저 정보, 요청 시각과 같은 기술 로그를 일시적으로 처리할 수 있습니다.</p>
         </article>
         <article class="static-section">
-          <h2>공개 제보 저장</h2>
-          <p>제보 시점, 선택한 태그, 장소 식별자, 제보 소유 확인용 임시 기기 식별자만 최소한으로 저장합니다. 자유 텍스트, 연락처, 민감 정보는 제보 항목으로 받지 않습니다.</p>
+          <h2>브라우저 안에 저장되는 항목</h2>
+          <p>언어 설정, 저장한 확인 포인트와 최근 본 확인 포인트는 사용 중인 브라우저의 로컬 저장소(localStorage)에만 남을 수 있습니다. 이 데이터는 스미맵 계정과 연결되지 않으며 다른 기기로 자동 동기화되지 않습니다.</p>
+          <p>브라우저의 사이트 데이터 삭제 기능에서 <code>sumimap.com</code> 데이터를 지우거나, 개발자 도구의 저장소에서 <code>sumimap:</code>으로 시작하는 항목을 삭제하면 초기화할 수 있습니다. 브라우저 데이터를 지우면 복구할 수 없습니다.</p>
         </article>
         <article class="static-section">
-          <h2>피드백 저장</h2>
-          <p>사용자가 버그, 질문, 건의사항을 보내는 경우 내용, 선택한 분류, 선택 입력한 연락처, 화면 경로, 언어 설정, 임시 기기 식별자가 운영 확인을 위해 저장될 수 있습니다. 답변이 필요하지 않다면 연락처는 비워둘 수 있습니다.</p>
+          <h2>위치 권한 사용</h2>
+          <p>사용자가 ‘현재 위치’ 버튼을 누르고 브라우저 권한을 허용한 경우에만 기기의 위치를 읽습니다. 위치는 화면에서 지도 중심과 후보까지의 거리를 계산하는 동안 사용하며, 스미맵 자체 서버에 저장하거나 이동 경로를 추적하지 않습니다. 권한은 브라우저 또는 기기 설정에서 언제든 철회할 수 있습니다.</p>
         </article>
         <article class="static-section">
-          <h2>문의</h2>
-          <p>개인정보와 장소 제보 정정 요청은 문의 페이지를 통해 접수할 수 있도록 운영합니다.</p>
+          <h2>외부 지도와 링크</h2>
+          <p>지도 표시에는 OpenStreetMap 기반 지도 데이터와 CARTO 타일을 사용합니다. 검색은 브라우저에 포함된 지역 기준점만 대상으로 하며 검색어를 스미맵 서버나 지오코딩 서비스에 보내지 않습니다. 길찾기 버튼을 누르면 목적지 좌표가 포함된 Google Maps 페이지로 이동합니다. 외부 서비스는 각자의 개인정보처리방침에 따라 IP 주소, 브라우저 정보와 요청 내용을 처리할 수 있습니다.</p>
+          <ul>
+            <li><a href="https://osmfoundation.org/wiki/Privacy_Policy" target="_blank" rel="noopener noreferrer">OpenStreetMap Foundation 개인정보처리방침</a></li>
+            <li><a href="https://carto.com/privacy/" target="_blank" rel="noopener noreferrer">CARTO 개인정보처리방침</a></li>
+            <li><a href="https://policies.google.com/privacy?hl=ko" target="_blank" rel="noopener noreferrer">Google 개인정보처리방침</a></li>
+          </ul>
+        </article>
+        <article class="static-section">
+          <h2>Google 광고와 쿠키</h2>
+          <p>일부 가이드 페이지에는 Google 광고 코드가 포함될 수 있습니다. Google을 포함한 제3자 사업자는 광고 제공과 측정을 위해 쿠키를 설정하거나 읽고, 웹 비콘, IP 주소 또는 기타 식별자를 사용할 수 있습니다. 사용자의 이전 방문을 바탕으로 맞춤 광고가 표시될 수 있습니다.</p>
+          <p><a href="https://policies.google.com/technologies/partner-sites?hl=ko" target="_blank" rel="noopener noreferrer">Google 파트너 사이트에서의 정보 사용 방식</a>과 <a href="https://adssettings.google.com/?hl=ko" target="_blank" rel="noopener noreferrer">Google 광고 설정</a>에서 자세한 내용과 맞춤 광고 선택 항목을 확인할 수 있습니다.</p>
+        </article>
+        <article class="static-section">
+          <h2>문의와 정정 요청</h2>
+          <p>스미맵 문의는 공개 GitHub Issues를 사용합니다. GitHub로 이동한 뒤 입력한 제목, 본문, 첨부 파일과 계정 정보는 공개될 수 있으며 GitHub의 정책에 따라 처리됩니다. 연락처, 신분증, 예약번호, 영수증, 정확한 사적 위치 등 개인정보나 민감정보를 작성하지 마세요.</p>
+          <p><a href="https://docs.github.com/ko/site-policy/privacy-policies/github-general-privacy-statement" target="_blank" rel="noopener noreferrer">GitHub 개인정보처리방침</a> · <a href="/contact/">문의 방법</a></p>
+        </article>
+        <article class="static-section">
+          <h2>방침 변경과 문의</h2>
+          <p>처리 방식이 바뀌면 이 페이지의 내용과 최종 수정일을 함께 갱신합니다. 개인정보 관련 문의도 <a href="/contact/">공개 문의 창구</a>를 사용하되 개인정보를 포함하지 마세요.</p>
+          <p>시행일 및 최종 수정일: 2026년 8월 14일</p>
         </article>
       </section>
     </main>

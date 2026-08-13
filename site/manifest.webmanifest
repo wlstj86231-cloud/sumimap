@@ -1,7 +1,7 @@
 {
   "name": "스미맵",
   "short_name": "스미맵",
-  "description": "일본 거주 한국인을 위한 생활 제보 지도",
+  "description": "공식 원문과 현장 안내를 함께 확인하는 일본 생활 지도",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
