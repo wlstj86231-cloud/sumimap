@@ -34,6 +34,13 @@
 /guide/*
   Cache-Control: public, max-age=0, must-revalidate
 
+/kr/*
+  Cache-Control: public, max-age=0, must-revalidate
+
+/data/farm-waste-collection-sites-2025.tsv
+  Cache-Control: public, max-age=31536000, immutable
+  Content-Type: text/tab-separated-values; charset=utf-8
+
 /policy/*
   Cache-Control: public, max-age=0, must-revalidate
 

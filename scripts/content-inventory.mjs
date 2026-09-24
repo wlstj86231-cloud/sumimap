@@ -22,10 +22,15 @@ const nonContentPaths = new Set([
   ...blockedAdPaths
 ]);
 
+// The public-data finder is useful without advertising. Keep it in the
+// content inventory while explicitly requiring this tool to stay ad-free.
+const adFreeContentPaths = new Set(["/kr/farm-waste-collection/"]);
+
 const contentEntryPrefixes = [
   "/guide/",
   "/routes/",
-  "/cities/"
+  "/cities/",
+  "/kr/farm-waste-collection/"
 ];
 
 const minContentTextLength = 900;
@@ -57,7 +62,9 @@ const officialHosts = new Set([
   "kotsu.city.nagoya.jp",
   "www.city.nagoya.jp",
   "chargespot.jp",
-  "www.chargespot.jp"
+  "www.chargespot.jp",
+  "www.data.go.kr",
+  "www.keco.or.kr"
 ]);
 
 const ignoredLinkExtensions = new Set([
@@ -322,6 +329,7 @@ async function main() {
       errors.push(`canonical mismatch on ${route}: ${page.canonical}`);
     }
     if (blockedAdPaths.has(route) && page.hasAds) errors.push(`ad script on blocked page: ${route}`);
+    if (adFreeContentPaths.has(route) && page.hasAds) errors.push(`ad script on ad-free public-data tool: ${route}`);
     if (!isNoIndexPath(route) && !sitemapSet.has(route)) errors.push(`crawlable page missing from sitemap: ${route}`);
     if (sitemapSet.has(route) && isNoIndexPath(route)) errors.push(`noindex page listed in sitemap: ${route}`);
 
@@ -331,7 +339,7 @@ async function main() {
 
     if (isContentPath(route) && !sitemapSet.has(route)) warnings.push(`content page missing from sitemap: ${route}`);
     if (isContentPath(route) && !feedSet.has(route)) warnings.push(`content page missing from feed: ${route}`);
-    if (isContentPath(route) && !blockedAdPaths.has(route) && !page.hasAds) warnings.push(`content page without ad script: ${route}`);
+    if (isContentPath(route) && !blockedAdPaths.has(route) && !adFreeContentPaths.has(route) && !page.hasAds) warnings.push(`content page without ad script: ${route}`);
     if (isContentPath(route) && page.internalLinks.length < 3) warnings.push(`content page has fewer than 3 internal links: ${route}`);
     if (isContentPath(route) && page.paragraphCount < 4) warnings.push(`content page has fewer than 4 paragraphs: ${route}`);
     if (isContentPath(route) && page.textLength < minContentTextLength) warnings.push(`content page has short text: ${route} (${page.textLength} chars)`);

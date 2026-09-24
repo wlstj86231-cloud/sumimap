@@ -6,6 +6,8 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const siteRoot = path.join(root, "site");
 const siteUrl = "https://sumimap.com";
 const lastmod = "2026-08-14";
+const farmFinderRoute = "/kr/farm-waste-collection/";
+const farmFinderLastmod = "2026-09-24";
 
 const sitemapRoutes = [
   "/",
@@ -31,12 +33,13 @@ const sitemapRoutes = [
   "/policy/",
   "/privacy/",
   "/terms/",
-  "/contact/"
+  "/contact/",
+  farmFinderRoute
 ];
 
 const feedRoutes = sitemapRoutes.filter((route) =>
   route === "/guide/" || route === "/routes/" || route.startsWith("/routes/") ||
-  route === "/cities/" || route.startsWith("/cities/") || route === "/sources/"
+  route === "/cities/" || route.startsWith("/cities/") || route === "/sources/" || route === farmFinderRoute
 );
 
 for (const route of sitemapRoutes) {
@@ -46,7 +49,7 @@ for (const route of sitemapRoutes) {
 
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${sitemapRoutes.map((route, index) => `  <url><loc>${siteUrl}${route}</loc><lastmod>${lastmod}</lastmod><changefreq>${index === 0 ? "daily" : "monthly"}</changefreq><priority>${index === 0 ? "1.0" : route === "/sources/" ? "0.9" : "0.8"}</priority></url>`).join("\n")}
+${sitemapRoutes.map((route, index) => `  <url><loc>${siteUrl}${route}</loc><lastmod>${route === farmFinderRoute ? farmFinderLastmod : lastmod}</lastmod><changefreq>${index === 0 ? "daily" : "monthly"}</changefreq><priority>${index === 0 ? "1.0" : route === "/sources/" ? "0.9" : "0.8"}</priority></url>`).join("\n")}
 </urlset>
 `;
 
@@ -60,7 +63,7 @@ const items = feedRoutes.map((route) => {
       <title>${xml(title)}</title>
       <link>${url}</link>
       <guid>${url}</guid>
-      <pubDate>Thu, 13 Aug 2026 15:00:00 GMT</pubDate>
+      <pubDate>${route === farmFinderRoute ? "Wed, 23 Sep 2026 15:00:00 GMT" : "Thu, 13 Aug 2026 15:00:00 GMT"}</pubDate>
       <description>${xml(description)}</description>
     </item>`;
 }).join("\n");
@@ -70,9 +73,9 @@ const feed = `<?xml version="1.0" encoding="UTF-8"?>
   <channel>
     <title>스미맵 공식 생활정보 가이드</title>
     <link>${siteUrl}/</link>
-    <description>일본 생활 중 필요한 시설과 안내를 공식 원문에서 확인하는 스미맵 콘텐츠 피드.</description>
+    <description>일본 생활 안내와 한국 지역 공공정보의 공식 원문 확인 방법을 다루는 스미맵 콘텐츠 피드.</description>
     <language>ko-KR</language>
-    <lastBuildDate>Thu, 13 Aug 2026 15:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Wed, 23 Sep 2026 15:00:00 GMT</lastBuildDate>
 ${items}
   </channel>
 </rss>

@@ -5,9 +5,14 @@
   "type": "module",
   "scripts": {
     "build": "node scripts/generate-core-pages.mjs && node scripts/build-public-indexes.mjs",
-    "check": "npm run build && npm run content:inventory && node scripts/verify-static.mjs",
+    "check": "npm run data:verify && npm run build && npm run content:inventory && node scripts/verify-static.mjs",
     "check:links": "node scripts/verify-official-links.mjs",
     "content:inventory": "node scripts/content-inventory.mjs",
+    "data:verify": "node scripts/verify-farm-waste-data.mjs verify",
+    "data:import": "node scripts/verify-farm-waste-data.mjs import",
     "serve": "python -m http.server 4192 -d site"
+  },
+  "devDependencies": {
+    "iconv-lite": "0.7.3"
   }
 }
