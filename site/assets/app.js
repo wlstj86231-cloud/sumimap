@@ -508,7 +508,7 @@ function renderGuide() {
       <a href="/sources/"><span>${t("자료 출처")}</span><em>${state.language === "ja" ? "公式情報と照合日" : "공식 원문과 대조일"}</em></a>
       <a href="/cities/"><span>${t("도시 가이드")}</span><em>${state.language === "ja" ? "都市別の確認方法" : "도시별 확인 방법"}</em></a>
       <a href="/routes/"><span>${t("상황 가이드")}</span><em>${state.language === "ja" ? "状況別の確認順序" : "상황별 확인 순서"}</em></a>
-      <a href="/kr/farm-waste-collection/"><span>${state.language === "ja" ? "韓国の公共情報" : "한국 공공정보"}</span><em>${state.language === "ja" ? "農業廃棄物の集積所住所" : "영농폐기물 집하장 주소"}</em></a>
+      <a href="/kr/"><span>${state.language === "ja" ? "韓国の農村住所" : "한국 농촌 공공주소"}</span><em>${state.language === "ja" ? "農業廃棄物の集積所住所" : "집하장 주소·방문 전 확인"}</em></a>
       <a href="/editorial/"><span>${t("편집 원칙")}</span><em>${state.language === "ja" ? "掲載・修正の基準" : "게재·정정 기준"}</em></a>
       <a href="/privacy/"><span>${t("개인정보")}</span><em>${state.language === "ja" ? "ブラウザ保存と広告" : "브라우저 저장과 광고"}</em></a>
       <a href="/contact/"><span>${t("문의·정정")}</span><em>${state.language === "ja" ? "公開Issueで提案" : "공개 이슈로 제안"}</em></a>

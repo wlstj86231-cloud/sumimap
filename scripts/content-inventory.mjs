@@ -24,12 +24,13 @@ const nonContentPaths = new Set([
 
 // The public-data finder is useful without advertising. Keep it in the
 // content inventory while explicitly requiring this tool to stay ad-free.
-const adFreeContentPaths = new Set(["/kr/farm-waste-collection/"]);
+const adFreeContentPaths = new Set(["/kr/", "/kr/farm-waste-collection/"]);
 
 const contentEntryPrefixes = [
   "/guide/",
   "/routes/",
   "/cities/",
+  "/kr/",
   "/kr/farm-waste-collection/"
 ];
 

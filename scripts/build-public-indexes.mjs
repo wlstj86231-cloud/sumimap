@@ -7,6 +7,7 @@ const siteRoot = path.join(root, "site");
 const siteUrl = "https://sumimap.com";
 const lastmod = "2026-08-14";
 const farmFinderRoute = "/kr/farm-waste-collection/";
+const farmHubRoute = "/kr/";
 const farmFinderLastmod = "2026-09-24";
 
 const sitemapRoutes = [
@@ -34,12 +35,13 @@ const sitemapRoutes = [
   "/privacy/",
   "/terms/",
   "/contact/",
+  farmHubRoute,
   farmFinderRoute
 ];
 
 const feedRoutes = sitemapRoutes.filter((route) =>
   route === "/guide/" || route === "/routes/" || route.startsWith("/routes/") ||
-  route === "/cities/" || route.startsWith("/cities/") || route === "/sources/" || route === farmFinderRoute
+  route === "/cities/" || route.startsWith("/cities/") || route === "/sources/" || route === farmHubRoute || route === farmFinderRoute
 );
 
 for (const route of sitemapRoutes) {
@@ -49,7 +51,7 @@ for (const route of sitemapRoutes) {
 
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${sitemapRoutes.map((route, index) => `  <url><loc>${siteUrl}${route}</loc><lastmod>${route === farmFinderRoute ? farmFinderLastmod : lastmod}</lastmod><changefreq>${index === 0 ? "daily" : "monthly"}</changefreq><priority>${index === 0 ? "1.0" : route === "/sources/" ? "0.9" : "0.8"}</priority></url>`).join("\n")}
+${sitemapRoutes.map((route, index) => `  <url><loc>${siteUrl}${route}</loc><lastmod>${route === farmFinderRoute || route === farmHubRoute ? farmFinderLastmod : lastmod}</lastmod><changefreq>${index === 0 ? "daily" : "monthly"}</changefreq><priority>${index === 0 ? "1.0" : route === "/sources/" ? "0.9" : "0.8"}</priority></url>`).join("\n")}
 </urlset>
 `;
 
@@ -63,7 +65,7 @@ const items = feedRoutes.map((route) => {
       <title>${xml(title)}</title>
       <link>${url}</link>
       <guid>${url}</guid>
-      <pubDate>${route === farmFinderRoute ? "Wed, 23 Sep 2026 15:00:00 GMT" : "Thu, 13 Aug 2026 15:00:00 GMT"}</pubDate>
+      <pubDate>${route === farmFinderRoute || route === farmHubRoute ? "Wed, 23 Sep 2026 15:00:00 GMT" : "Thu, 13 Aug 2026 15:00:00 GMT"}</pubDate>
       <description>${xml(description)}</description>
     </item>`;
 }).join("\n");
