@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://sumimap.com/</loc><lastmod>2026-08-14</lastmod><changefreq>daily</changefreq><priority>1.0</priority></url>
+  <url><loc>https://sumimap.com/</loc><lastmod>2026-09-27</lastmod><changefreq>weekly</changefreq><priority>1.0</priority></url>
   <url><loc>https://sumimap.com/guide/</loc><lastmod>2026-08-14</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://sumimap.com/routes/</loc><lastmod>2026-08-14</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://sumimap.com/routes/battery/</loc><lastmod>2026-08-14</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
@@ -17,13 +17,16 @@
   <url><loc>https://sumimap.com/cities/fukuoka/</loc><lastmod>2026-08-14</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://sumimap.com/cities/sapporo/</loc><lastmod>2026-08-14</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://sumimap.com/cities/nagoya/</loc><lastmod>2026-08-14</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://sumimap.com/sources/</loc><lastmod>2026-08-14</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://sumimap.com/about/</loc><lastmod>2026-08-14</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://sumimap.com/editorial/</loc><lastmod>2026-08-14</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://sumimap.com/sources/</loc><lastmod>2026-09-27</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://sumimap.com/about/</loc><lastmod>2026-09-27</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://sumimap.com/editorial/</loc><lastmod>2026-09-27</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://sumimap.com/policy/</loc><lastmod>2026-08-14</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://sumimap.com/privacy/</loc><lastmod>2026-08-14</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://sumimap.com/terms/</loc><lastmod>2026-08-14</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://sumimap.com/contact/</loc><lastmod>2026-08-14</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://sumimap.com/japan/</loc><lastmod>2026-09-27</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://sumimap.com/japan/about/</loc><lastmod>2026-09-27</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://sumimap.com/japan/editorial/</loc><lastmod>2026-09-27</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://sumimap.com/kr/</loc><lastmod>2026-09-24</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://sumimap.com/kr/farm-waste-collection/</loc><lastmod>2026-09-24</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://sumimap.com/kr/farm-waste-collection/</loc><lastmod>2026-09-27</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
 </urlset>

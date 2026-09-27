@@ -15,7 +15,10 @@ const blockedAdPaths = new Set([
   "/privacy/",
   "/terms/",
   "/contact/",
-  "/sources/"
+  "/sources/",
+  "/japan/",
+  "/japan/about/",
+  "/japan/editorial/"
 ]);
 
 const nonContentPaths = new Set([

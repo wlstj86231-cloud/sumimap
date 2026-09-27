@@ -3,10 +3,10 @@ const REDIRECT_HOSTS = new Set(["www.sumimap.com", "sumimap.pages.dev"]);
 
 // Keep retired public URLs here so exact redirects remain auditable.
 const LEGACY_REDIRECTS = new Map([
-  ["/review-readiness/", "/about/"],
+  ["/review-readiness/", "/japan/about/"],
   ["/routes/convenience/", "/routes/restroom/"],
   ["/routes/late-night/", "/routes/first-day/"],
-  ["/routes/response/", "/editorial/"],
+  ["/routes/response/", "/japan/editorial/"],
   ["/spots/", "/cities/"],
   ["/fukuoka-convenience-restroom-guide/", "/routes/restroom/"],
   ["/fukuoka-rain-shelter/", "/routes/rain/"],
@@ -15,7 +15,7 @@ const LEGACY_REDIRECTS = new Map([
   ["/japan-convenience-store-restroom/", "/routes/restroom/"],
   ["/japan-first-day-living-map/", "/routes/first-day/"],
   ["/japan-korean-resident-map/", "/routes/korean/"],
-  ["/japan-response-discomfort-signal/", "/editorial/"],
+  ["/japan-response-discomfort-signal/", "/japan/editorial/"],
   ["/japan-station-rest-spots/", "/routes/station/"],
   ["/kyoto-korean-support/", "/routes/korean/"],
   ["/kyoto-mobile-battery-rental-guide/", "/routes/battery/"],

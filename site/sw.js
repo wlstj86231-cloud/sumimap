@@ -1,8 +1,10 @@
-const CACHE_NAME = "sumimap-v65-farm-hub";
+const CACHE_NAME = "sumimap-v66-agriculture-home";
 const LOCAL_ASSETS = [
   "/",
+  "/japan/",
+  "/assets/farm-home.css?v=20260927",
   "/assets/styles.css?v=20260814-trust1",
-  "/assets/app.js?v=20260924-farm2",
+  "/assets/app.js?v=20260927-japan1",
   "/assets/vendor/leaflet/leaflet.css",
   "/assets/vendor/leaflet/leaflet.js",
   "/assets/vendor/leaflet/images/layers.png",

@@ -95,7 +95,11 @@ function mapSearchUrl(address) {
 }
 
 function fullAddress(row) {
-  const address = row.address.replaceAll(/\s+/g, " ").trim();
+  let address = row.address.replaceAll(/\s+/g, " ").trim();
+  const regionPrefix = `${row.province} ${row.city} `;
+  if (address.startsWith(regionPrefix + regionPrefix)) {
+    address = address.slice(regionPrefix.length);
+  }
   const missingRegion = [row.province, row.city].filter((part) => !address.includes(part));
   return [...missingRegion, address].join(" ");
 }

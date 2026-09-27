@@ -1,7 +1,7 @@
 {
   "name": "스미맵",
   "short_name": "스미맵",
-  "description": "공식 원문과 현장 안내를 함께 확인하는 일본 생활 지도",
+  "description": "영농폐기물 공동집하장 주소 검색과 농촌 공공자료 확인",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

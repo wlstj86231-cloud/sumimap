@@ -120,7 +120,8 @@ function source(authority, title, url, updated, scope) {
 }
 
 function page(slug, title, description, h1, sources, intro, steps, limits, mapHref) {
-  return { slug, title, description, h1, sources, intro, steps, limits, mapHref, type: "Article" };
+  return { slug, title, description, h1, sources, intro, steps, limits,
+    mapHref: mapHref.startsWith("/?") ? `/japan/${mapHref.slice(1)}` : mapHref, type: "Article" };
 }
 
 function city(slug, title, description, h1, sources, intro, steps, limits, cityKey) {
@@ -166,7 +167,7 @@ function render(item) {
       inLanguage: "ko-KR",
       datePublished: checkedAt,
       dateModified: checkedAt,
-      author: { "@type": "Organization", name: "스미맵 편집팀", url: `${siteUrl}/about/` },
+      author: { "@type": "Organization", name: "스미맵 편집팀", url: `${siteUrl}/japan/about/` },
       publisher: { "@type": "Organization", name: "스미맵" },
       citation: citations
     })}</script>
@@ -174,7 +175,7 @@ function render(item) {
   <body class="static-body">
     <main class="static-shell">
       <nav class="static-nav" aria-label="상단 탐색">
-        <a class="brand" href="/"><span class="brand-mark">住</span><span><strong>스미맵</strong><small>일본 생활 확인 지도</small></span></a>
+        <a class="brand" href="/japan/"><span class="brand-mark">住</span><span><strong>스미맵</strong><small>일본 생활 확인 지도</small></span></a>
         <a href="${escapeHtml(item.mapHref)}">지도 열기</a>
       </nav>
       <section class="static-hero">
@@ -206,7 +207,7 @@ function render(item) {
         <article class="static-section">
           <h2>업데이트와 정정</h2>
           <p>이 문서는 ${checkedAt}에 위 원문을 다시 대조해 전면 작성했습니다. 링크 변경, 폐쇄, 운영시간 차이 또는 설명 오류를 발견하면 <a href="https://github.com/wlstj86231-cloud/sumimap/issues/new">공개 정정 창구</a>에 원문 URL과 차이를 남겨주세요. 공개 창구에는 전화번호, 위치 기록, 예약번호 같은 개인정보를 적지 마세요.</p>
-          <p><a href="/sources/">전체 공식 출처와 검수 방법</a> · <a href="/editorial/">편집 원칙</a> · <a href="/privacy/">개인정보 처리방침</a></p>
+          <p><a href="/sources/#japan-sources">일본 자료 출처와 검수 방법</a> · <a href="/japan/editorial/">일본 자료 편집 원칙</a> · <a href="/privacy/">개인정보 처리방침</a></p>
         </article>
         <article class="static-section">
           <h2>관련 가이드</h2>
@@ -220,13 +221,13 @@ function render(item) {
 
 function relatedLinks(slug) {
   const links = {
-    guide: [{ href: "/sources/", label: "공식 출처", description: "기관별 원문과 검수 날짜를 봅니다." }, { href: "/routes/", label: "상황별 가이드", description: "곤란한 상황에 맞는 확인 순서를 고릅니다." }, { href: "/cities/", label: "도시별 가이드", description: "도시별 지자체와 교통기관 원문을 봅니다." }],
+    guide: [{ href: "/sources/#japan-sources", label: "공식 출처", description: "기관별 원문과 검수 날짜를 봅니다." }, { href: "/routes/", label: "상황별 가이드", description: "곤란한 상황에 맞는 확인 순서를 고릅니다." }, { href: "/cities/", label: "도시별 가이드", description: "도시별 지자체와 교통기관 원문을 봅니다." }],
     routes: [{ href: "/routes/battery/", label: "충전", description: "대여·반납 가능 상태를 확인합니다." }, { href: "/routes/restroom/", label: "화장실", description: "공공시설과 개찰·층을 확인합니다." }, { href: "/routes/first-day/", label: "일본 첫날", description: "정부 생활 포털과 공식 창구를 저장합니다." }],
     cities: [{ href: "/cities/tokyo/", label: "도쿄", description: "도 공식 통합지도와 역 구내도를 봅니다." }, { href: "/cities/osaka/", label: "오사카", description: "시 공중화장실과 지하 동선을 봅니다." }, { href: "/cities/sapporo/", label: "삿포로", description: "겨울 운영과 배리어프리 정보를 봅니다." }]
   };
   if (links[slug]) return links[slug];
-  if (slug.startsWith("cities/")) return [{ href: "/cities/", label: "다른 도시", description: "6개 도시의 공식 자료 범위를 비교합니다." }, { href: "/routes/station/", label: "역 동선", description: "운영사·개찰·층 확인 순서를 봅니다." }, { href: "/sources/", label: "전체 출처", description: "모든 공식 원문과 대조일을 봅니다." }];
-  return [{ href: "/routes/", label: "다른 상황", description: "상황에 맞는 확인 순서를 고릅니다." }, { href: "/cities/", label: "도시별 확인", description: "지자체와 교통기관 원문을 봅니다." }, { href: "/sources/", label: "전체 출처", description: "공식 원문과 검수 방법을 봅니다." }];
+  if (slug.startsWith("cities/")) return [{ href: "/cities/", label: "다른 도시", description: "6개 도시의 공식 자료 범위를 비교합니다." }, { href: "/routes/station/", label: "역 동선", description: "운영사·개찰·층 확인 순서를 봅니다." }, { href: "/sources/#japan-sources", label: "전체 출처", description: "모든 공식 원문과 대조일을 봅니다." }];
+  return [{ href: "/routes/", label: "다른 상황", description: "상황에 맞는 확인 순서를 고릅니다." }, { href: "/cities/", label: "도시별 확인", description: "지자체와 교통기관 원문을 봅니다." }, { href: "/sources/#japan-sources", label: "전체 출처", description: "공식 원문과 검수 방법을 봅니다." }];
 }
 
 function escapeHtml(value) {
