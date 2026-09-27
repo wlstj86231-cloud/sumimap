@@ -9,6 +9,9 @@
 .farm-controls select:focus-visible, .farm-controls input:focus-visible, .farm-results button:focus-visible, .farm-province-summary button:focus-visible { outline: 3px solid #6dbb91; outline-offset: 2px; }
 .farm-controls :disabled { color: #79847e; background: #f1f3f0; }
 .farm-status { margin: 0 0 16px; color: #375a44 !important; font-weight: 750; }
+.farm-region-guide { margin: 0 0 16px; padding: 13px 15px; border-left: 3px solid #327750; background: #eaf4ea; color: #254332 !important; line-height: 1.6; }
+.farm-region-guide[hidden] { display: none; }
+.farm-region-guide a { color: #155e36; font-weight: 800; text-decoration: underline; text-underline-offset: 3px; }
 .farm-province-summary { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
 .farm-province-summary button { min-height: 36px; padding: 7px 11px; border: 1px solid #cbdccd; border-radius: 8px; background: #f7fbf7; color: #28533a; font-size: 13px; }
 .farm-province-summary button[aria-pressed="true"] { border-color: #327750; background: #327750; color: white; }

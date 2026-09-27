@@ -1,3 +1,5 @@
+import { regionGuideUrl } from "./farm-waste-region-guides-20260927.js";
+
 const dataPath = "/data/farm-waste-collection-sites-2025.tsv";
 const expectedRows = 9553;
 const visibleLimit = 50;
@@ -7,6 +9,7 @@ const provinceSelect = document.querySelector("#province");
 const citySelect = document.querySelector("#city");
 const termInput = document.querySelector("#term");
 const loadStatus = document.querySelector("#load-status");
+const regionGuide = document.querySelector("#region-guide");
 const provinceSummary = document.querySelector("#province-summary");
 const results = document.querySelector("#results");
 const shortlist = document.querySelector("#shortlist");
@@ -171,7 +174,26 @@ function filteredRows() {
   });
 }
 
+function renderRegionGuide() {
+  const province = provinceSelect.value;
+  const city = citySelect.value;
+  const href = province && city ? regionGuideUrl(province, city) : null;
+  regionGuide.replaceChildren();
+  regionGuide.hidden = !href;
+  if (!href) return;
+
+  const link = document.createElement("a");
+  link.href = href;
+  link.textContent = `${city} 공동집하장 등록 주소와 방문 전 확인 사항`;
+  regionGuide.append(
+    document.createTextNode(`${province} ${city}에서 찾은 주소를 더 살펴보려면 `),
+    link,
+    document.createTextNode("을 참고하세요. 지역 안내도 2025년 공개자료를 사용하므로 실제 운영 여부와 반입 품목은 지자체에 확인해야 합니다."),
+  );
+}
+
 function renderResults() {
+  renderRegionGuide();
   results.replaceChildren();
   const matches = filteredRows();
   if (matches === null) {
