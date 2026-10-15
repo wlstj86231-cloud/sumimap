@@ -8,10 +8,11 @@ const siteUrl = "https://sumimap.com";
 const lastmod = "2026-08-14";
 const farmFinderRoute = "/kr/farm-waste-collection/";
 const farmHubRoute = "/kr/";
-const farmFinderLastmod = "2026-09-27";
+const farmFinderLastmod = "2026-10-15";
 const farmHubLastmod = "2026-09-24";
 const agricultureHomeLastmod = "2026-09-27";
 const updatedRoutes = new Set(["/", "/about/", "/sources/", "/editorial/", "/japan/", "/japan/about/", "/japan/editorial/"]);
+const evidenceUpdatedRoutes = new Set(["/about/", "/sources/", "/editorial/"]);
 
 const sitemapRoutes = [
   "/",
@@ -57,7 +58,7 @@ for (const route of sitemapRoutes) {
 
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${sitemapRoutes.map((route, index) => `  <url><loc>${siteUrl}${route}</loc><lastmod>${route === farmFinderRoute ? farmFinderLastmod : route === farmHubRoute ? farmHubLastmod : updatedRoutes.has(route) ? agricultureHomeLastmod : lastmod}</lastmod><changefreq>${index === 0 ? "weekly" : "monthly"}</changefreq><priority>${index === 0 ? "1.0" : route === farmFinderRoute ? "0.9" : "0.8"}</priority></url>`).join("\n")}
+${sitemapRoutes.map((route, index) => `  <url><loc>${siteUrl}${route}</loc><lastmod>${route === farmFinderRoute ? farmFinderLastmod : route === farmHubRoute ? farmHubLastmod : evidenceUpdatedRoutes.has(route) ? "2026-10-15" : updatedRoutes.has(route) ? agricultureHomeLastmod : lastmod}</lastmod><changefreq>${index === 0 ? "weekly" : "monthly"}</changefreq><priority>${index === 0 ? "1.0" : route === farmFinderRoute ? "0.9" : "0.8"}</priority></url>`).join("\n")}
 </urlset>
 `;
 
@@ -83,7 +84,7 @@ const feed = `<?xml version="1.0" encoding="UTF-8"?>
     <link>${siteUrl}/</link>
     <description>한국 농촌 공공주소 자료와 이전 일본 생활 안내의 원문 확인 방법을 다루는 스미맵 자료 피드.</description>
     <language>ko-KR</language>
-    <lastBuildDate>Sun, 27 Sep 2026 03:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Wed, 14 Oct 2026 15:00:00 GMT</lastBuildDate>
 ${items}
   </channel>
 </rss>
