@@ -11,3 +11,4 @@ User-agent: Daumoa
 Allow: /
 
 Sitemap: https://sumimap.com/sitemap.xml
+#DaumWebMasterTool:1941a4dafff681e3607c9562195a5e4820a0b9a596b7fc51b017b531dbec092e:dSlZXvWuL7UAVoESNn1QCg==
