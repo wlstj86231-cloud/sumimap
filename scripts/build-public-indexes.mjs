@@ -58,7 +58,7 @@ for (const route of sitemapRoutes) {
 
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${sitemapRoutes.map((route, index) => `  <url><loc>${siteUrl}${route}</loc><lastmod>${route === farmFinderRoute ? farmFinderLastmod : route === farmHubRoute ? farmHubLastmod : evidenceUpdatedRoutes.has(route) ? "2026-10-15" : updatedRoutes.has(route) ? agricultureHomeLastmod : lastmod}</lastmod><changefreq>${index === 0 ? "weekly" : "monthly"}</changefreq><priority>${index === 0 ? "1.0" : route === farmFinderRoute ? "0.9" : "0.8"}</priority></url>`).join("\n")}
+${sitemapRoutes.map((route, index) => `  <url><loc>${siteUrl}${route}</loc><lastmod>${route === farmFinderRoute ? farmFinderLastmod : route === farmHubRoute ? farmHubLastmod : route === "/about/" ? "2026-10-26" : evidenceUpdatedRoutes.has(route) ? "2026-10-15" : updatedRoutes.has(route) ? agricultureHomeLastmod : lastmod}</lastmod><changefreq>${index === 0 ? "weekly" : "monthly"}</changefreq><priority>${index === 0 ? "1.0" : route === farmFinderRoute ? "0.9" : "0.8"}</priority></url>`).join("\n")}
 </urlset>
 `;
 
