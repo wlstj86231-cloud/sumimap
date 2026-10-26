@@ -18,6 +18,7 @@ npm run check   # 데이터 해시 검증 → JSON·페이지·sitemap 생성 �
 npm run check:links   # /sources/ 외부 링크 상태 확인(네트워크 필요)
 ```
 
+- 시·도 페이지의 지역 공식 안내는 `scripts/lib/local-notes.mjs`(원문에 있는 사실만), 운영자 정보는 `scripts/lib/layout.mjs`의 `OPERATOR_INFO`에 있습니다. 고친 내용은 `generate-core-pages.mjs`의 `CHANGELOG`에 날짜와 함께 적습니다.
 - 페이지는 `scripts/generate-core-pages.mjs`가 만듭니다. HTML을 직접 고치지 말고 생성 스크립트(`scripts/lib/*.mjs`)를 고친 뒤 `npm run build`를 실행하세요.
 - `site/assets/*`와 `site/data/farm-waste/*`는 1년 캐시입니다. 내용을 바꾸면 파일 이름의 날짜(예: `finder-20261026.js`, 같은 날 다시 바꾸면 `finder-2026102602.js`처럼 숫자를 붙임)를 바꾸고 `scripts/lib/layout.mjs`와 `site/sw.js`(캐시 이름 포함)를 함께 고치세요.
 - 원자료 재생성 방법과 해시는 `docs/data-sources/farm-waste-collection-2025.md`에 있습니다.
