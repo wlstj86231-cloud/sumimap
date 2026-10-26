@@ -1,55 +1,31 @@
-# Sumimap AdSense Content Structure
+# 영농폐기물 집하장 지도: content and ad placement rules
 
-This document is the working gate for the 80% approval pass. Sumimap should read as a Japan daily-life information site with a fast map, not as a map-only tool.
+The site is a farm waste collection point finder with source-backed disposal guides. (The former Japan daily-life map was retired on 2026-10-26; its URLs answer 410 from `functions/_middleware.js`.)
 
-## Publishable Content Types
+## Publishable content types
 
-- Core guide: `/guide/`
-- Route hubs: `/routes/`, `/routes/battery/`, `/routes/restroom/`, `/routes/rain/`, `/routes/station/`, `/routes/convenience/`, `/routes/late-night/`, `/routes/first-day/`, `/routes/response/`, `/routes/rest/`, `/routes/korean/`
-- City hubs: `/cities/`, `/cities/tokyo/`, `/cities/osaka/`, `/cities/fukuoka/`, `/cities/kyoto/`
-- Spot pages: `/spots/*`
-- Search-entry articles: root-level daily-life guide pages such as charging, restroom, rain shelter, first-day, and Korean resident pages.
+- Finder tool: `/kr/farm-waste-collection/`
+- Province directory: `/kr/` and `/kr/<slug>/` (provinces with 20+ rows)
+- Disposal guides: `/guide/`, `/guide/vinyl/`, `/guide/pesticide-containers/`, `/guide/leftover-pesticide/`, `/guide/other-farm-waste/`, `/guide/before-visit/`, `/guide/no-burning/`
 
-## Required Page Blocks
+## Required page blocks
 
-Every new publishable content page should include:
+Every content page needs:
 
-- A specific situation, not a generic intro.
-- A decision standard a visitor can use on the street.
-- A short action order.
-- One paragraph explaining what not to over-assume.
-- At least three internal links to related guides, route hubs, city hubs, or spot pages.
-- A clear canonical URL and meta description.
-- Inclusion in both `site/sitemap.xml` and `site/feed.xml` when the page is a real reading page.
+- A specific job (find an address, or answer one disposal question) and a link into the finder.
+- Facts only from official sources (한국환경공단, 농림축산식품부, 지자체, 국가법령정보센터), linked with 자료 대조일. Regional rules are labelled with the region.
+- At least two direct official links, the words "공식 원문" and "자료 대조일" (checked by `npm run content:inventory`).
+- Unique title/description, canonical URL, JSON-LD that matches the visible content, and inclusion in `sitemap.xml` and `feed.xml`.
 
-## Ad Placement Rules
+## Ad placement rules
 
-Ads are allowed on:
+- The AdSense auto-ads loader is allowed only on `/guide/*` article pages. No manual ad slots.
+- Ads must stay off: `/`, the finder, `/kr/*`, `/about/`, `/sources/`, `/editorial/`, `/policy/`, `/contact/`, `/privacy/`, `/terms/`, `404.html`, the 410 notice, and any empty/loading state.
 
-- `/guide/`
-- `/routes/*`
-- `/cities/*`
-- `/spots/*`
-- Root-level static daily-life articles.
-
-Ads must stay off:
-
-- `/`
-- `/about/`
-- `/editorial/`
-- `/policy/`
-- `/privacy/`
-- `/terms/`
-- `/contact/`
-- `/review-readiness/`
-- Map, report, save, translation, loading, and empty-result states.
-
-## Inventory Command
-
-Run this before and after content expansion:
+## Inventory command
 
 ```bash
 npm run content:inventory
 ```
 
-The command fails on hard issues such as broken internal links, sitemap URLs without local HTML, missing canonical/meta basics, duplicate feed or sitemap URLs, or ad scripts on blocked pages. It reports softer warnings for pages that need more internal links, paragraphs, feed coverage, or ad coverage.
+Fails on broken internal links, sitemap/feed mismatches, missing canonical/meta, ads on blocked pages, missing official sources, retired Japan routes, old brand names, or near-duplicate pages (7-word shingle Jaccard > 0.34).
