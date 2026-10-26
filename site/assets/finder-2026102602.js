@@ -327,7 +327,14 @@
     let matches = rows;
     if (state.city) matches = matches.filter((row) => row.city === state.city.n);
     if (state.area) matches = matches.filter((row) => row.area === state.area);
-    if (tokens.length) matches = matches.filter((row) => tokens.every((part) => rowHas(row, part)));
+    // Spacing should not matter: "고 단 리" and "송지면 가차리" are tried as one
+    // word first. Separate words (e.g. "고단리 강릉") are matched one by one
+    // only when the joined text finds nothing.
+    if (tokens.length) {
+      const joined = tokens.join("");
+      const whole = matches.filter((row) => rowHas(row, joined));
+      matches = whole.length || tokens.length === 1 ? whole : matches.filter((row) => tokens.every((part) => rowHas(row, part)));
+    }
 
     resultsTitle.textContent = q
       ? `${scopeLabel()}에서 ‘${q}’ 찾기 · ${fmt(matches.length)}건`

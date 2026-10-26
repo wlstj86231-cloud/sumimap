@@ -259,16 +259,20 @@ function staticAddressList(city) {
   }).join("")}</ul>`;
 }
 
+// Same text the finder searches (finder-*.js loadProvince/rowHas), so a chip's
+// count is exactly the number of results its link opens.
+const finderKey = (p, row) => `${p.name}${p.short}${row.city}${row.area === NO_AREA ? "" : row.area}${row.name}${row.address}`.replace(/\s+/gu, "").toLowerCase();
+
 function villageChips(p, city) {
-  const counts = new Map();
-  for (const row of city.rows) {
-    if (!row.village) continue;
-    const name = looseVillage(row.village);
-    counts.set(name, (counts.get(name) || 0) + 1);
-  }
-  const villages = [...counts].sort(([left], [right]) => left.localeCompare(right, "ko"));
+  const names = new Set(city.rows.filter((row) => row.village).map((row) => looseVillage(row.village)));
+  const keys = city.rows.map((row) => finderKey(p, row));
+  const looseKeys = keys.map(looseVillage);
+  const villages = [...names].sort((left, right) => left.localeCompare(right, "ko")).map((name) => {
+    const pool = /[0-9]/u.test(name) ? keys : looseKeys;
+    return [name, pool.filter((key) => key.includes(name)).length];
+  });
   if (!villages.length) return "";
-  return `<p class="small">주소에 읍·면이 거의 적혀 있지 않아 주소에 나오는 마을(리·동) 이름으로 묶었습니다. ‘고단1리’, ‘고단2리’는 ‘고단리’ 하나로 모았습니다. 이름을 누르면 그 마을 주소가 열립니다.</p>
+  return `<p class="small">주소에 읍·면이 거의 적혀 있지 않아 주소에 나오는 마을(리·동) 이름으로 묶었습니다. ‘고단1리’, ‘고단2리’는 ‘고단리’ 하나로 모았습니다. 이름을 누르면 주소나 집하장 이름에 그 마을 이름이 들어간 곳이 열리고, 건수도 그 기준입니다.</p>
       <ul class="chips compact">${villages.map(([name, count]) => `<li><a class="chip" href="${esc(finderHref({ province: p.name, city: city.name, q: name }))}"><span>${esc(name)}</span><span class="count">${fmt(count)}건</span></a></li>`).join("")}</ul>`;
 }
 

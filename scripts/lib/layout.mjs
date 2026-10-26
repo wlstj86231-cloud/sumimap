@@ -2,7 +2,7 @@
 export const SITE_URL = "https://sumimap.com";
 export const SITE_NAME = "영농폐기물 집하장 지도";
 export const STYLE_HREF = "/assets/site-20261026.css";
-export const FINDER_JS = "/assets/finder-20261026.js";
+export const FINDER_JS = "/assets/finder-2026102602.js";
 export const FINDER_ROUTE = "/kr/farm-waste-collection/";
 export const PUBLISHED = "2026-10-26";
 export const OPERATOR = Object.freeze({ "@type": "Organization", name: "제이 미디어(J MEDIA)", url: "https://jnewmedia.com/" });
