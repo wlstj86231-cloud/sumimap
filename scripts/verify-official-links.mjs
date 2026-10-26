@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const html = fs.readFileSync(path.join(root, "site", "sources", "index.html"), "utf8");
-const urls = [...new Set([...html.matchAll(/href=["'](https?:\/\/[^"']+)["']/g)].map((match) => match[1]))];
+const urls = [...new Set([...html.matchAll(/href=["'](https?:\/\/[^"']+)["']/g)].map((match) => match[1].replaceAll("&amp;", "&")))];
 const failures = [];
 let cursor = 0;
 

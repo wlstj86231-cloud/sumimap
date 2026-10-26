@@ -17,7 +17,11 @@ Every content page needs:
 - At least two direct official links, the words "공식 원문" and "자료 대조일" (checked by `npm run content:inventory`).
 - Unique title/description, canonical URL, JSON-LD that matches the visible content, and inclusion in `sitemap.xml` and `feed.xml`.
 - The meta block (`metaBlock()` in `scripts/lib/layout.mjs`): 작성·관리 제이 미디어 편집팀 (운영 책임: 대표 이정우), 게시일 (first commit that published the current content), 최종 확인일, number of sources. Then a 범위와 한계 block (`scopeBlock()`) and the 출처 list (`sourcesBlock()`).
-- Province pages (`/kr/<slug>/`) carry original analysis counted from the data at build time ("주소 자료에서 읽히는 것") and only those local notes that come from an official page (`scripts/lib/local-notes.mjs`). Provinces whose 시·군 pages were not checked say so instead of getting invented notes.
+- Province pages (`/kr/<slug>/`) carry original analysis counted from the data at build time ("주소 자료에서 읽히는 것") and only those local notes that come from an official page (`scripts/lib/local-notes.mjs`). Provinces whose 시·군 pages were not checked say so instead of getting invented notes. Provinces with 250 rows or fewer list every address on the page. `HEAD_NOTES` flags names in the 2025 file that changed later (전라남도 → 전남광주통합특별시 and 인천 중구·동구, both 2026-07-01).
+
+## Privacy facts to keep true
+
+- Cloudflare Web Analytics is injected at the edge on every page (`static.cloudflareinsights.com`, posts to `/cdn-cgi/rum`, no cookies; query strings are not sent). `/privacy/` section 1 says so. If the zone setting changes, update that section and the changelog.
 
 ## Operator and structured data
 

@@ -55,7 +55,12 @@ const officialHosts = new Set([
   "www.cheongju.go.kr",
   "www.miryang.go.kr",
   "www.dangjin.go.kr",
-  "agri.jeju.go.kr"
+  "agri.jeju.go.kr",
+  "www.hsg.go.kr",
+  "h-waste.hscity.go.kr",
+  "www.andong.go.kr",
+  "www.boseong.go.kr",
+  "www.namwon.go.kr"
 ]);
 
 const ignoredLinkExtensions = new Set([
