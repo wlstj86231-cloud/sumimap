@@ -8,11 +8,12 @@ import { DATA, NO_AREA, loadRows, groupRegions, mapQuery, hasProvincePage, provi
 import { page, esc, finderHref, sourcesBlock, metaBlock, scopeBlock, boribay, SITE_URL, SITE_NAME, FINDER_ROUTE, FINDER_JS, CHECKED, ORG_REF, WEBSITE_REF, OPERATOR_INFO } from "./lib/layout.mjs";
 import { SRC } from "./lib/sources.mjs";
 import { GUIDES, GUIDE_LIST, relatedGuides } from "./lib/guides.mjs";
-import { LOCAL_NOTES, KECO_FACILITIES, SEJONG_TABLE, compareSejong } from "./lib/local-notes.mjs";
+import { LOCAL_NOTES, KECO_FACILITIES, SEJONG_TABLE, compareSejong, compareHwaseong, HEAD_NOTES } from "./lib/local-notes.mjs";
 
 // 게시일: first commit that published the current content of each page.
-// 2026-09-24 = 082621f (finder and /kr/ hub), 2026-10-26 = 6916ac0 (province pages, guides).
-const FIRST_PUBLISHED = { finder: "2026-09-24", directory: "2026-09-24", province: "2026-10-26" };
+// 2026-09-24 = 082621f (finder). 2026-10-26 = 6916ac0 (province pages, guides, and the
+// /kr/ province table; /kr/ was an explanatory hub with different content before that).
+const FIRST_PUBLISHED = { finder: "2026-09-24", directory: "2026-10-26", province: "2026-10-26" };
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const siteRoot = path.join(root, "site");
@@ -203,7 +204,7 @@ write(FINDER_ROUTE, page({
         <li><strong>순서:</strong> 결과는 원자료에 실린 순서대로 20건씩 보여 줍니다. 좌표가 없어 가까운 순으로 정렬하지 않습니다.</li>
         <li><strong>지도 버튼:</strong> 화면 주소는 원문 그대로 두고, 지도 검색어에서만 괄호 속 설명을 빼고 행정리 번호를 뺀 이름(‘고단1리’→‘고단리’)으로 바꿉니다.</li>
       </ol>
-      <p>검색어와 고른 지역은 이 기기의 브라우저 안에서만 처리하며 서버로 보내지 않습니다. 고른 시·도의 주소 파일만 내려받고, 다음 방문 때 ‘지난번에 본 지역’ 단추를 보여 주려고 마지막 지역 이름을 기기에 저장합니다(<a href="/privacy/">개인정보처리방침</a>).</p>
+      <p>검색과 지역 고르기는 이 기기의 브라우저 안에서 처리하며, 운영자는 검색어를 따로 모으거나 저장하지 않습니다. 고른 시·도의 주소 파일만 내려받고, 다음 방문 때 ‘지난번에 본 지역’ 단추를 보여 주려고 마지막 지역 이름을 기기에 저장합니다(<a href="/privacy/">개인정보처리방침</a>).</p>
     </section>
 
     ${scopeBlock([
@@ -243,7 +244,7 @@ write("/kr/", page({
     <div class="page-head">
       <h1>시·도별 영농폐기물 공동집하장 목록</h1>
       <p class="lead">시·도를 고르면 시·군·구와 읍·면·동별 주소 건수가 나옵니다. 주소를 바로 보려면 <a href="${FINDER_ROUTE}">집하장 찾기</a>를 이용하세요.</p>
-      ${metaBlock({ published: FIRST_PUBLISHED.directory, sources: 2 })}
+      ${metaBlock({ published: FIRST_PUBLISHED.directory, sources: 4 })}
     </div>
     <section class="box" aria-labelledby="list-title">
       <h2 id="list-title">14개 시·도</h2>
@@ -259,6 +260,7 @@ write("/kr/", page({
         </table>
       </div>
       <p class="small">${missingProvinces}의 주소는 2025년 8월 27일 기준 파일에 없습니다. 이 지역에 집하장이 없다는 뜻은 아니므로 구청이나 시청에 확인하세요.</p>
+      <p class="small">표의 시·도 이름은 2025년 자료 그대로입니다. 그 뒤 2026년 7월 1일 전라남도와 광주광역시는 전남광주통합특별시로 합쳐졌고(「전남광주통합특별시 설치를 위한 특별법」), 인천 중구·동구는 제물포구·영종구·검단구로 바뀌었습니다. 해당 시·도 페이지에 찾을 때 주의할 점을 적었습니다.</p>
     </section>
     ${provinces.filter((p) => !hasProvincePage(p)).map((p) => `<section class="box" id="${p.slug}" aria-labelledby="${p.slug}-title">
       <h2 id="${p.slug}-title">${p.name} 집하장 주소 ${fmt(p.count)}건</h2>
@@ -278,7 +280,7 @@ write("/kr/", page({
       "이 목록은 한국환경공단 공개자료(2025년 8월 27일 기준)의 건수와 주소만 보여 줍니다. 운영 여부, 수거 일정, 받는 품목은 들어 있지 않습니다.",
       "시·도 페이지는 주소가 20건 이상인 12개 시·도에만 만들었고, 대전·울산은 이 페이지에 주소를 모두 적었습니다."
     ])}
-    ${sourcesBlock([SRC.data, SRC.keco])}`
+    ${sourcesBlock([SRC.data, SRC.keco, SRC.jeonnamLaw, SRC.incheonLaw])}`
 }));
 
 // ---------------------------------------------------------------- province pages
@@ -319,18 +321,18 @@ function provinceInsights(p) {
   const byCount = [...p.cities].sort((a, b) => b.count - a.count || a.name.localeCompare(b.name, "ko"));
   const items = [];
 
-  if (p.cities.length >= 3) {
+  if (p.cities.length >= 4) {
     const top = byCount.slice(0, 3);
     const share = top.reduce((sum, city) => sum + city.count, 0);
-    const small = byCount.filter((city) => city.count <= 5);
+    const small = byCount.slice(3).filter((city) => city.count <= 5);
     items.push(`<strong>건수가 몰린 곳.</strong> ${top.map((city) => `${esc(city.name)} ${fmt(city.count)}건`).join(", ")}을 합치면 ${p.short} 전체의 ${pct(share)}입니다.${small.length ? ` 반대로 ${josa(small.map((city) => `${esc(city.name)}(${fmt(city.count)}건)`).join(", "), "은", "는")} 5건 이하입니다.` : ""} 이 자료는 시·군이 해마다 제출한 정보를 모은 것이라(포털 설명), 건수가 적다고 집하장이 적다고 단정할 수는 없습니다.`);
-  } else if (p.cities.length === 2) {
-    items.push(`<strong>두 곳으로 나뉩니다.</strong> ${byCount.map((city) => `${esc(city.name)} ${fmt(city.count)}건`).join(", ")}입니다.`);
+  } else if (p.cities.length >= 2) {
+    items.push(`<strong>${p.cities.length === 2 ? "두" : "세"} 곳으로 나뉩니다.</strong> ${byCount.map((city) => `${esc(city.name)} ${fmt(city.count)}건`).join(", ")}입니다.`);
   }
   const areaCounts = p.cities
     .flatMap((city) => city.areas.filter(([name]) => name !== NO_AREA).map(([name, count]) => [p.cities.length > 1 ? `${city.name} ${name}` : name, count]))
     .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "ko"));
-  if (areaCounts.length) {
+  if (areaCounts.length && areaCounts[0][1] >= 3) {
     items.push(`<strong>주소가 많은 읍·면·동.</strong> 주소에 적힌 읍·면·동 ${fmt(areaCounts.length)}곳 가운데 ${areaCounts.slice(0, 3).map(([name, count]) => `${esc(name)} ${fmt(count)}건`).join(", ")} 순으로 많습니다.`);
   }
 
@@ -356,8 +358,8 @@ function provinceInsights(p) {
     const freq = new Map();
     for (const note of notes) freq.set(note, (freq.get(note) || 0) + 1);
     const hints = [...freq].filter(([note]) => PLACE_HINT.test(note)).sort((a, b) => b[1] - a[1]).slice(0, 3);
-    const shown = hints.length ? hints : [...freq].slice(0, 2);
-    items.push(`<strong>괄호 속 위치 설명.</strong> ${fmt(notes.length)}건에 괄호 설명이 붙어 있습니다(예: ${shown.map(([note, count]) => `‘${esc(note)}’${count > 1 ? ` ${fmt(count)}건` : ""}`).join(", ")}). 지도 검색에서는 빠지니 현장에서 자리를 찾는 단서로 쓰세요.`);
+    // Only notes that describe a place ("마을회관 옆") are worth pointing out; "2개소" is not.
+    if (hints.length) items.push(`<strong>괄호 속 위치 설명.</strong> ${fmt(notes.length)}건에 괄호 설명이 붙어 있습니다(예: ${hints.map(([note, count]) => `‘${esc(note)}’${count > 1 ? ` ${fmt(count)}건` : ""}`).join(", ")}). 지도 검색에서는 빠지니 현장에서 자리를 찾는 단서로 쓰세요.`);
   }
 
   const named = p.rows.filter((row) => row.name !== "이름 미등록");
@@ -399,6 +401,29 @@ function sejongComparison(p) {
       <p class="small">출처: <a href="${esc(SRC.sejong.url)}">${esc(SRC.sejong.org)} · ${esc(SRC.sejong.title)}</a>, 확인일 ${CHECKED}</p>`;
 }
 
+// 화성시 포털의 읍·면별 집하장 수와 공개자료 줄 수를 나란히 보여 준다.
+function hwaseongComparison(p) {
+  const city = p.cities.find((item) => item.name === "화성시");
+  if (!city) return "";
+  const result = compareHwaseong(city);
+  const gaps = result.rows.filter(([, portal, data]) => portal !== data).sort((a, b) => Math.abs(b[1] - b[2]) - Math.abs(a[1] - a[2]));
+  return `<h4>읍·면별 집하장 수: 화성시 포털과 공개자료</h4>
+      <p>포털의 ‘지역별 영농폐기물 집하장 수’는 모두 ${fmt(result.portalTotal)}곳이고, 공개자료의 화성시 주소는 ${fmt(result.dataTotal)}줄입니다. 읍·면은 주소에 적힌 이름으로 세어 맞춰 보았습니다. ${josa(result.same.join("·"), "은", "는")} 두 숫자가 같고, 가장 많이 다른 곳은 ${gaps.slice(0, 2).map(([name, portal, data]) => `${name}(포털 ${portal}곳, 자료 ${data}줄)`).join(", ")}입니다.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th scope="col">읍·면</th><th scope="col">포털</th><th scope="col">공개자료</th></tr></thead>
+          <tbody>
+            ${result.rows.map(([name, portal, data]) => `<tr><td>${name}</td><td>${portal}곳</td><td>${data}줄${portal === data ? "" : ` (${data > portal ? "+" : ""}${data - portal})`}</td></tr>`).join("\n            ")}
+            <tr><td>동 지역*</td><td>${result.portalDong}곳</td><td>${result.dataOther}줄</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="small">* 포털의 동 지역은 진안동·기배동·화산동·동탄6동이고, 공개자료 쪽은 주소에 읍·면이 적히지 않은 줄입니다. 이 주소는 대부분 도로 이름 주소라 어느 동인지 가리기 어려워 합계만 적었습니다. 숫자가 다른 읍·면은 그사이 집하장이 생기거나 없어졌을 수 있으니, 읍·면사무소에 마을 집하장 위치를 확인하세요.</p>`;
+}
+
+// 인천 중구 was abolished on 2026-07-01 (see HEAD_NOTES), so it is not named as an office to call.
+const officeNames = (p) => p.cities.map((city) => esc(city.name)).filter((name) => !(p.name === "인천광역시" && name === "중구"));
+
 function localSection(p) {
   const notes = LOCAL_NOTES[p.name] || [];
   const facilities = KECO_FACILITIES[p.name];
@@ -407,11 +432,12 @@ function localSection(p) {
   for (const note of notes) {
     parts.push(`<h3>${esc(note.title)}</h3>
       ${note.html}
+      ${note.hwaseong ? hwaseongComparison(p) : ""}
       <p class="small">출처: <a href="${esc(note.source.url)}">${esc(note.source.org)} · ${esc(note.source.title)}</a>, 확인일 ${CHECKED}</p>`);
   }
   if (facilities) {
     parts.push(`<h3>모은 폐비닐이 가는 곳</h3>
-      <p>한국환경공단이 안내하는 영농 폐비닐 재활용시설 7곳 가운데 ${josa(facilities.join(", "), "이", "가")} ${p.short}에 있습니다. 공단은 마을 공동집하장에서 수거한 폐비닐을 자체 재활용시설에서 재활용해 국내외 재활용업체에 공급한다고 설명합니다. 농가가 직접 가져가는 곳으로 안내된 시설은 아니므로, 배출은 마을 공동집하장으로 하세요.</p>
+      <p>한국환경공단이 안내하는 영농 폐비닐 재활용시설 7곳 가운데 ${josa(facilities.join(", "), "이", "가")} ${p.short}에 있습니다. 공단은 마을 공동집하장에서 수거한 폐비닐을 자체 재활용시설에서 재활용해 국내외 재활용업체에 공급한다고 설명합니다. 공단 누리집은 이 시설을 농가가 직접 가져가는 곳으로 안내하지 않으므로, 평소 배출은 마을 공동집하장으로 하고 직접 가져가려면 먼저 시·군청이나 공단 사업소에 확인하세요.</p>
       <p class="small">출처: <a href="${esc(SRC.keco.url)}">${esc(SRC.keco.org)} · ${esc(SRC.keco.title)}</a>, 확인일 ${CHECKED}</p>`);
   }
   const checkedLocal = notes.some((note) => note.kind !== "context") || p.name === "세종특별자치시";
@@ -419,7 +445,7 @@ function localSection(p) {
     ? `<p class="small">위 안내는 ${p.short === "세종" ? "세종시" : p.short} 누리집 표기를 옮긴 것이라 그 뒤에 바뀌었을 수 있습니다. 이용 전에 읍·면사무소나 담당 부서에 확인하세요.</p>`
     : checkedLocal
     ? `<p class="small">위 안내는 ${p.short}의 일부 시·군 누리집에서 옮긴 것입니다. 다른 시·군의 기준은 다를 수 있으니 해당 시·군청이나 읍·면 행정복지센터에 확인하세요.</p>`
-    : `<p>${p.short} 시·군 누리집의 배출 안내는 아직 원문과 대조하지 않아 옮기지 않았습니다. 시·군청 누리집에서 ‘영농폐기물’을 검색하거나 읍·면 행정복지센터에 물어보세요.</p>`;
+    : `<p>${p.short} 시·군·구 누리집의 배출 기준은 이 페이지에 옮겨 싣지 않았습니다. 수거 일정, 보상금, 받는 품목은 ${officeNames(p).join("·")}의 환경(자원순환) 담당 부서나 읍·면 행정복지센터에 확인하세요. 누리집에서 ‘영농폐기물’로 검색하면 배출 안내가 나오는 곳이 많습니다.</p>`;
   return `<section class="box box-soft" aria-labelledby="local-title">
       <h2 id="local-title">${p.short}에서 확인한 공식 안내</h2>
       ${parts.join("\n      ")}
@@ -437,7 +463,8 @@ function provinceSources(p) {
 for (const p of provinces.filter(hasProvincePage)) {
   const route = `/kr/${p.slug}/`;
   const top = [...p.cities].sort((a, b) => b.count - a.count).slice(0, 3);
-  const listAddresses = p.count <= 60;
+  // Provinces up to 250 rows (인천, 세종, 제주, 대구) show every address on the page itself.
+  const listAddresses = p.count <= 250;
   const areaTotal = p.cities.reduce((sum, city) => sum + city.areas.filter(([name]) => name !== NO_AREA).length, 0);
   const sources = provinceSources(p);
   write(route, page({
@@ -462,7 +489,8 @@ for (const p of provinces.filter(hasProvincePage)) {
     body: `
     <div class="page-head">
       <h1>${p.name} 영농폐기물 공동집하장</h1>
-      <p class="lead">${p.name}에는 한국환경공단 2025년 공개자료 기준 ${p.cities.length}개 시·군·구에 집하장 주소 ${fmt(p.count)}건이 실려 있습니다. 시·군과 읍·면·동을 누르면 주소 목록이 열립니다.</p>
+      <p class="lead">${p.name}에는 한국환경공단 2025년 공개자료 기준 ${p.cities.length}개 시·군·구에 집하장 주소 ${fmt(p.count)}건이 실려 있습니다. ${listAddresses ? "주소는 이 페이지 아래에 모두 적었고, 시·군과 읍·면·동을 누르면 찾기 화면에서 좁혀 볼 수 있습니다." : "시·군과 읍·면·동을 누르면 주소 목록이 열립니다."}</p>
+      ${HEAD_NOTES[p.name] ? `<p class="notice">${esc(HEAD_NOTES[p.name])} <a href="#local-title">자세히</a></p>` : ""}
       ${metaBlock({ published: FIRST_PUBLISHED.province, sources: sources.length })}
       <p class="cta-row"><a class="btn" href="${esc(finderHref({ province: p.name }))}">${p.short} 집하장 주소 바로 찾기</a></p>
     </div>
@@ -727,9 +755,12 @@ trust("/editorial/", "편집 원칙", "영농폐기물 집하장 지도를 누�
     </section>`);
 
 const CHANGELOG = [
+  ["2026-10-26", "개인정보처리방침에 ‘방문 통계 도구를 쓰지 않는다’고 잘못 적었던 부분을 고쳐, 모든 페이지에서 실행되는 Cloudflare Web Analytics(쿠키 없이 페이지 주소·브라우저 종류·로딩 속도를 집계)를 밝혔습니다. 찾기 화면의 ‘검색어를 서버로 보내지 않는다’는 설명도 실제 동작에 맞게 고쳤습니다."],
+  ["2026-10-26", "시·도 페이지에 지역 공식 안내를 더했습니다: 횡성군(강원), 화성시(경기, 읍·면별 집하장 수를 공개자료와 비교), 안동시(경북), 보성군(전남), 남원시 덕과면(전북). 2026년 7월 1일 전남광주통합특별시 출범과 인천 구 개편에 따라 2025년 자료의 ‘전라남도’, 인천 ‘중구’ 주소를 찾을 때 주의할 점을 적었습니다."],
+  ["2026-10-26", "주소가 250건 이하인 인천·세종·제주·대구 페이지에 주소 전체를 싣고, 자동으로 센 ‘주소 자료에서 읽히는 것’에서 뜻이 약한 문장(1~2건짜리 순위, 위치 설명이 아닌 괄호 내용, 많은 곳과 적은 곳에 같은 군이 겹치는 문장)을 뺐습니다. 시·도 목록 페이지의 게시일을 지금 내용(시·도 표)이 처음 실린 2026-10-26로 바로잡았습니다."],
   ["2026-10-26", "운영자 정보(상호, 대표, 사업자등록번호, 주소, 연락처)를 서비스 소개·문의 페이지와 모든 페이지 바닥글에 공개하고, 이메일·전화·카카오톡 문의 창구를 더했습니다."],
   ["2026-10-26", "시·도 페이지 12곳에 공개자료를 세어 정리한 ‘주소 자료에서 읽히는 것’, 확인한 지역 공식 안내(세종·청주·당진·밀양, 군위군 편입 근거, 한국환경공단 폐비닐 재활용시설 위치), 범위와 한계를 더했습니다."],
-  ["2026-10-26", "세종시 누리집의 공동집하장 설치현황 표기가 35개소로 바뀐 것을 확인해 ‘38개소’로 적었던 설명을 고치고, 시 표와 공개자료를 지번으로 맞춰 본 결과를 세종 페이지에 실었습니다."],
+  ["2026-10-26", "세종시 누리집에 보이는 공동집하장 설치현황 표(35개소)와 달리 ‘38개소’로 잘못 적었던 설명을 고치고, 시 표와 공개자료를 지번으로 맞춰 본 결과를 세종 페이지에 실었습니다."],
   ["2026-10-26", "찾기 도구와 안내 페이지마다 작성·관리 주체, 게시일, 최종 확인일, 출처 수, 범위와 한계를 표시했습니다. 자료 출처 페이지에 이용 조건(이용허락범위 제한 없음)과 기준일을 표로 정리하고, 개인정보처리방침의 광고 쿠키 설명과 편집 원칙의 작성 방법(AI 도구 활용) 설명을 보강했습니다."],
   ["2026-10-26", "찾기 화면에서 띄어 쓴 검색어도 찾도록 고치고, 마을 단추의 건수를 실제 결과 수와 맞추고, 보상금을 받는 주체에 대한 설명(밀양시 안내)을 더했습니다."],
   ["2026-10-26", "찾기 도구를 시·도 → 시·군·구 → 읍·면·동 순서로 다시 만들고, 배출 방법 안내 7쪽을 공식 원문을 근거로 새로 실었습니다."],
@@ -818,10 +849,11 @@ trust("/contact/", "문의", "영농폐기물 집하장 지도 운영자 제이 
       <p>처리 기준은 <a href="/policy/">정정 정책</a>, 개인정보는 <a href="/privacy/">개인정보처리방침</a>을 보세요.</p>
     </section>`, { type: "ContactPage", aboutOrg: true });
 
-trust("/privacy/", "개인정보처리방침", "영농폐기물 집하장 지도는 회원가입과 개인정보 수집을 하지 않습니다. 문의할 때 보내는 정보, 기기에 저장되는 항목, 외부 지도 링크, Google AdSense 광고 쿠키와 맞춤 광고 해제 방법, 시행일을 안내합니다.", "개인정보처리방침", "영농폐기물 집하장 지도는 회원가입이 없고, 이름·연락처·위치를 서버에 모으지 않습니다. 이 방침은 2026년 10월 26일부터 적용합니다.", `
+trust("/privacy/", "개인정보처리방침", "영농폐기물 집하장 지도는 회원가입과 개인정보 수집을 하지 않습니다. Cloudflare 호스팅과 방문 통계(Cloudflare Web Analytics), 문의할 때 보내는 정보, 기기에 저장되는 항목, 외부 지도 링크, Google AdSense 광고 쿠키와 맞춤 광고 해제 방법, 시행일을 안내합니다.", "개인정보처리방침", "영농폐기물 집하장 지도는 회원가입이 없고, 이름·연락처·위치를 서버에 모으지 않습니다. 이 방침은 2026년 10월 26일부터 적용합니다.", `
     <section class="box">
-      <h2>1. 서버에 모으는 정보</h2>
-      <p>운영자 서버에 개인정보를 저장하는 기능이 없습니다. 검색어와 고른 지역은 브라우저 안에서만 처리하며 서버로 보내지 않습니다. 사이트를 전달하는 호스팅 사업자(Cloudflare)는 보안과 전송을 위해 IP 주소, 브라우저 정보, 요청 시각 같은 기술 기록을 처리할 수 있습니다. 방문 통계나 분석 도구(Google Analytics 등)는 쓰지 않습니다.</p>
+      <h2>1. 자동으로 처리되는 정보와 방문 통계</h2>
+      <p>운영자 서버에 개인정보를 저장하는 기능은 없습니다. 사이트는 Cloudflare에서 호스팅되며, Cloudflare는 보안과 전송을 위해 IP 주소, 브라우저 정보, 요청한 주소, 요청 시각 같은 기술 기록을 처리할 수 있습니다. 찾기 화면의 검색과 지역 고르기는 브라우저 안에서 처리합니다. 다만 홈의 검색창이나 지역 단추로 들어오면 검색어와 지역 이름이 페이지 주소의 ‘?’ 뒤에 붙어 Cloudflare를 거쳐 전달되며, 운영자는 이를 따로 모으거나 저장하지 않습니다.</p>
+      <p>방문 통계에는 <a href="https://www.cloudflare.com/web-analytics/">Cloudflare Web Analytics</a>를 씁니다. 페이지를 열면 Cloudflare의 측정 스크립트(static.cloudflareinsights.com)가 방문한 페이지 주소와 직전 페이지 주소(둘 다 ‘?’ 뒤 부분은 빼고), 브라우저·기기 종류, 페이지 로딩 속도 같은 정보를 Cloudflare로 보내고, Cloudflare는 이를 접속 국가 같은 정보와 함께 집계 통계로 만들어 운영자에게 보여 줍니다. 이 도구는 쿠키나 브라우저 저장소를 쓰지 않으며, 운영자는 이 통계로 개인을 식별하지 않습니다. 처리 방식은 <a href="https://www.cloudflare.com/privacypolicy/">Cloudflare 개인정보처리방침</a>을 따릅니다. Google Analytics 같은 다른 분석 도구는 쓰지 않습니다.</p>
     </section>
     <section class="box">
       <h2>2. 문의할 때 보내는 정보</h2>
@@ -856,6 +888,7 @@ trust("/privacy/", "개인정보처리방침", "영농폐기물 집하장 지도
     <section class="box">
       <h2>7. 시행일과 변경</h2>
       <p>이 방침은 2026년 10월 26일부터 적용합니다. 처리 방식이 바뀌면 이 페이지의 내용과 시행일을 함께 고치고, <a href="/policy/#changelog">수정 기록</a>에 남깁니다.</p>
+      <p class="small">2026-10-26 보완: 처음 게시한 방침에 ‘방문 통계 도구를 쓰지 않는다’고 잘못 적었던 부분을 고쳐, 모든 페이지에서 실행되는 Cloudflare Web Analytics를 1항에 밝혔습니다.</p>
     </section>`);
 
 trust("/terms/", "이용약관", "영농폐기물 집하장 지도의 운영자와 정보 성격, 이용자가 직접 확인할 사항과 확인할 기관, 면책, 외부 서비스와 광고, 금지 행위, 시행일을 안내합니다.", "이용약관", "영농폐기물 집하장 지도를 이용할 때 알아 두어야 할 조건입니다. 이용하면 이 약관에 동의한 것으로 봅니다. 이 약관은 2026년 10월 26일부터 적용합니다.", `
