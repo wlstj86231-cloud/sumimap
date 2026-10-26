@@ -25,8 +25,8 @@ const nonContentPaths = new Set([
   ...blockedAdPaths
 ]);
 
-// The public-data finder stays in the content inventory. Every public page,
-// including this tool, must load the AdSense loader (checked below).
+// The public-data finder is useful without advertising. Keep it in the
+// content inventory while explicitly requiring this tool to stay ad-free.
 const adFreeContentPaths = new Set(["/kr/", "/kr/farm-waste-collection/"]);
 
 const contentEntryPrefixes = [
@@ -332,7 +332,8 @@ async function main() {
     if (page.canonical && page.canonical !== expectedCanonicalForRoute(route)) {
       errors.push(`canonical mismatch on ${route}: ${page.canonical}`);
     }
-    if (!page.hasAds) errors.push(`missing AdSense loader: ${route}`);
+    if (blockedAdPaths.has(route) && page.hasAds) errors.push(`ad script on blocked page: ${route}`);
+    if (adFreeContentPaths.has(route) && page.hasAds) errors.push(`ad script on ad-free public-data tool: ${route}`);
     if (!isNoIndexPath(route) && !sitemapSet.has(route)) errors.push(`crawlable page missing from sitemap: ${route}`);
     if (sitemapSet.has(route) && isNoIndexPath(route)) errors.push(`noindex page listed in sitemap: ${route}`);
 

@@ -35,7 +35,7 @@ for (const token of ["/api/reports", "/api/feedback", "getTrustScore", "feedback
 const notFound = fs.readFileSync(path.join(site, "404.html"), "utf8");
 if (!/name=["']robots["'][^>]+noindex/i.test(notFound)) failures.push("404.html: missing noindex");
 if (/rel=["']canonical["']/i.test(notFound)) failures.push("404.html: must not have canonical");
-if (!notFound.includes("adsbygoogle.js?client=ca-pub-5877883031077615")) failures.push("404.html: missing AdSense loader");
+if (/adsbygoogle|pagead2\.googlesyndication\.com/i.test(notFound)) failures.push("404.html: must not load ads");
 
 const ads = fs.readFileSync(path.join(site, "ads.txt"), "utf8").trim();
 if (ads !== "google.com, pub-5877883031077615, DIRECT, f08c47fec0942fa0") failures.push("ads.txt: unexpected publisher record");
