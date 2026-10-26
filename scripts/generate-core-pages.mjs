@@ -562,6 +562,8 @@ ${body}`
 
 const telHref = `tel:${OPERATOR_INFO.phone.replaceAll("-", "")}`;
 const mailHref = `mailto:${OPERATOR_INFO.email}?subject=${encodeURIComponent("[영농폐기물 집하장 지도] 문의")}`;
+// Cloudflare's email obfuscation would turn the address into a /cdn-cgi/ link and "[email protected]" without JS; email_off keeps it readable.
+const emailLink = `<!--email_off--><a href="${mailHref}">${OPERATOR_INFO.email}</a><!--/email_off-->`;
 const operatorTable = `<div class="table-wrap">
         <table class="facts">
           <tbody>
@@ -570,7 +572,7 @@ const operatorTable = `<div class="table-wrap">
             <tr><th scope="row">사업자등록번호</th><td>${OPERATOR_INFO.bizNo}</td></tr>
             <tr><th scope="row">주소</th><td>${OPERATOR_INFO.address}</td></tr>
             <tr><th scope="row">고객센터</th><td><a href="${telHref}">${OPERATOR_INFO.phone}</a></td></tr>
-            <tr><th scope="row">이메일</th><td><a href="${mailHref}">${OPERATOR_INFO.email}</a></td></tr>
+            <tr><th scope="row">이메일</th><td>${emailLink}</td></tr>
             <tr><th scope="row">카카오톡 오픈채팅</th><td><a href="${OPERATOR_INFO.kakaoGeneral}">제휴·일반 문의</a> · <a href="${OPERATOR_INFO.kakaoBoribay}">보리장터 이용 문의</a></td></tr>
             <tr><th scope="row">회사 정보</th><td><a href="${OPERATOR_INFO.company}">jnewmedia.com/company</a></td></tr>
           </tbody>
@@ -783,7 +785,7 @@ trust("/contact/", "문의", "영농폐기물 집하장 지도 운영자 제이 
       <div class="table-wrap">
         <table class="facts">
           <tbody>
-            <tr><th scope="row">이메일</th><td><a href="${mailHref}">${OPERATOR_INFO.email}</a></td></tr>
+            <tr><th scope="row">이메일</th><td>${emailLink}</td></tr>
             <tr><th scope="row">고객센터 전화</th><td><a href="${telHref}">${OPERATOR_INFO.phone}</a> (제이 미디어 고객센터, 보리장터와 같은 번호)</td></tr>
             <tr><th scope="row">카카오톡 오픈채팅</th><td><a href="${OPERATOR_INFO.kakaoGeneral}">제휴·일반 문의</a>(이 사이트 문의·정정 요청) · <a href="${OPERATOR_INFO.kakaoBoribay}">보리장터 이용 문의</a></td></tr>
             <tr><th scope="row">우편</th><td>${OPERATOR_INFO.address}, 제이 미디어</td></tr>
@@ -849,7 +851,7 @@ trust("/privacy/", "개인정보처리방침", "영농폐기물 집하장 지도
     </section>
     <section class="box">
       <h2>6. 개인정보 관련 문의</h2>
-      <p>제이 미디어(대표 ${OPERATOR_INFO.ceo}) · 이메일 <a href="${mailHref}">${OPERATOR_INFO.email}</a> · 고객센터 <a href="${telHref}">${OPERATOR_INFO.phone}</a>. 자세한 연락 방법은 <a href="/contact/">문의</a>에 있습니다.</p>
+      <p>제이 미디어(대표 ${OPERATOR_INFO.ceo}) · 이메일 ${emailLink} · 고객센터 <a href="${telHref}">${OPERATOR_INFO.phone}</a>. 자세한 연락 방법은 <a href="/contact/">문의</a>에 있습니다.</p>
     </section>
     <section class="box">
       <h2>7. 시행일과 변경</h2>
