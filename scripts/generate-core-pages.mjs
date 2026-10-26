@@ -146,7 +146,7 @@ function render(item) {
     <meta property="og:title" content="${escapeHtml(item.title)}">
     <meta property="og:description" content="${escapeHtml(item.description)}">
     <meta property="og:url" content="${siteUrl}${route}">
-    <meta name="google-adsense-account" content="ca-pub-7217591196020054">
+    <meta name="google-adsense-account" content="ca-pub-5877883031077615">
     <link rel="alternate" type="application/rss+xml" title="스미맵 RSS" href="${siteUrl}/feed.xml">
     <link rel="stylesheet" href="/assets/styles.css?v=${styleVersion}">
     <script>
@@ -154,7 +154,7 @@ function render(item) {
         const ads = document.createElement("script");
         ads.async = true;
         ads.crossOrigin = "anonymous";
-        ads.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7217591196020054";
+        ads.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5877883031077615";
         document.head.append(ads);
       }
     </script>
