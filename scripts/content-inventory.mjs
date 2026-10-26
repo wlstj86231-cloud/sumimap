@@ -45,6 +45,7 @@ const forbiddenPublicPhrases = [
   "스미맵",
   "일본 생활"
 ];
+const adDisclosurePaths = new Set(["/about/", "/privacy/", "/editorial/"]);
 const officialHosts = new Set([
   "www.data.go.kr",
   "www.keco.or.kr",
@@ -325,6 +326,9 @@ async function main() {
     if (sitemapSet.has(route) && isNoIndexPath(route)) errors.push(`noindex page listed in sitemap: ${route}`);
 
     for (const phrase of forbiddenPublicPhrases) {
+      // The privacy, about and editorial pages must name the ad product
+      // ("Google AdSense") to disclose ads and cookies; elsewhere it stays out.
+      if (phrase === "AdSense" && adDisclosurePaths.has(route)) continue;
       if (page.text.includes(phrase)) errors.push(`reviewer-facing phrase on ${route}: ${phrase}`);
     }
 

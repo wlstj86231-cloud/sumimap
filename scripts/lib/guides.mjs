@@ -32,6 +32,12 @@ export const GUIDES = [
     h1: "영농폐기물, 종류마다 내놓는 곳이 다릅니다",
     lead: "폐비닐과 농약 빈 용기는 마을 공동집하장으로, 남은 농약은 구입처나 읍·면사무소로 갑니다. 버릴 물건을 표에서 찾고, 자세한 방법은 각 안내를 눌러 보세요.",
     sources: [SRC.keco, SRC.sejong, SRC.cheongju, SRC.miryang, SRC.mafra],
+    published: "2026-10-26",
+    scope: [
+      "폐비닐, 농약 빈 용기, 남은 농약과 몇 가지 농자재의 기본 배출 경로만 정리했습니다. 폐농기계, 폐타이어, 폐유, 작물 줄기 같은 영농부산물은 다루지 않습니다.",
+      "보상금 금액과 영양제 병·비료 포대 처리 기준은 해당 지역 누리집의 예시입니다. 사는 시·군의 올해 기준은 읍·면사무소나 시·군청 환경(자원순환) 담당 부서에 확인하세요.",
+      "보상금을 실제로 받을 수 있는지, 언제 수거하는지는 이 사이트가 정하거나 보장하지 않습니다."
+    ],
     body: `
     <section class="box" aria-labelledby="table-title">
       <h2 id="table-title">품목별로 어디에 내놓나요</h2>
@@ -92,6 +98,12 @@ export const GUIDES = [
     h1: "폐비닐은 털고, 나누고, 묶어서 집하장으로",
     lead: "폐비닐은 재질과 섞인 이물질에 따라 재활용 여부와 보상금이 달라집니다. 걷어 낸 날 바로 정리해 두면 수거 날 일이 줄어듭니다.",
     sources: [SRC.keco, SRC.cheongju, SRC.sejong, SRC.miryang, SRC.wasteLaw8, SRC.wasteLaw68],
+    published: "2026-10-26",
+    scope: [
+      "하우스·멀칭 폐비닐을 집하장에 내놓는 방법만 다룹니다. 등급(A·B·C)을 어떤 기준으로 매기는지와 올해 단가는 시·군마다 달라 여기서 정하지 않습니다.",
+      "1톤·5톤 기준은 세종시 안내의 예입니다. 다른 지역의 대량 배출 지원 여부는 시·군 환경 담당 부서에 물어보세요.",
+      "남이 버린 폐비닐이 방치된 땅을 신고하거나 과태료 대상인지 판단하는 일은 시·군청이 맡습니다."
+    ],
     body: `
     <section class="box" aria-labelledby="steps-title">
       <h2 id="steps-title">이 순서로 정리하세요</h2>
@@ -141,6 +153,12 @@ export const GUIDES = [
     h1: "농약 빈 용기는 다 쓰고, 재질별로 나눠서",
     lead: "농약 빈 용기는 한국환경공단이 따로 수거하고 무게에 따라 수거비를 줍니다. 대신 내용물이 남은 병이나 농약이 아닌 병은 받지 않습니다.",
     sources: [SRC.keco, SRC.sejong, SRC.cheongju, SRC.miryang, SRC.mafra],
+    published: "2026-10-26",
+    scope: [
+      "내용물을 다 쓴 농약 빈 용기만 다룹니다. 농약이 남은 병은 <a href=\"/guide/leftover-pesticide/\">남은 농약 처리 방법</a>을 따르세요.",
+      "수거비 금액은 한국환경공단 안내 기준이며, 마을이나 농가에 어떻게 나눠 지급하는지는 지역마다 다릅니다. 읍·면사무소에 확인하세요.",
+      "농약이 몸에 묻거나 들이마셔 몸에 이상이 있으면 이 페이지를 볼 것이 아니라 바로 119나 가까운 의료기관에 연락하세요."
+    ],
     body: `
     <section class="box" aria-labelledby="steps-title">
       <h2 id="steps-title">내놓기 전 다섯 가지</h2>
@@ -192,6 +210,12 @@ export const GUIDES = [
     h1: "남은 농약은 빈 용기 수거함에 넣지 않습니다",
     lead: "내용물이 남은 농약은 빈 용기와 처리 경로가 다릅니다. 원래 용기째 밀봉해 두고, 구입처나 읍·면사무소에 처리 방법을 물어보세요.",
     sources: [SRC.mafra, SRC.sejong, SRC.jejuAgri, SRC.keco],
+    published: "2026-10-26",
+    scope: [
+      "구입처가 반납을 받는지, 읍·면사무소가 언제 폐농약을 받는지는 지역과 판매점마다 다릅니다. 가져가기 전에 전화로 확인하세요.",
+      "이름이나 성분을 알 수 없는 약제, 새거나 부푼 용기는 직접 옮겨 담거나 섞지 말고 읍·면사무소나 시·군 담당 부서에 처리 방법을 물어보세요.",
+      "농약에 노출되어 몸에 이상이 있으면 바로 119나 가까운 의료기관에 연락하세요. 이 페이지는 의학적 조언이 아닙니다."
+    ],
     body: `
     <section class="box" aria-labelledby="steps-title">
       <h2 id="steps-title">처리 순서</h2>
@@ -233,6 +257,12 @@ export const GUIDES = [
     h1: "집하장에 넣기 애매한 농자재 정리법",
     lead: "공동집하장은 폐비닐과 농약 빈 용기가 중심입니다. 그 밖의 농자재는 품목마다 내놓는 곳이 달라서, 섞어 두면 수거되지 않을 수 있습니다.",
     sources: [SRC.sejong, SRC.cheongju, SRC.miryang, SRC.keco],
+    published: "2026-10-26",
+    scope: [
+      "영양제 병, 비료·사료 포대, 차광막 같은 품목의 처리 기준은 세종시·청주시·밀양시 안내를 예로 든 것입니다. 사는 지역의 기준이 다르면 지역 기준을 따르세요.",
+      "대형폐기물 신고 방법과 수수료, 재활용사업장 위치는 시·군마다 다릅니다.",
+      "폐농기계, 폐타이어, 폐유는 이 페이지에서 다루지 않습니다. 남은 농약은 <a href=\"/guide/leftover-pesticide/\">남은 농약 처리 방법</a>을 보세요."
+    ],
     body: `
     <section class="box" aria-labelledby="bottle-title">
       <h2 id="bottle-title">영양제·친환경 유기농자재 병</h2>
@@ -281,6 +311,12 @@ export const GUIDES = [
     h1: "집하장에 가기 전, 전화 한 통으로 확인하세요",
     lead: "이 사이트의 주소는 한국환경공단 공개자료에서 왔지만, 그 자료에는 운영 요일·수거일·받는 품목·연락처가 없습니다. 짐을 싣기 전에 아래 다섯 가지를 확인하면 헛걸음을 줄일 수 있습니다.",
     sources: [SRC.data, SRC.keco, SRC.cheongju, SRC.dangjin, SRC.wasteLaw8],
+    published: "2026-10-26",
+    scope: [
+      "질문 목록은 운영자가 공개자료에 없는 항목(운영 요일, 수거일, 받는 품목, 연락처)을 바탕으로 만든 예시입니다. 기관의 답이 이 페이지보다 우선합니다.",
+      "이 사이트는 집하장마다 담당자 연락처를 갖고 있지 않습니다. 읍·면 행정복지센터 번호는 시·군청 누리집에서 확인하세요.",
+      "운영자는 현장 방문이나 전화 조사를 하지 않았습니다."
+    ],
     body: `
     <section class="box" aria-labelledby="five-title">
       <h2 id="five-title">확인할 다섯 가지</h2>
@@ -340,6 +376,12 @@ export const GUIDES = [
     h1: "폐비닐을 태우거나 묻으면 안 되는 이유",
     lead: "폐비닐과 농약 빈 용기는 집하장에 모으면 수거해 가고 보상금도 받을 수 있습니다. 태우거나 묻으면 법 위반이 될 수 있고, 재활용할 자원도 사라집니다.",
     sources: [SRC.wasteLaw8, SRC.wasteLaw68, SRC.keco],
+    published: "2026-10-26",
+    scope: [
+      "폐기물관리법 제8조·제68조를 쉽게 풀어 쓴 것이며 법률 자문이 아닙니다. 어떤 행위가 위반인지, 예외 지역에 해당하는지는 시·군 환경 담당 부서가 판단합니다.",
+      "고춧대·깻대 같은 영농부산물을 태우는 문제와 산불 관련 규정은 다루지 않습니다. 시·군 농업기술센터나 읍·면사무소 안내를 확인하세요.",
+      "과태료 처분을 받았다면 처분한 기관에 문의하세요. 이 사이트는 개별 처분에 대해 판단하지 않습니다."
+    ],
     body: `
     <section class="box" aria-labelledby="law-title">
       <h2 id="law-title">법은 이렇게 정합니다</h2>

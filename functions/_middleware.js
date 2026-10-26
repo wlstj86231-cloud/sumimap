@@ -53,7 +53,7 @@ const RETIRED_HTML = `<!doctype html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <title>종료된 안내입니다 | 영농폐기물 집하장 지도</title>
-<link rel="stylesheet" href="/assets/site-20261026.css">
+<link rel="stylesheet" href="/assets/site-2026102602.css">
 </head>
 <body>
 <main id="main" class="wrap narrow">

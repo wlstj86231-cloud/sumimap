@@ -92,6 +92,8 @@ export function villageOf(province, city, address) {
   const skip = new Set([province, ...city.split(" ")]);
   const tokens = address.split(" ").filter((token) => token && !skip.has(token)).slice(0, 3);
   for (const token of tokens) {
+    // A 읍·면 token is never a village ("속리산면" must not give "속리").
+    if (/(읍|면)$/u.test(token)) continue;
     const match = token.match(/^([가-힣]+[0-9]*(?:리|동))(?=$|[0-9]|산|\()/u);
     if (match && !/(읍|면)$/u.test(match[1])) return match[1];
   }

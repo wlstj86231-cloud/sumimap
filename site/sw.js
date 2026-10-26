@@ -1,7 +1,7 @@
-const CACHE_NAME = "sumimap-v69-farm-finder";
+const CACHE_NAME = "sumimap-v70-farm-finder";
 const PAGE_CACHE = "sumimap-pages-v1";
 const LOCAL_ASSETS = [
-  "/assets/site-20261026.css",
+  "/assets/site-2026102602.css",
   "/assets/finder-2026102602.js",
   "/assets/icon.svg",
   "/manifest.webmanifest"
