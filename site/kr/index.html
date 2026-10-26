@@ -3,21 +3,104 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>농촌 공공주소 확인 방법 - 영농폐기물 집하장 지도</title>
-  <meta name="description" content="영농폐기물 공동집하장 같은 농촌 공공주소를 공식 원문과 대조하고, 실제 방문 전에 운영 여부와 수거 품목을 확인하는 방법.">
-  <meta name="robots" content="index,follow">
+  <title>시·도별 영농폐기물 공동집하장 목록 | 영농폐기물 집하장 지도</title>
+  <meta name="description" content="14개 시·도의 영농폐기물 공동집하장 주소 건수와 시·군·구 수를 한눈에 보고, 시·군·읍면별 목록으로 들어가세요. 주소 자료를 읽을 때 주의할 점도 함께 정리했습니다.">
   <link rel="canonical" href="https://sumimap.com/kr/">
-  <link rel="stylesheet" href="/assets/styles.css?v=20260814-trust1">
+  <link rel="icon" href="/assets/icon.svg" type="image/svg+xml">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#1d6a41">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="영농폐기물 집하장 지도">
+  <meta property="og:title" content="시·도별 영농폐기물 공동집하장 목록 | 영농폐기물 집하장 지도">
+  <meta property="og:description" content="14개 시·도의 영농폐기물 공동집하장 주소 건수와 시·군·구 수를 한눈에 보고, 시·군·읍면별 목록으로 들어가세요. 주소 자료를 읽을 때 주의할 점도 함께 정리했습니다.">
+  <meta property="og:url" content="https://sumimap.com/kr/">
+  
+  
+  <link rel="alternate" type="application/rss+xml" title="영농폐기물 집하장 지도 새 안내" href="https://sumimap.com/feed.xml">
+  <link rel="stylesheet" href="/assets/site-20261026.css">
+  
+  <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"CollectionPage","name":"시·도별 영농폐기물 공동집하장 목록","url":"https://sumimap.com/kr/","inLanguage":"ko-KR","isBasedOn":"https://www.data.go.kr/data/15106132/fileData.do","hasPart":[{"@type":"WebPage","name":"강원특별자치도 영농폐기물 공동집하장","url":"https://sumimap.com/kr/gangwon/"},{"@type":"WebPage","name":"경기도 영농폐기물 공동집하장","url":"https://sumimap.com/kr/gyeonggi/"},{"@type":"WebPage","name":"경상남도 영농폐기물 공동집하장","url":"https://sumimap.com/kr/gyeongnam/"},{"@type":"WebPage","name":"경상북도 영농폐기물 공동집하장","url":"https://sumimap.com/kr/gyeongbuk/"},{"@type":"WebPage","name":"대구광역시 영농폐기물 공동집하장","url":"https://sumimap.com/kr/daegu/"},{"@type":"WebPage","name":"세종특별자치시 영농폐기물 공동집하장","url":"https://sumimap.com/kr/sejong/"},{"@type":"WebPage","name":"인천광역시 영농폐기물 공동집하장","url":"https://sumimap.com/kr/incheon/"},{"@type":"WebPage","name":"전라남도 영농폐기물 공동집하장","url":"https://sumimap.com/kr/jeonnam/"},{"@type":"WebPage","name":"전북특별자치도 영농폐기물 공동집하장","url":"https://sumimap.com/kr/jeonbuk/"},{"@type":"WebPage","name":"제주특별자치도 영농폐기물 공동집하장","url":"https://sumimap.com/kr/jeju/"},{"@type":"WebPage","name":"충청남도 영농폐기물 공동집하장","url":"https://sumimap.com/kr/chungnam/"},{"@type":"WebPage","name":"충청북도 영농폐기물 공동집하장","url":"https://sumimap.com/kr/chungbuk/"}]},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"홈","item":"https://sumimap.com/"},{"@type":"ListItem","position":2,"name":"시·도별 목록","item":"https://sumimap.com/kr/"}]}]}</script>
 </head>
-<body class="static-body">
-  <main class="static-shell">
-    <nav class="static-nav" aria-label="상단 탐색"><a class="brand" href="/"><span class="brand-mark">영</span><span><strong>영농폐기물 집하장 지도</strong><small>한국 농촌 공공주소</small></span></a><a href="/contact/">정정 제안</a></nav>
-    <section class="static-hero"><p>한국 · 농촌 생활</p><h1>농촌 공공주소 확인 지도</h1><p>공개 목록에 주소가 있어도 오늘 실제로 이용할 수 있는지는 별도 확인이 필요합니다. 영농폐기물 집하장 지도는 농촌 생활에 필요한 위치 자료의 원문 날짜, 주소, 빠진 필드를 드러내고 방문 전에 확인할 질문을 정리합니다. 현재 제공하는 실제 데이터 도구는 한국환경공단의 영농폐기물 공동집하장 주소 찾기입니다.</p></section>
-    <section class="static-content">
-      <article class="static-section"><h2>주소 찾기와 이용 가능성 확인을 나눕니다</h2><p>공공데이터포털에 게시된 공동집하장 파일에는 시·도, 시·군·구, 이름과 소재지가 있습니다. 원본 기준일은 2025년 8월 27일이며 현재 운영시간이나 오늘의 수거 일정은 포함되지 않습니다. 목록의 행 수가 곧 현재 가동 시설의 수가 되는 것도 아닙니다. 주소를 찾는 일과 실제로 폐기물을 가져가도 되는지 확인하는 일은 다른 단계입니다.</p><p><a href="/kr/farm-waste-collection/">전국 영농폐기물 공동집하장 주소 찾기</a>에서는 지역·주소로 공개 행을 검색하고 방문 후보 3곳을 비교할 수 있습니다. 좌표가 없는 원자료를 임의의 지도 핀으로 바꾸지 않고, 주소 검색으로 위치를 다시 대조하도록 했습니다.</p></article>
-      <article class="static-section"><h2>방문 전에 묻는 네 가지</h2><ol><li>해당 집하장이 현재 열려 있는지, 최근 위치가 바뀌지 않았는지 관할 읍·면 또는 시·군 담당 부서에 묻습니다.</li><li>버리려는 물품이 폐비닐인지, 사용한 농약용기인지, 남은 농약인지 구분합니다. 품목마다 처리 경로가 다를 수 있습니다.</li><li>수거일과 반입시간, 분리·세척·묶음 기준을 확인합니다. 공개 주소 파일에는 이 항목이 없습니다.</li><li>지도 검색의 도로 주소가 원문 소재지와 같은지 대조하고, 출입구와 차량 진입 가능 여부를 확인합니다.</li></ol><p>지역 담당자의 안내가 공개 파일보다 최신일 수 있습니다. 방문을 마친 뒤 원문과 주소가 다르면 확인한 원문 URL과 함께 정정 제안을 남겨 주세요. 개인 연락처나 정확한 농가 주소를 공개 게시판에 적을 필요는 없습니다.</p></article>
-      <article class="static-section"><h2>공식 원문과 범위</h2><p><a href="https://www.data.go.kr/data/15106132/fileData.do">공공데이터포털의 한국환경공단 전국 영농폐기물 공동집하장 위치 자료</a>는 주소 탐색의 원자료입니다. <a href="https://www.keco.or.kr/web/lay1/S1T185C1072/contents.do">한국환경공단 영농폐기물 수거·처리사업 안내</a>는 공동집하장이 분리배출 과정에서 어떤 역할을 하는지 설명합니다. 자료 대조일: 2026-09-24. 공식 원문은 수거 기준과 자료 갱신에 따라 바뀔 수 있습니다.</p><p>이 페이지는 특정 장소의 현재 가동, 수거 품목, 요금 또는 반입 가능 여부를 보증하지 않습니다. 그 질문은 관할 기관에 다시 확인하세요. 품목별 배출 방법은 주소 목록이 아닌 별도 안내가 필요하며, 주소 탐색 결과에서 관련 설명으로 이어집니다.</p></article>
+<body>
+  <a class="skip" href="#main">본문으로 바로가기</a>
+  <header class="site-header">
+    <div class="wrap header-row">
+      <a class="brand" href="/"><span class="brand-mark" aria-hidden="true">영</span>영농폐기물 집하장 지도</a>
+      <nav class="site-nav" aria-label="주요 메뉴"><a href="/kr/farm-waste-collection/">집하장 찾기</a><a href="/guide/">배출 방법</a><a href="/kr/" aria-current="page">지역별 목록</a></nav>
+    </div>
+  </header>
+  <main id="main" class="wrap">
+    <nav aria-label="현재 위치"><ol class="crumbs"><li><a href="/">홈</a></li><li aria-current="page">시·도별 목록</li></ol></nav>
+
+    <div class="page-head">
+      <h1>시·도별 영농폐기물 공동집하장 목록</h1>
+      <p class="lead">시·도를 고르면 시·군·구와 읍·면·동별 주소 건수가 나옵니다. 주소를 바로 보려면 <a href="/kr/farm-waste-collection/">집하장 찾기</a>를 이용하세요.</p>
+    </div>
+    <section class="box" aria-labelledby="list-title">
+      <h2 id="list-title">14개 시·도</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th scope="col">시·도</th><th scope="col">주소</th><th scope="col">시·군·구</th><th scope="col">가장 많은 곳</th></tr></thead>
+          <tbody>
+            <tr><td><a href="/kr/gangwon/">강원특별자치도</a></td><td>1,175건</td><td>18곳</td><td>횡성군 213건</td></tr>
+            <tr><td><a href="/kr/gyeonggi/">경기도</a></td><td>536건</td><td>14곳</td><td>화성시 232건</td></tr>
+            <tr><td><a href="/kr/gyeongnam/">경상남도</a></td><td>1,076건</td><td>18곳</td><td>남해군 190건</td></tr>
+            <tr><td><a href="/kr/gyeongbuk/">경상북도</a></td><td>2,608건</td><td>21곳</td><td>의성군 431건</td></tr>
+            <tr><td><a href="/kr/daegu/">대구광역시</a></td><td>200건</td><td>2곳</td><td>군위군 181건</td></tr>
+            <tr><td><a href="/kr/#daejeon">대전광역시</a></td><td>7건</td><td>3곳</td><td>중구 4건</td></tr>
+            <tr><td><a href="/kr/sejong/">세종특별자치시</a></td><td>41건</td><td>1곳</td><td>세종특별자치시 41건</td></tr>
+            <tr><td><a href="/kr/#ulsan">울산광역시</a></td><td>4건</td><td>3곳</td><td>중구 2건</td></tr>
+            <tr><td><a href="/kr/incheon/">인천광역시</a></td><td>24건</td><td>4곳</td><td>강화군 11건</td></tr>
+            <tr><td><a href="/kr/jeonnam/">전라남도</a></td><td>1,445건</td><td>20곳</td><td>해남군 344건</td></tr>
+            <tr><td><a href="/kr/jeonbuk/">전북특별자치도</a></td><td>610건</td><td>13곳</td><td>순창군 144건</td></tr>
+            <tr><td><a href="/kr/jeju/">제주특별자치도</a></td><td>144건</td><td>2곳</td><td>제주시 78건</td></tr>
+            <tr><td><a href="/kr/chungnam/">충청남도</a></td><td>519건</td><td>14곳</td><td>태안군 78건</td></tr>
+            <tr><td><a href="/kr/chungbuk/">충청북도</a></td><td>1,164건</td><td>14곳</td><td>괴산군 222건</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="small">서울·부산·광주의 주소는 2025년 8월 27일 기준 파일에 없습니다. 이 지역에 집하장이 없다는 뜻은 아니므로 구청이나 시청에 확인하세요.</p>
+    </section>
+    <section class="box" id="daejeon" aria-labelledby="daejeon-title">
+      <h2 id="daejeon-title">대전광역시 집하장 주소 7건</h2>
+      <p>주소가 적어 따로 페이지를 만들지 않고 여기에 모두 적었습니다. 운영 여부는 해당 구청 환경 담당 부서에 확인하세요.</p>
+      <h3>동구</h3><ul class="addr-list"><li><span class="addr">대전광역시 동구 대청호수로 163</span><span class="small">대청동 영농폐비닐 공동집하장</span><br><span class="links"><a href="https://map.naver.com/p/search/%EB%8C%80%EC%A0%84%EA%B4%91%EC%97%AD%EC%8B%9C%20%EB%8F%99%EA%B5%AC%20%EB%8C%80%EC%B2%AD%ED%98%B8%EC%88%98%EB%A1%9C%20163">네이버 지도</a> · <a href="https://map.kakao.com/link/search/%EB%8C%80%EC%A0%84%EA%B4%91%EC%97%AD%EC%8B%9C%20%EB%8F%99%EA%B5%AC%20%EB%8C%80%EC%B2%AD%ED%98%B8%EC%88%98%EB%A1%9C%20163">카카오맵</a></span></li></ul>
+      <h3>유성구</h3><ul class="addr-list"><li><span class="addr">대전광역시 유성구 세동 878(세동 69 옆)</span><span class="small">사봉 공동집하장</span><br><span class="links"><a href="https://map.naver.com/p/search/%EB%8C%80%EC%A0%84%EA%B4%91%EC%97%AD%EC%8B%9C%20%EC%9C%A0%EC%84%B1%EA%B5%AC%20%EC%84%B8%EB%8F%99%20878">네이버 지도</a> · <a href="https://map.kakao.com/link/search/%EB%8C%80%EC%A0%84%EA%B4%91%EC%97%AD%EC%8B%9C%20%EC%9C%A0%EC%84%B1%EA%B5%AC%20%EC%84%B8%EB%8F%99%20878">카카오맵</a></span></li><li><span class="addr">대전광역시 유성구 세동 산57-1(세동 135-12 맞은편)</span><span class="small">양지뜸 공동집하장</span><br><span class="links"><a href="https://map.naver.com/p/search/%EB%8C%80%EC%A0%84%EA%B4%91%EC%97%AD%EC%8B%9C%20%EC%9C%A0%EC%84%B1%EA%B5%AC%20%EC%84%B8%EB%8F%99%20%EC%82%B057-1">네이버 지도</a> · <a href="https://map.kakao.com/link/search/%EB%8C%80%EC%A0%84%EA%B4%91%EC%97%AD%EC%8B%9C%20%EC%9C%A0%EC%84%B1%EA%B5%AC%20%EC%84%B8%EB%8F%99%20%EC%82%B057-1">카카오맵</a></span></li></ul>
+      <h3>중구</h3><ul class="addr-list"><li><span class="addr">대전광역시 중구 구완동 210</span><span class="small">구완동집하장</span><br><span class="links"><a href="https://map.naver.com/p/search/%EB%8C%80%EC%A0%84%EA%B4%91%EC%97%AD%EC%8B%9C%20%EC%A4%91%EA%B5%AC%20%EA%B5%AC%EC%99%84%EB%8F%99%20210">네이버 지도</a> · <a href="https://map.kakao.com/link/search/%EB%8C%80%EC%A0%84%EA%B4%91%EC%97%AD%EC%8B%9C%20%EC%A4%91%EA%B5%AC%20%EA%B5%AC%EC%99%84%EB%8F%99%20210">카카오맵</a></span></li><li><span class="addr">대전광역시 중구 목달동 304</span><span class="small">목달동집하장</span><br><span class="links"><a href="https://map.naver.com/p/search/%EB%8C%80%EC%A0%84%EA%B4%91%EC%97%AD%EC%8B%9C%20%EC%A4%91%EA%B5%AC%20%EB%AA%A9%EB%8B%AC%EB%8F%99%20304">네이버 지도</a> · <a href="https://map.kakao.com/link/search/%EB%8C%80%EC%A0%84%EA%B4%91%EC%97%AD%EC%8B%9C%20%EC%A4%91%EA%B5%AC%20%EB%AA%A9%EB%8B%AC%EB%8F%99%20304">카카오맵</a></span></li><li><span class="addr">대전광역시 중구 정생동 145-1</span><span class="small">정생2동 농촌폐비닐 집하장</span><br><span class="links"><a href="https://map.naver.com/p/search/%EB%8C%80%EC%A0%84%EA%B4%91%EC%97%AD%EC%8B%9C%20%EC%A4%91%EA%B5%AC%20%EC%A0%95%EC%83%9D%EB%8F%99%20145-1">네이버 지도</a> · <a href="https://map.kakao.com/link/search/%EB%8C%80%EC%A0%84%EA%B4%91%EC%97%AD%EC%8B%9C%20%EC%A4%91%EA%B5%AC%20%EC%A0%95%EC%83%9D%EB%8F%99%20145-1">카카오맵</a></span></li><li><span class="addr">대전광역시 중구 침산동 38-3</span><span class="small">침산동집하장</span><br><span class="links"><a href="https://map.naver.com/p/search/%EB%8C%80%EC%A0%84%EA%B4%91%EC%97%AD%EC%8B%9C%20%EC%A4%91%EA%B5%AC%20%EC%B9%A8%EC%82%B0%EB%8F%99%2038-3">네이버 지도</a> · <a href="https://map.kakao.com/link/search/%EB%8C%80%EC%A0%84%EA%B4%91%EC%97%AD%EC%8B%9C%20%EC%A4%91%EA%B5%AC%20%EC%B9%A8%EC%82%B0%EB%8F%99%2038-3">카카오맵</a></span></li></ul>
+    </section>
+    <section class="box" id="ulsan" aria-labelledby="ulsan-title">
+      <h2 id="ulsan-title">울산광역시 집하장 주소 4건</h2>
+      <p>주소가 적어 따로 페이지를 만들지 않고 여기에 모두 적었습니다. 운영 여부는 해당 구청 환경 담당 부서에 확인하세요.</p>
+      <h3>동구</h3><ul class="addr-list"><li><span class="addr">울산광역시 동구 주전동 149-3(주전농협창고앞)</span><span class="small">주전 공동집하장</span><br><span class="links"><a href="https://map.naver.com/p/search/%EC%9A%B8%EC%82%B0%EA%B4%91%EC%97%AD%EC%8B%9C%20%EB%8F%99%EA%B5%AC%20%EC%A3%BC%EC%A0%84%EB%8F%99%20149-3">네이버 지도</a> · <a href="https://map.kakao.com/link/search/%EC%9A%B8%EC%82%B0%EA%B4%91%EC%97%AD%EC%8B%9C%20%EB%8F%99%EA%B5%AC%20%EC%A3%BC%EC%A0%84%EB%8F%99%20149-3">카카오맵</a></span></li></ul>
+      <h3>북구</h3><ul class="addr-list"><li><span class="addr">울산광역시 북구 북구 달곡1길 71</span><span class="small">달곡마을회관</span><br><span class="links"><a href="https://map.naver.com/p/search/%EC%9A%B8%EC%82%B0%EA%B4%91%EC%97%AD%EC%8B%9C%20%EB%B6%81%EA%B5%AC%20%EB%B6%81%EA%B5%AC%20%EB%8B%AC%EA%B3%A11%EA%B8%B8%2071">네이버 지도</a> · <a href="https://map.kakao.com/link/search/%EC%9A%B8%EC%82%B0%EA%B4%91%EC%97%AD%EC%8B%9C%20%EB%B6%81%EA%B5%AC%20%EB%B6%81%EA%B5%AC%20%EB%8B%AC%EA%B3%A11%EA%B8%B8%2071">카카오맵</a></span></li></ul>
+      <h3>중구</h3><ul class="addr-list"><li><span class="addr">울산광역시 중구 성안동 산323-2</span><span class="small">성동집하장</span><br><span class="links"><a href="https://map.naver.com/p/search/%EC%9A%B8%EC%82%B0%EA%B4%91%EC%97%AD%EC%8B%9C%20%EC%A4%91%EA%B5%AC%20%EC%84%B1%EC%95%88%EB%8F%99%20%EC%82%B0323-2">네이버 지도</a> · <a href="https://map.kakao.com/link/search/%EC%9A%B8%EC%82%B0%EA%B4%91%EC%97%AD%EC%8B%9C%20%EC%A4%91%EA%B5%AC%20%EC%84%B1%EC%95%88%EB%8F%99%20%EC%82%B0323-2">카카오맵</a></span></li><li><span class="addr">울산광역시 중구 유곡동 717-3</span><span class="small">길촌집하장</span><br><span class="links"><a href="https://map.naver.com/p/search/%EC%9A%B8%EC%82%B0%EA%B4%91%EC%97%AD%EC%8B%9C%20%EC%A4%91%EA%B5%AC%20%EC%9C%A0%EA%B3%A1%EB%8F%99%20717-3">네이버 지도</a> · <a href="https://map.kakao.com/link/search/%EC%9A%B8%EC%82%B0%EA%B4%91%EC%97%AD%EC%8B%9C%20%EC%A4%91%EA%B5%AC%20%EC%9C%A0%EA%B3%A1%EB%8F%99%20717-3">카카오맵</a></span></li></ul>
+    </section>
+    <section class="box" aria-labelledby="read-title">
+      <h2 id="read-title">주소 자료를 읽을 때 알아 둘 점</h2>
+      <ol class="steps-list">
+        <li><strong>건수는 집하장 수가 아닙니다.</strong> 같은 주소가 두 번 실린 줄을 합치지 않았고, 자료 이후 새로 생기거나 없어진 곳은 반영되지 않습니다.</li>
+        <li><strong>주소에 읍·면이 빠진 곳이 있습니다.</strong> 전국 711건은 “강릉시 고단1리”처럼 읍·면 없이 마을 이름부터 적혀 있습니다. 이런 지역은 마을(리) 이름으로 검색하는 편이 빠릅니다.</li>
+        <li><strong>지도 검색은 주소 글자 기준입니다.</strong> 원자료에 좌표가 없어 지도 결과가 실제 입구와 다를 수 있습니다.</li>
+        <li><strong>운영 여부는 따로 확인합니다.</strong> 수거 날짜와 받는 품목은 읍·면사무소나 시·군 환경 담당 부서가 압니다. → <a href="/guide/before-visit/">가기 전 확인할 5가지</a></li>
+      </ol>
+    </section>
+    <section class="box" aria-labelledby="sources-title">
+      <h2 id="sources-title">공식 원문</h2>
+      <ul class="source-list">
+        <li><a href="https://www.data.go.kr/data/15106132/fileData.do">공공데이터포털(한국환경공단) · 전국 영농폐기물 공동집하장 위치</a><br><small>집하장 시·도, 시·군·구, 이름, 소재지(2025-08-27 기준 파일) · 자료 대조일 2026-10-26</small></li>
+        <li><a href="https://www.keco.or.kr/web/lay1/S1T185C1072/contents.do">한국환경공단 · 영농폐기물 수거·처리사업</a><br><small>공동집하장 분리배출 기준(폐비닐 재질·색상, 농약 빈 용기 재질), 수거 흐름, 농약 빈 용기 수거비, 폐비닐 보상비 범위, 폐비닐 재활용시설 · 자료 대조일 2026-10-26</small></li>
+      </ul>
+      <p class="small">자료 대조일은 운영자가 위 공식 원문을 다시 열어 이 페이지의 설명과 맞춰 본 날입니다. 원문 기관의 갱신일이나 실제 수거 일정이 바뀐 날과는 다릅니다.</p>
     </section>
   </main>
+  <footer class="site-footer">
+    <div class="wrap">
+      <ul class="footer-links"><li><a href="/about/">서비스 소개</a></li><li><a href="/sources/">자료 출처</a></li><li><a href="/editorial/">편집 원칙</a></li><li><a href="/contact/">문의·정정 요청</a></li><li><a href="/privacy/">개인정보 처리방침</a></li><li><a href="/terms/">이용약관</a></li></ul>
+      <p>운영: 제이 미디어(J MEDIA) · <a href="https://boribay.com/?utm_source=sumimap.com&utm_medium=referral&utm_campaign=support">보리장터(boribay.com)</a> 운영사. 정부·한국환경공단의 공식 서비스가 아닙니다.</p>
+      <p>집하장 주소: 한국환경공단 공개자료(공공데이터포털), 2025년 8월 27일 기준 파일.</p>
+    </div>
+  </footer>
+  
+  <script>if ("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js").catch(() => {});</script>
 </body>
 </html>

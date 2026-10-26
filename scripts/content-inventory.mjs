@@ -15,60 +15,46 @@ const blockedAdPaths = new Set([
   "/privacy/",
   "/terms/",
   "/contact/",
-  "/sources/",
-  "/japan/",
-  "/japan/about/",
-  "/japan/editorial/"
+  "/sources/"
 ]);
 
 const nonContentPaths = new Set([
   ...blockedAdPaths
 ]);
 
-// The public-data finder is useful without advertising. Keep it in the
-// content inventory while explicitly requiring this tool to stay ad-free.
-const adFreeContentPaths = new Set(["/kr/", "/kr/farm-waste-collection/"]);
+// The public-data finder, the province directory and the province pages are
+// tools/data indexes: useful without advertising and required to stay ad-free.
+const isAdFreeContentPath = (route) => route.startsWith("/kr/");
 
 const contentEntryPrefixes = [
   "/guide/",
-  "/routes/",
-  "/cities/",
-  "/kr/",
-  "/kr/farm-waste-collection/"
+  "/kr/"
 ];
 
 const minContentTextLength = 900;
 const maxShingleSimilarity = 0.34;
-const retiredRoutePrefixes = ["/spots/"];
+// Former Japan daily-life sections answer 410 from functions/_middleware.js.
+const retiredRoutePrefixes = ["/spots/", "/japan/", "/routes/", "/cities/"];
 const forbiddenPublicPhrases = [
   "AdSense",
   "애드센스",
   "심사 준비",
   "검토 준비",
   "검색 유입",
-  "광고 안정성"
+  "광고 안정성",
+  "스미맵",
+  "일본 생활"
 ];
 const officialHosts = new Set([
-  "www.moj.go.jp",
-  "www.japan.travel",
-  "www.jma.go.jp",
-  "www.digitalservice.metro.tokyo.lg.jp",
-  "www.seikatubunka.metro.tokyo.lg.jp",
-  "www.jreast.co.jp",
-  "www.city.osaka.lg.jp",
-  "subway.osakametro.co.jp",
-  "www.city.kyoto.lg.jp",
-  "subway.city.fukuoka.lg.jp",
-  "www.jrkyushu.co.jp",
-  "www.city.fukuoka.lg.jp",
-  "www.city.sapporo.jp",
-  "barrierfree.city.nagoya.jp",
-  "kotsu.city.nagoya.jp",
-  "www.city.nagoya.jp",
-  "chargespot.jp",
-  "www.chargespot.jp",
   "www.data.go.kr",
-  "www.keco.or.kr"
+  "www.keco.or.kr",
+  "www.mafra.go.kr",
+  "www.law.go.kr",
+  "www.sejong.go.kr",
+  "www.cheongju.go.kr",
+  "www.miryang.go.kr",
+  "www.dangjin.go.kr",
+  "agri.jeju.go.kr"
 ]);
 
 const ignoredLinkExtensions = new Set([
@@ -85,6 +71,7 @@ const ignoredLinkExtensions = new Set([
   ".ico",
   ".xml",
   ".txt",
+  ".tsv",
   ".webmanifest"
 ]);
 
@@ -333,7 +320,7 @@ async function main() {
       errors.push(`canonical mismatch on ${route}: ${page.canonical}`);
     }
     if (blockedAdPaths.has(route) && page.hasAds) errors.push(`ad script on blocked page: ${route}`);
-    if (adFreeContentPaths.has(route) && page.hasAds) errors.push(`ad script on ad-free public-data tool: ${route}`);
+    if (isAdFreeContentPath(route) && page.hasAds) errors.push(`ad script on ad-free public-data tool: ${route}`);
     if (!isNoIndexPath(route) && !sitemapSet.has(route)) errors.push(`crawlable page missing from sitemap: ${route}`);
     if (sitemapSet.has(route) && isNoIndexPath(route)) errors.push(`noindex page listed in sitemap: ${route}`);
 
@@ -343,7 +330,7 @@ async function main() {
 
     if (isContentPath(route) && !sitemapSet.has(route)) warnings.push(`content page missing from sitemap: ${route}`);
     if (isContentPath(route) && !feedSet.has(route)) warnings.push(`content page missing from feed: ${route}`);
-    if (isContentPath(route) && !blockedAdPaths.has(route) && !adFreeContentPaths.has(route) && !page.hasAds) warnings.push(`content page without ad script: ${route}`);
+    if (isContentPath(route) && !blockedAdPaths.has(route) && !isAdFreeContentPath(route) && !page.hasAds) warnings.push(`content page without ad script: ${route}`);
     if (isContentPath(route) && page.internalLinks.length < 3) warnings.push(`content page has fewer than 3 internal links: ${route}`);
     if (isContentPath(route) && page.paragraphCount < 4) warnings.push(`content page has fewer than 4 paragraphs: ${route}`);
     if (isContentPath(route) && page.textLength < minContentTextLength) warnings.push(`content page has short text: ${route} (${page.textLength} chars)`);

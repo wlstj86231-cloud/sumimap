@@ -1,243 +1,596 @@
+// Generates every public HTML page of 영농폐기물 집하장 지도.
+// Facts come from the verified TSV (scripts/lib/farm-data.mjs) and from the
+// official sources in scripts/lib/sources.mjs (re-read 2026-10-26).
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { DATA, NO_AREA, loadRows, groupRegions, mapQuery, hasProvincePage, provinceHref, looseVillage } from "./lib/farm-data.mjs";
+import { page, esc, finderHref, sourcesBlock, boribay, SITE_URL, SITE_NAME, FINDER_ROUTE, FINDER_JS, PUBLISHED, OPERATOR } from "./lib/layout.mjs";
+import { SRC } from "./lib/sources.mjs";
+import { GUIDES, GUIDE_LIST, relatedGuides } from "./lib/guides.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const siteRoot = path.join(root, "site");
-const siteUrl = "https://sumimap.com";
-const checkedAt = "2026-08-14";
-const styleVersion = "20260814-trust1";
+const rows = loadRows();
+const provinces = groupRegions(rows);
+const fmt = (n) => n.toLocaleString("ko-KR");
+const written = [];
 
-const S = {
-  charge: source("INFORICH", "CHARGESPOT 공식 사용·요금·설치 지도", "https://chargespot.jp/", "원문에 별도 갱신일 표기 없음", "대여·반납 가능 상태와 요금은 서비스 운영사의 공식 지도·앱에서 이동 직전에 확인합니다."),
-  moj: source("出入国在留管理庁", "외국인 생활지원 포털", "https://www.moj.go.jp/isa/support/portal/?hl=ko", "2026-05-29 포털 일부 갱신", "한국어를 포함한 다국어 생활·취업 안내를 제공하는 일본 정부 원문입니다."),
-  jnto: source("日本政府観光局（JNTO）", "Tourist Information Center", "https://www.japan.travel/en/tic/", "원문에 별도 갱신일 표기 없음", "전국 인증 관광안내소와 전화 안내의 운영 범위를 확인합니다."),
-  jma: source("気象庁", "다국어 방재정보", "https://www.jma.go.jp/jma/kokusai/multi.html", "원문에 별도 갱신일 표기 없음", "호우·폭염·지진 등 공식 경보를 한국어를 포함한 다국어로 확인합니다."),
-  tokyoMap: source("東京都デジタルサービス局", "Tokyo Map", "https://www.digitalservice.metro.tokyo.lg.jp/business/data-utilization/tokyomap", "2026-04-16", "도쿄도 보유 지도에서 배리어프리 화장실과 공공 Wi-Fi 같은 시설 레이어를 확인합니다."),
-  tokyoConsult: source("東京都生活文化局", "도쿄도 외국인 상담 서비스", "https://www.seikatubunka.metro.tokyo.lg.jp/about/0000002541", "2026-01-20", "한국어 상담 요일, 시간과 상담 범위를 도쿄도 원문에서 확인합니다."),
-  jrTokyo: source("JR東日本", "도쿄역 공식 안내", "https://www.jreast.co.jp/estation/stations/1039.html", "원문에 별도 갱신일 표기 없음", "역 구내도와 출구·시설 정보는 철도 운영사 원문을 기준으로 봅니다."),
-  osakaToilet: source("大阪市環境局", "오사카시 공중화장실·시민화장실", "https://www.city.osaka.lg.jp/kankyo/page/0000369340.html", "2026-06-02", "오사카시 관리 공중화장실 목록과 공식 지도를 확인합니다."),
-  osakaMetro: source("Osaka Metro", "난바역 공식 안내", "https://subway.osakametro.co.jp/station_guide/m/m20/index.php", "원문에 별도 갱신일 표기 없음", "역 구내도, 출구, 다기능 화장실과 엘리베이터를 운영사 원문에서 확인합니다."),
-  osakaLife: source("大阪市", "한국어 신생활 준비 안내", "https://www.city.osaka.lg.jp/contents/wdu020/enjoy/ko/content_k.html", "원문에 별도 갱신일 표기 없음", "외국어 생활 상담과 공공 창구를 한국어로 안내하는 오사카시 원문입니다."),
-  kyotoToilet: source("京都市環境政策局", "교토시 공중화장실 지도", "https://www.city.kyoto.lg.jp/kankyo/page/0000330061.html", "2026-03-10", "기온·기요미즈를 포함한 지역별 공중화장실 위치와 목록을 확인합니다."),
-  kyotoTouristToilet: source("京都市", "교토시 관광화장실 제도와 목록", "https://www.city.kyoto.lg.jp/kankyo/page/0000193916.html", "2026-04-01", "무료 개방 조건, 개방 시간과 인증 시설의 이용 주의사항을 확인합니다."),
-  kyotoConsult: source("京都市", "외국 국적 주민 상담", "https://www.city.kyoto.lg.jp/sogo/page/0000246836.html", "2022-10-01", "한국어를 포함한 생활 일반·법률·비자 상담 창구 범위를 확인합니다."),
-  fukuokaSubway: source("福岡市交通局", "하카타역 공식 안내", "https://subway.city.fukuoka.lg.jp/eki/stations/hakata.php", "원문에 별도 갱신일 표기 없음", "역 입체도, 출구, 엘리베이터, 다기능 화장실과 설비를 확인합니다."),
-  fukuokaJr: source("JR九州", "하카타역 공식 안내", "https://www.jrkyushu.co.jp/railway/station/1191771_1601.html", "원문에 별도 갱신일 표기 없음", "역 구내도, 창구 운영, 코인로커와 역 설비를 확인합니다."),
-  fukuokaConsult: source("福岡市", "외국인 생활 상담 안내", "https://www.city.fukuoka.lg.jp/soki/kokusai/shisei/seikatugaidansu/enquirie_to_fukuoka_city_hall_2.html", "원문에 별도 갱신일 표기 없음", "구청 절차와 생활 문의의 한국어 통역 연결 범위를 확인합니다."),
-  sapporoTransit: source("札幌市交通局", "노선도·역 구내도", "https://www.city.sapporo.jp/st/route_konaizu/", "2024-12-04", "지하철 역 구내도, 엘리베이터·계단, 피난 경로와 환승 동선을 확인합니다."),
-  sapporoBarrier: source("札幌市", "삿포로시 배리어프리 타운맵", "https://www.city.sapporo.jp/fukushi/barrierfree/index.html", "시유 시설 데이터 2025-04 기준", "다목적 화장실과 배리어프리 설비를 찾고 실제 현황은 시설에 재확인합니다."),
-  sapporoWinter: source("札幌市", "공원 화장실 동절기 이용 안내", "https://www.city.sapporo.jp/ryokuka/top/koueniji/benjoichiran.html", "2026-04-21", "겨울철 폐쇄 또는 이용 제한이 있는 공원 화장실을 확인합니다."),
-  nagoyaBarrier: source("名古屋市", "나고야 배리어프리 외출 내비", "https://barrierfree.city.nagoya.jp/map/", "원문에 별도 갱신일 표기 없음", "나고야역·사카에·가나야마 환승과 배리어프리 화장실 정보를 확인합니다."),
-  nagoyaTransit: source("名古屋市交通局", "지하철 화장실 안내", "https://kotsu.city.nagoya.jp/rp/barrierfr/TRP0000938.htm", "원문에 별도 갱신일 표기 없음", "각 역의 일반·배리어프리 화장실 설비 현황을 확인합니다."),
-  nagoyaLife: source("名古屋市", "한국어 생활 가이드", "https://www.city.nagoya.jp/shisei/kokusai/1017227/1017236.html", "2025-10-17", "주거·병원·교통·재해·행정 절차와 상담 창구를 한국어로 확인합니다.")
+function write(route, html) {
+  const file = route === "/404.html"
+    ? path.join(siteRoot, "404.html")
+    : path.join(siteRoot, ...route.split("/").filter(Boolean), "index.html");
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  fs.writeFileSync(file, html, "utf8");
+  written.push(route);
+}
+
+const useAreas = (city) => city.areas.length > 1 && city.noArea / city.count < 0.5;
+// Exact duplicates are counted on the original TSV line, like the data check.
+const duplicateExtra = (list) => list.length - new Set(list.map((row) => row.line)).size;
+const unnamed = (list) => list.filter((row) => row.name === "이름 미등록").length;
+const totalDuplicates = duplicateExtra(rows);
+const totalNoArea = rows.filter((row) => row.area === NO_AREA).length;
+const missingProvinces = "서울·부산·광주";
+
+const dataBadge = `<p class="data-badge"><span>한국환경공단 공개자료</span><span>${DATA.baseDateLabel} 기준</span><span>전국 ${fmt(DATA.totalRows)}건</span><a href="${FINDER_ROUTE}#about-data">자료 설명</a></p>`;
+
+const visitChecklist = `<ol class="check-list">
+          <li><strong>지금도 쓰는 곳인지</strong> 읍·면사무소에 확인하기</li>
+          <li><strong>수거 날짜와 받는 품목</strong> 묻기(폐비닐·농약 빈 용기)</li>
+          <li>폐비닐은 <strong>흙·잡초를 털고</strong> 하우스·멀칭 따로 묶기</li>
+          <li>농약 병은 <strong>다 쓴 것만</strong>, 남은 농약은 따로 문의</li>
+        </ol>`;
+
+// ---------------------------------------------------------------- home
+write("/", page({
+  route: "/",
+  title: "영농폐기물 공동집하장 찾기 - 우리 동네 집하장 주소 | 영농폐기물 집하장 지도",
+  description: "시·도, 시·군·구, 읍·면·동을 차례로 눌러 가까운 영농폐기물 공동집하장 주소를 찾고, 복사하거나 네이버·카카오 지도로 바로 여세요. 한국환경공단 공개자료 9,553건 기준.",
+  ogType: "website",
+  verification: true,
+  jsonLd: [{
+    "@type": "WebSite",
+    name: SITE_NAME,
+    url: `${SITE_URL}/`,
+    inLanguage: "ko-KR",
+    description: "한국환경공단 공개자료로 영농폐기물 공동집하장 주소를 지역별로 찾고 배출 방법을 확인하는 서비스",
+    publisher: OPERATOR,
+    potentialAction: {
+      "@type": "SearchAction",
+      target: `${SITE_URL}${FINDER_ROUTE}?q={search_term_string}`,
+      "query-input": "required name=search_term_string"
+    }
+  }],
+  body: `
+    <section class="home-hero">
+      <h1>가까운 영농폐기물 공동집하장 찾기</h1>
+      <p class="lead">시·도와 시·군을 차례로 누르면 한국환경공단 공개자료에 실린 집하장 주소가 나옵니다. 주소를 복사하거나 네이버·카카오 지도로 바로 열 수 있습니다.</p>
+    </section>
+    <form class="finder-search box" action="${FINDER_ROUTE}" method="get" role="search">
+      <label for="home-q">마을·읍면 이름으로 바로 찾기</label>
+      <div class="search-row"><input id="home-q" name="q" type="search" placeholder="예: 대화면, 고단1리" maxlength="40" autocomplete="off"><button type="submit">찾기</button></div>
+      ${dataBadge}
+    </form>
+    <section class="box" aria-labelledby="pick-title">
+      <h2 id="pick-title">시·도부터 고르기</h2>
+      <ul class="chips">
+        ${provinces.map((p) => `<li><a class="chip" href="${esc(finderHref({ province: p.name }))}"><span>${p.short}</span><span class="count">${fmt(p.count)}건</span></a></li>`).join("\n        ")}
+      </ul>
+      <p class="small">2025년 공개자료에 주소가 실린 14개 시·도입니다. ${missingProvinces}의 주소는 이 자료에 없습니다.</p>
+    </section>
+    <section class="notice" aria-labelledby="visit-title">
+      <h2 id="visit-title">짐 싣기 전에 꼭 확인하세요</h2>
+      <p>공개자료에는 주소만 있고 <strong>운영 요일·수거일·받는 품목·연락처가 없습니다.</strong></p>
+      ${visitChecklist}
+      <p><a href="/guide/before-visit/">읍·면사무소에 물어볼 말 보기</a></p>
+    </section>
+    <section aria-labelledby="guide-title">
+      <h2 id="guide-title">무엇을 어떻게 내놓나요</h2>
+      <div class="card-grid three">
+        ${GUIDE_LIST.map((item) => `<a class="card" href="${item.route}"><strong>${item.label}</strong><span>${item.summary}</span></a>`).join("\n        ")}
+      </div>
+      <p><a href="/guide/">종류별 배출 방법 한눈에 보기</a></p>
+    </section>
+    <section class="box" aria-labelledby="data-title">
+      <h2 id="data-title">이 주소 자료에 대해</h2>
+      <p><a href="${SRC.data.url}">공공데이터포털의 한국환경공단 「전국 영농폐기물 공동집하장 위치」</a> 2025년 8월 27일 기준 파일에서 시·도, 시·군·구, 이름, 소재지를 가져왔습니다. ${fmt(DATA.totalRows)}건은 자료에 실린 주소 줄 수이며, 같은 주소가 두 번 실린 경우도 있어 실제 운영 중인 집하장 수와 다릅니다. 좌표가 없어 거리순 정렬은 하지 않습니다.</p>
+      <p><a href="/sources/">자료 출처와 가공 방법</a> · <a href="/about/">서비스 소개</a> · <a href="/kr/">시·도별 목록</a></p>
+    </section>`
+}));
+
+// ---------------------------------------------------------------- finder
+const finderIndex = {
+  v: DATA.version,
+  noArea: NO_AREA,
+  total: DATA.totalRows,
+  p: provinces.map((p) => ({
+    n: p.name,
+    s: p.slug,
+    k: p.short,
+    c: p.count,
+    ci: p.cities.map((city) => ({ n: city.name, c: city.count, na: city.noArea, a: city.areas }))
+  }))
 };
 
-const pages = [
-  page("guide", "일본 생활 지도 이용 가이드: 공식 원문과 현장 확인 순서 - 영농폐기물 집하장 지도", "일본 생활 지도 핀의 의미, 공식 원문과 자료 대조일을 읽는 법, 화장실·충전·다국어 안내를 현장에서 재확인하는 순서를 설명합니다.", "핀보다 원문, 원문보다 현장 안내를 먼저 봅니다", [S.moj, S.jnto, S.tokyoMap],
-    ["일본 생활 지도의 핀은 개별 매장이나 시설이 확실히 운영 중이라는 인증이 아닙니다. 낯선 도시에서 어떤 공식 자료를 먼저 열어야 하는지 알려주는 지역 기준점입니다. 따라서 핀 좌표와 실제 시설 출입구가 다를 수 있고, 운영시간·공사·행사·계절에 따라 이용 조건도 바뀔 수 있습니다.", "각 문서에는 원문 기관, 원문 제목, 원문에 표시된 갱신일과 일본 생활 지도가 링크를 다시 열어 본 자료 대조일을 나눠 적습니다. 대조일이 오늘에 가깝더라도 원문 데이터 자체가 오래됐을 수 있으므로 두 날짜를 같은 의미로 읽지 않습니다."],
-    ["필요한 상황을 고른 뒤 가까운 핀을 ‘정답’이 아니라 검색 시작점으로 봅니다.", "상세 화면의 공식 원문을 열어 시설명, 출구, 층, 운영시간과 이용 조건을 확인합니다.", "지도에서 현재 이동 방향과 같은 쪽인지 보고, 실패할 때 쓸 두 번째 후보도 남깁니다.", "현장에 도착하면 표지판과 직원 안내를 우선하고, 정보가 다르면 공개 정정 창구에 원문 링크와 차이를 남깁니다."],
-    ["일본 생활 지도는 정부·지자체·교통기관의 공식 서비스가 아닌 독립 편집 서비스입니다.", "실시간 혼잡도, 빈 좌석, 화장실 개방, 언어 가능한 직원을 보증하지 않습니다.", "응급 상황과 안전 판단에는 일본 생활 지도가 아니라 현지 긴급전화와 공식 방재정보를 이용해야 합니다."], "/?utm_source=guide&utm_medium=internal&utm_campaign=map"),
-
-  page("routes", "일본 생활 상황별 확인 순서 - 영농폐기물 집하장 지도", "배터리 부족, 화장실 급함, 비·대기, 역 환승, 일본 첫날과 언어 안내 상황에서 공식 원문을 여는 순서를 고르는 허브입니다.", "지금 곤란한 이유부터 고르면 확인 순서가 짧아집니다", [S.charge, S.jma, S.jnto],
-    ["같은 장소라도 배터리가 부족할 때와 화장실이 급할 때 필요한 판단은 다릅니다. 상황별 가이드는 장소를 추천 목록으로 나열하지 않고, 공식 원문에서 어떤 항목을 먼저 찾아야 실패 가능성이 줄어드는지 정리합니다.", "충전은 대여 가능 상태와 반납 슬롯, 화장실은 개찰 안팎과 층, 비·대기는 기상 경보와 실내 연결, 언어 안내는 지원 언어와 상담 시간을 구분합니다. 아래 가이드 중 지금 필요한 한 가지를 먼저 여는 것이 좋습니다."],
-    ["배터리가 15% 아래면 충전 가이드에서 공식 대여 지도와 결제 조건을 확인합니다.", "화장실이 급하면 가까운 거리보다 공공시설·개찰 안팎·층을 먼저 봅니다.", "비나 폭염이면 공식 기상정보를 확인하고 목적지 방향과 이어지는 실내 동선을 찾습니다.", "일본 첫날이거나 언어 지원이 필요하면 정부 생활 포털과 인증 안내소를 우선합니다."],
-    ["상황별 문서는 개별 영업점의 실시간 상태를 수집하지 않습니다.", "매장 콘센트와 화장실은 운영자의 허가나 구매 조건이 있을 수 있습니다.", "특정 지역 또는 시설의 안전도·친절도·신뢰도를 점수로 평가하지 않습니다."], "/?utm_source=routes&utm_medium=internal&utm_campaign=map"),
-
-  page("cities", "일본 6개 도시 공식 시설 확인 가이드 - 영농폐기물 집하장 지도", "도쿄·오사카·교토·후쿠오카·삿포로·나고야에서 지자체와 교통기관의 공식 시설 지도를 찾는 도시별 허브입니다.", "도시마다 먼저 열어야 할 공식 지도가 다릅니다", [S.tokyoMap, S.osakaToilet, S.nagoyaBarrier],
-    ["대형역의 출구 구조, 공중화장실을 관리하는 기관, 겨울철 시설 운영 조건은 도시마다 다릅니다. 도시 허브는 같은 문장을 지역명만 바꿔 반복하지 않고, 해당 지자체와 교통기관이 실제로 공개한 자료의 범위부터 설명합니다.", "도쿄는 도 공식 통합지도, 오사카와 교토는 시가 공개한 공중화장실 자료, 후쿠오카는 교통국과 JR큐슈 역 안내, 삿포로는 겨울 운영과 배리어프리 정보, 나고야는 환승·배리어프리 지도를 중심으로 봅니다."],
-    ["현재 있는 도시를 고르고 공식 자료가 다루는 시설 종류를 먼저 확인합니다.", "역권에서는 같은 역 이름보다 운영사, 개찰 안팎, 출구와 층을 구분합니다.", "지도 작성 기준일이 표시되면 자료 대조일과 별도로 기록된 날짜를 읽습니다.", "원문과 현장이 다르면 현장 안내를 따르고 정정 제안에는 확인한 원문 URL을 함께 남깁니다."],
-    ["도시 페이지는 모든 공공시설을 망라하지 않습니다.", "지자체 데이터의 갱신 주기와 시설 실제 변경 시점 사이에는 차이가 생길 수 있습니다.", "지역 기준 핀은 특정 시설의 좌표·입구·운영 상태를 보증하지 않습니다."], "/?utm_source=cities&utm_medium=internal&utm_campaign=map"),
-
-  page("routes/battery", "일본에서 배터리 부족할 때 공식 충전 위치 확인법 - 영농폐기물 집하장 지도", "일본에서 휴대전화 배터리가 부족할 때 공식 보조배터리 설치 지도, 대여 상태, 요금, 결제와 반납 위치를 확인하는 순서입니다.", "콘센트를 찾기 전에 대여와 반납 가능 상태를 같이 봅니다", [S.charge, S.jnto],
-    ["배터리가 급하면 지도에 콘센트가 표시된 카페를 무작정 찾아가기보다 공식 보조배터리 대여 지도의 현재 상태를 먼저 보는 편이 실패가 적습니다. CHARGESPOT은 공식 안내에서 스테이션 상태에 따라 대여나 반납이 불가능할 수 있다고 밝히므로, 설치 여부와 실제 이용 가능 여부를 같은 것으로 보면 안 됩니다.", "매장 콘센트는 눈에 보여도 고객 사용을 허용한다는 뜻이 아닙니다. 주문 조건, 좌석별 제한, 직원 확인이 필요할 수 있어 일본 생활 지도는 특정 카페를 ‘충전 가능’이라고 고정 표시하지 않습니다."],
-    ["공식 대여 지도나 앱에서 현재 위치 주변의 대여 가능 스테이션을 찾습니다.", "지원 결제수단, 최신 요금과 케이블 규격을 운영사 원문에서 확인합니다.", "빌리기 전에 다음 이동지 주변에 반납 가능한 빈 슬롯이 있는지 함께 봅니다.", "매장 전원을 쓰려면 주문과 직원 허락을 먼저 받고, 무단 사용은 하지 않습니다."],
-    ["일본 생활 지도는 배터리 재고, 고장, 반납 슬롯을 실시간으로 중계하지 않습니다.", "상업 서비스의 요금과 결제 조건은 운영사 공지가 우선합니다.", "핀은 대여기를 가리키는 확정 좌표가 아니라 공식 설치 지도를 여는 지역 기준점입니다."], "/?case=battery&utm_source=route-battery&utm_medium=internal&utm_campaign=map"),
-
-  page("routes/restroom", "일본에서 화장실 급할 때 공식 시설 확인 순서 - 영농폐기물 집하장 지도", "일본 대형역과 관광지에서 공중화장실, 개찰 안팎, 층, 운영시간과 대체 후보를 공식 자료로 확인하는 순서입니다.", "가장 가까운 곳보다 지금 들어갈 수 있는 공공 동선을 찾습니다", [S.tokyoMap, S.osakaToilet, S.kyotoToilet],
-    ["화장실이 급할 때 직선거리만 보면 개찰 반대편, 다른 층, 영업이 끝난 상업시설을 선택할 수 있습니다. 도쿄도 지도, 오사카시 공중화장실 목록, 교토시 공중화장실 지도처럼 관리 기관이 공개한 원문에서 시설 종류와 위치를 먼저 확인합니다.", "편의점·카페·백화점 화장실은 점포와 시간에 따라 구매 또는 입장 조건이 달라집니다. 공공시설 후보를 먼저 보고, 민간 시설은 현장 표지와 직원 안내를 따르는 순서가 안전합니다."],
-    ["현재 역의 운영사와 개찰 안팎을 먼저 구분합니다.", "공식 지도에서 같은 층 또는 현재 출구 방향의 공공시설 후보를 찾습니다.", "첫 후보가 공사·혼잡·폐쇄일 때 바로 이동할 두 번째 후보를 저장합니다.", "도착 후 표지판의 이용시간과 제한을 확인하고 사유지에는 무단 출입하지 않습니다."],
-    ["공식 목록도 공사와 긴급 폐쇄를 즉시 반영하지 못할 수 있습니다.", "일본 생활 지도는 청결도, 대기줄과 현재 개방 상태를 측정하지 않습니다.", "개별 매장의 화장실 이용 가능성을 일반화하거나 보장하지 않습니다."], "/?case=toilet&utm_source=route-restroom&utm_medium=internal&utm_campaign=map"),
-
-  page("routes/rain", "일본에서 비·폭염을 피할 때 공식 정보 확인법 - 영농폐기물 집하장 지도", "일본에서 비, 호우, 폭염을 만났을 때 기상청 경보와 공공 실내 동선을 확인하고 통행 공간과 휴게공간을 구분하는 방법입니다.", "지붕보다 먼저 공식 경보와 다음 이동 방향을 확인합니다", [S.jma, S.jrTokyo, S.fukuokaSubway],
-    ["갑작스러운 비나 폭염에서는 가까운 지붕만 찾기보다 기상청 다국어 방재정보로 경보 수준과 지속 가능성을 확인해야 합니다. 짧은 소나기와 이동을 멈춰야 할 호우는 대응이 다르며, 일본 생활 지도는 자체 날씨 판단이나 안전 등급을 만들지 않습니다.", "역 통로와 지하상가는 비를 피할 수 있어도 모두 휴게공간은 아닙니다. 목적지 방향과 이어지는 실내 동선, 실제 앉을 수 있는 공공 공간, 운영시간이 있는 시설을 구분해서 봅니다."],
-    ["기상청 공식 정보에서 호우·폭염·지진 등 현재 경보를 확인합니다.", "철도 운영사 구내도에서 목적지 방향과 이어지는 실내 출구를 고릅니다.", "통행을 방해하지 않는 실제 휴게공간인지 현장 표지로 확인합니다.", "상황이 악화되면 지도를 계속 탐색하지 말고 시설 직원과 현지 재난 안내를 따릅니다."],
-    ["지도 핀은 대피소나 안전지대를 뜻하지 않습니다.", "실내 연결 통로의 개방시간과 공사 상태는 변할 수 있습니다.", "재난·응급 상황에는 공식 경보와 현지 당국 지시가 일본 생활 지도보다 우선합니다."], "/?case=rain&utm_source=route-rain&utm_medium=internal&utm_campaign=map"),
-
-  page("routes/rest", "일본에서 잠깐 쉬기 전 확인할 공공 동선 - 영농폐기물 집하장 지도", "일본 역과 관광지에서 통행 공간, 대기 공간, 실제 휴게공간을 구분하고 운영시간과 이용 규칙을 확인하는 방법입니다.", "잠깐 머물 수 있는 곳과 지나가는 통로를 구분합니다", [S.jrTokyo, S.osakaMetro, S.jnto],
-    ["짐을 정리하거나 약속 전 잠깐 기다릴 때 역 통로와 상업시설 입구를 휴게공간으로 오해하기 쉽습니다. 운영사 구내도와 시설 안내에서 대합실, 안내소, 개방된 공공 공간을 확인하고 통행을 막지 않는지를 먼저 봅니다.", "일본 생활 지도의 쉬기 핀은 좌석이 비어 있거나 장시간 체류가 허용된다는 제보가 아닙니다. 지역 기준점에서 공식 시설 정보를 열어 확인 순서를 제시할 뿐입니다."],
-    ["현재 이동을 방해하지 않는 안전한 위치에서 짐과 배터리 상태를 먼저 확인합니다.", "역 운영사 또는 지자체 원문에서 대합실·안내소·공공시설의 위치를 찾습니다.", "좌석, 영업시간, 구매 조건과 체류 제한은 현장에서 다시 확인합니다.", "앉을 곳이 없으면 통로에 머무르지 말고 다음 공식 후보로 이동합니다."],
-    ["빈 좌석과 혼잡도는 실시간으로 제공하지 않습니다.", "민간 영업장의 체류 허용 여부를 일본 생활 지도가 대신 판단하지 않습니다.", "늦은 시간에는 운영 종료와 교통편을 별도로 확인해야 합니다."], "/?filter=rest&utm_source=route-rest&utm_medium=internal&utm_campaign=map"),
-
-  page("routes/station", "일본 대형역에서 출구·시설을 확인하는 순서 - 영농폐기물 집하장 지도", "도쿄역, 난바역, 하카타역 같은 대형역에서 운영사, 개찰 안팎, 출구, 층과 배리어프리 동선을 공식 구내도로 확인합니다.", "역 이름보다 운영사·개찰·층을 먼저 구분합니다", [S.jrTokyo, S.osakaMetro, S.fukuokaSubway],
-    ["일본의 대형역은 같은 이름 아래 JR, 지하철, 사철이 함께 있고 개찰과 출구가 멀리 떨어진 경우가 많습니다. ‘역 근처’라는 설명만으로는 화장실이나 엘리베이터에 도달하기 어렵기 때문에 해당 구간을 운영하는 기관의 공식 구내도를 먼저 엽니다.", "지도상 거리가 짧아도 층 이동, 개찰 통과, 지하 연결 방향 때문에 실제 동선은 길어질 수 있습니다. 일본 생활 지도는 도보 몇 분이라는 고정 시간을 만들지 않고 지도 중심과 기준점의 거리만 보조적으로 표시합니다."],
-    ["승차권이나 앱에서 지금 이용 중인 철도 운영사를 확인합니다.", "공식 구내도에서 개찰 안팎, 층과 출구 번호를 순서대로 찾습니다.", "엘리베이터·다기능 화장실 등 필요한 설비 기호를 확인합니다.", "공사나 통제 표지가 있으면 구내도보다 역무원과 현장 안내를 우선합니다."],
-    ["고정된 구내도와 실제 공사 동선은 다를 수 있습니다.", "환승 소요시간은 보행 속도와 혼잡에 따라 달라 보장하지 않습니다.", "승강장 안전과 운행 장애 정보는 해당 철도 운영사의 실시간 공지를 이용해야 합니다."], "/?filter=restroom&utm_source=route-station&utm_medium=internal&utm_campaign=map"),
-
-  page("routes/first-day", "일본 도착 첫날 생활 정보 확인 순서 - 영농폐기물 집하장 지도", "일본 도착 첫날 정부 생활 포털, 인증 관광안내소, 교통기관 원문을 이용해 통신·교통·상담과 기본 동선을 정리하는 방법입니다.", "첫날에는 넓은 추천 목록보다 공식 창구 세 곳을 저장합니다", [S.moj, S.jnto, S.fukuokaJr],
-    ["일본 도착 첫날에는 배터리, 통신, 교통, 숙소 이동과 행정 정보가 한꺼번에 필요해집니다. 블로그나 커뮤니티의 오래된 글부터 보기보다 출입국재류관리청 생활지원 포털, JNTO 인증 안내소, 이용하는 교통기관의 공식 안내를 먼저 저장하면 기준점을 잡기 쉽습니다.", "관광객, 유학생, 취업 체류자는 필요한 행정 절차가 서로 다릅니다. 일본 생활 지도는 비자·법률 판단을 대신하지 않고, 정부의 한국어 원문과 공식 상담 창구로 이동하도록 안내합니다."],
-    ["정부 생활지원 포털에서 자신의 체류 목적에 맞는 한국어 안내를 찾습니다.", "공항이나 주요 역에서 JNTO 인증 안내소의 위치·운영시간·지원 언어를 확인합니다.", "이용할 철도 운영사의 공식 역 안내에서 출구와 다음 환승 동선을 저장합니다.", "전화번호·주소·예약 정보는 공개 정정 창구에 쓰지 말고 본인 기기에만 보관합니다."],
-    ["일본 생활 지도는 출입국·세금·의료·법률 자문을 제공하지 않습니다.", "안내소의 언어 가능 직원과 운영시간은 날마다 달라질 수 있습니다.", "개인 상황에 관한 결정은 담당 기관 또는 자격 있는 전문가에게 확인해야 합니다."], "/?utm_source=route-first-day&utm_medium=internal&utm_campaign=map"),
-
-  page("routes/korean", "일본에서 한국어·다국어 공식 안내를 찾는 법 - 영농폐기물 집하장 지도", "일본 정부 생활지원 포털, JNTO 인증 관광안내소와 도시별 외국인 상담에서 한국어 지원 범위와 시간을 확인하는 방법입니다.", "한국어 표지와 한국어 상담 가능 여부는 따로 확인합니다", [S.moj, S.jnto, S.tokyoConsult],
-    ["한국어 메뉴가 있다는 사실, 한국어 안내문이 있다는 사실, 한국어로 복잡한 상담이 가능하다는 사실은 서로 다릅니다. 지역 전체를 ‘한국어 가능’으로 표시하지 않고 정부 포털, JNTO 인증 안내소, 지자체 상담창구의 지원 언어와 시간을 각각 확인합니다.", "JNTO의 도쿄 대면 카운터는 2026년 3월 31일 종료됐으므로 과거 블로그의 주소를 그대로 따라가면 안 됩니다. 현재 전화 안내와 전국 인증 안내소 정보는 JNTO 공식 원문을 기준으로 봅니다."],
-    ["질문이 생활 행정인지 관광 안내인지 먼저 구분합니다.", "정부 또는 지자체 원문에서 한국어 지원 요일·시간·상담 범위를 확인합니다.", "방문 전에 전화나 공식 페이지로 휴무와 예약 필요 여부를 다시 봅니다.", "번역이 필요한 개인정보는 공개 이슈에 올리지 말고 해당 공식 창구에 직접 전달합니다."],
-    ["상권이나 매장 전체의 한국어 응대를 보장하지 않습니다.", "직원 언어 능력과 근무 일정은 고정 정보가 아닙니다.", "의료·법률·긴급 상황에는 일반 관광 안내가 아닌 해당 전문·공공 창구를 이용해야 합니다."], "/?case=korean&utm_source=route-korean&utm_medium=internal&utm_campaign=map"),
-
-  city("cities/tokyo", "도쿄 공식 생활시설 지도 읽기 - 영농폐기물 집하장 지도", "도쿄도 공식 통합지도, JR동일본 역 안내와 외국인 상담 원문으로 화장실·Wi-Fi·출구·다국어 상담을 확인합니다.", "도쿄에서는 통합지도와 철도 운영사 구내도를 나눠 봅니다", [S.tokyoMap, S.jrTokyo, S.tokyoConsult],
-    ["도쿄도 Tokyo Map은 배리어프리 화장실과 TOKYO FREE Wi-Fi 같은 공공 데이터 레이어를 한 화면에서 확인할 수 있습니다. 하지만 역 내부 출구와 개찰 동선은 해당 철도 운영사의 구내도가 더 구체적이므로 목적에 따라 원문을 나눠 엽니다.", "신주쿠·시부야·우에노처럼 역권이 큰 곳에서는 지도 중심과 실제 출구가 멀 수 있습니다. 현재 운영사, 개찰 안팎과 층을 확인한 뒤 지역 기준 핀을 이용합니다."],
-    ["도쿄도 지도에서 필요한 시설 레이어를 켜고 범례를 확인합니다.", "역 안이면 JR·도쿄메트로·도영 등 현재 운영사의 구내도를 별도로 엽니다.", "외국어 생활 상담은 도쿄도 원문에서 한국어 요일과 시간을 확인합니다.", "공사·행사 통제가 보이면 원문보다 역무원과 현장 안내를 우선합니다."],
-    ["도쿄 전체의 모든 민간 시설을 포함하지 않습니다.", "무료 Wi-Fi 연결 품질과 화장실 개방 상태는 실시간 보증 대상이 아닙니다.", "지역 기준 핀은 특정 출입구 또는 매장의 위치 표식이 아닙니다."], "tokyo"),
-
-  city("cities/osaka", "오사카 공식 화장실·역 동선 확인 가이드 - 영농폐기물 집하장 지도", "오사카시 공중화장실 지도, Osaka Metro 난바역 구내도와 한국어 생활 안내로 지하 동선과 공공시설을 확인합니다.", "오사카에서는 지하 구역 이름과 출구를 먼저 적습니다", [S.osakaToilet, S.osakaMetro, S.osakaLife],
-    ["우메다와 난바는 지하 동선이 넓고 여러 철도 운영사가 이어져 있어 같은 역권 안에서도 방향을 잃기 쉽습니다. 오사카시 공중화장실 자료와 Osaka Metro 구내도를 함께 보고 현재 지하상가 이름, 출구 번호와 층을 먼저 확인합니다.", "시가 관리하는 공중화장실과 상업시설 내부 화장실은 이용 조건이 다릅니다. 공식 목록의 관리 주체를 확인하고 민간 시설은 영업시간과 현장 안내를 따릅니다."],
-    ["오사카시 공식 지도에서 공중화장실의 관리 주체와 위치를 확인합니다.", "지하철역에서는 난바·우메다 같은 지역명보다 노선과 역 번호를 먼저 봅니다.", "엘리베이터와 다기능 화장실은 공식 구내도의 설비 기호를 사용합니다.", "생활 상담이 필요하면 오사카시 한국어 안내에서 담당 공공 창구를 찾습니다."],
-    ["지하 공사와 통로 폐쇄는 지도보다 현장 표지가 빠를 수 있습니다.", "상업시설 영업시간과 매장 이용 조건을 대신 보증하지 않습니다.", "혼잡도와 체감 보행시간은 사람과 시간대에 따라 달라집니다."], "osaka"),
-
-  city("cities/kyoto", "교토 공식 공중·관광 화장실 확인 가이드 - 영농폐기물 집하장 지도", "교토시 공중화장실 지도와 관광화장실 제도, 외국 국적 주민 상담 원문으로 기온·교토역 주변 이용 조건을 확인합니다.", "교토에서는 공중화장실과 관광화장실의 개방 조건을 구분합니다", [S.kyotoToilet, S.kyotoTouristToilet, S.kyotoConsult],
-    ["교토시는 공중화장실 지도와 민간 시설이 무료로 화장실을 개방하는 관광화장실 제도를 따로 안내합니다. 목록에 있다는 사실만 보고 언제나 열려 있다고 생각하지 말고 개방 시간과 현장 표지를 확인해야 합니다.", "기온과 시조가와라마치는 계절 행사와 관광 혼잡에 따라 동선이 크게 달라질 수 있습니다. 사유지·매장 시설을 무단 이용하지 않고 촬영·대기·화장실 관련 지역 안내를 우선합니다."],
-    ["교토시 공식 지도에서 공중화장실과 관광화장실 종류를 구분합니다.", "목록에 표시된 개방 시간과 주의사항을 읽고 두 번째 후보도 정합니다.", "관광 성수기와 행사일에는 현장 통제와 안내원의 지시를 따릅니다.", "생활·비자 상담은 교토시 공식 외국 국적 주민 상담 범위를 확인합니다."],
-    ["화장실 청결도와 현재 대기열은 제공하지 않습니다.", "관광화장실 제휴 시설의 사정에 따른 임시 변경을 즉시 반영하지 못할 수 있습니다.", "특정 지역의 친절도·안전도·혼잡도를 점수화하지 않습니다."], "kyoto"),
-
-  city("cities/fukuoka", "후쿠오카 하카타·텐진 공식 역 시설 가이드 - 영농폐기물 집하장 지도", "후쿠오카시 지하철과 JR큐슈 하카타역 공식 안내, 외국인 생활 상담으로 출구·화장실·역 설비를 확인합니다.", "후쿠오카에서는 하카타역의 운영사와 교통수단을 먼저 구분합니다", [S.fukuokaSubway, S.fukuokaJr, S.fukuokaConsult],
-    ["하카타역은 지하철, JR, 버스와 공항 이동이 이어집니다. 후쿠오카시 지하철 역 입체도와 JR큐슈 역 안내는 다루는 구역이 다르므로 현재 교통수단에 맞는 운영사 원문을 열어야 합니다.", "텐진 역시 지하 연결이 편리하지만 통행 공간과 휴게공간은 다릅니다. 비를 피할 때는 목적지 방향과 운영시간을 확인하고 장시간 통로를 막지 않습니다."],
-    ["현재 이용 중인 교통수단이 지하철인지 JR인지 먼저 확인합니다.", "운영사 공식 구내도에서 출구, 엘리베이터와 다기능 화장실을 찾습니다.", "공항·버스·신칸센 환승이면 다음 운영사의 원문도 함께 저장합니다.", "행정 문의는 후쿠오카시 외국인 생활 상담의 한국어 연결 범위를 확인합니다."],
-    ["두 운영사의 지도 범위를 하나의 실시간 지도처럼 합치지 않습니다.", "코인로커·창구·설비의 현재 빈자리와 고장을 보증하지 않습니다.", "공항과 역의 보안·운영 통제가 공식 페이지보다 우선할 수 있습니다."], "fukuoka"),
-
-  city("cities/sapporo", "삿포로 겨울철 화장실·배리어프리 확인 가이드 - 영농폐기물 집하장 지도", "삿포로시 지하철 구내도, 배리어프리 타운맵과 공원 화장실 동절기 안내로 겨울 이용 제한과 대체 동선을 확인합니다.", "삿포로에서는 지도 위치와 겨울 운영 여부를 따로 봅니다", [S.sapporoTransit, S.sapporoBarrier, S.sapporoWinter],
-    ["삿포로는 적설과 동절기 운영 때문에 여름에 이용 가능했던 공원 화장실이나 지상 동선이 같은 방식으로 유지되지 않을 수 있습니다. 시가 공개한 동절기 화장실 안내와 지하철 구내도를 함께 확인해 실내 대체 동선을 남깁니다.", "배리어프리 타운맵 원문도 실제 현황이 다를 수 있으므로 시설에 직접 확인하라고 안내합니다. 일본 생활 지도는 자료 기준일을 숨기지 않고 현장 재확인을 같은 비중으로 표시합니다."],
-    ["공원 화장실은 삿포로시 동절기 목록에서 폐쇄·개방 조건을 확인합니다.", "눈길 이동이 어렵다면 지하철 구내도의 엘리베이터와 실내 출구를 찾습니다.", "배리어프리 설비는 원문 기준일을 읽고 필요한 경우 시설에 직접 문의합니다.", "폭설·교통 장애가 있으면 공식 운행·방재정보를 우선합니다."],
-    ["제설 상태와 통로 미끄럼 정도를 실시간으로 측정하지 않습니다.", "민간 시설 데이터 일부는 시유 시설 자료보다 오래될 수 있습니다.", "겨울 안전 판단은 시 당국·교통기관의 최신 공지를 따라야 합니다."], "sapporo"),
-
-  city("cities/nagoya", "나고야역 배리어프리·화장실 공식 가이드 - 영농폐기물 집하장 지도", "나고야시 배리어프리 외출 내비와 교통국 화장실 안내, 한국어 생활 가이드로 환승 설비와 공공 창구를 확인합니다.", "나고야에서는 환승 경로와 다기능 화장실 설비를 같이 봅니다", [S.nagoyaBarrier, S.nagoyaTransit, S.nagoyaLife],
-    ["나고야시 배리어프리 외출 내비는 나고야역, 사카에, 가나야마의 환승 지도와 엘리베이터·배리어프리 화장실 정보를 제공합니다. 작성 연도가 표시된 지도는 현재 현장과 달라질 수 있으므로 출발 전 교통기관 최신 안내와 대조합니다.", "나고야시 교통국은 역별 일반·배리어프리 화장실 설비 현황을 별도로 제공합니다. 필요한 설비가 있으면 화장실 존재 여부만 보지 말고 오스토메이트·베이비시트 등 세부 항목을 확인합니다."],
-    ["이용 노선과 도착 개찰을 확인한 뒤 공식 환승 지도를 엽니다.", "엘리베이터 경로와 필요한 화장실 설비가 같은 동선에 있는지 확인합니다.", "작성 시점이 오래된 PDF는 현장 공사 안내와 교통국 최신 페이지를 대조합니다.", "행정·생활 문의는 나고야시 한국어 생활 가이드에서 담당 창구를 찾습니다."],
-    ["환승 지도 작성 뒤의 공사와 임시 통제를 즉시 반영하지 못할 수 있습니다.", "다기능 화장실의 현재 고장·혼잡·청결 상태를 보증하지 않습니다.", "일본 생활 지도의 핀은 역사 안의 정확한 설비 좌표가 아닙니다."], "nagoya")
-];
-
-function source(authority, title, url, updated, scope) {
-  return { authority, title, url, updated, scope };
-}
-
-function page(slug, title, description, h1, sources, intro, steps, limits, mapHref) {
-  return { slug, title, description, h1, sources, intro, steps, limits,
-    mapHref: mapHref.startsWith("/?") ? `/japan/${mapHref.slice(1)}` : mapHref, type: "Article" };
-}
-
-function city(slug, title, description, h1, sources, intro, steps, limits, cityKey) {
-  return page(slug, title, description, h1, sources, intro, steps, limits, `/?city=${cityKey}&utm_source=${cityKey}-city&utm_medium=internal&utm_campaign=map`);
-}
-
-function render(item) {
-  const route = `/${item.slug}/`;
-  const citations = item.sources.map((entry) => entry.url);
-  const related = relatedLinks(item.slug);
-  return `<!doctype html>
-<html lang="ko">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>${escapeHtml(item.title)}</title>
-    <meta name="description" content="${escapeHtml(item.description)}">
-    <link rel="canonical" href="${siteUrl}${route}">
-    <link rel="icon" href="/assets/icon.svg" type="image/svg+xml">
-    <meta property="og:type" content="article">
-    <meta property="og:site_name" content="영농폐기물 집하장 지도">
-    <meta property="og:title" content="${escapeHtml(item.title)}">
-    <meta property="og:description" content="${escapeHtml(item.description)}">
-    <meta property="og:url" content="${siteUrl}${route}">
-    <meta name="google-adsense-account" content="ca-pub-5877883031077615">
-    <link rel="alternate" type="application/rss+xml" title="영농폐기물 집하장 지도 RSS" href="${siteUrl}/feed.xml">
-    <link rel="stylesheet" href="/assets/styles.css?v=${styleVersion}">
-    <script>
-      if (location.hostname === "sumimap.com") {
-        const ads = document.createElement("script");
-        ads.async = true;
-        ads.crossOrigin = "anonymous";
-        ads.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5877883031077615";
-        document.head.append(ads);
-      }
-    </script>
-    <script type="application/ld+json">${JSON.stringify({
-      "@context": "https://schema.org",
-      "@type": item.type,
-      headline: item.title,
-      description: item.description,
-      url: `${siteUrl}${route}`,
-      inLanguage: "ko-KR",
-      datePublished: checkedAt,
-      dateModified: checkedAt,
-      author: { "@type": "Organization", name: "영농폐기물 집하장 지도 편집팀", url: `${siteUrl}/japan/about/` },
-      publisher: { "@type": "Organization", name: "영농폐기물 집하장 지도" },
-      citation: citations
-    })}</script>
-  </head>
-  <body class="static-body">
-    <main class="static-shell">
-      <nav class="static-nav" aria-label="상단 탐색">
-        <a class="brand" href="/japan/"><span class="brand-mark">住</span><span><strong>영농폐기물 집하장 지도</strong><small>일본 생활 확인 지도</small></span></a>
-        <a href="${escapeHtml(item.mapHref)}">지도 열기</a>
-      </nav>
-      <section class="static-hero">
-        <h1>${escapeHtml(item.h1)}</h1>
-        <p>${escapeHtml(item.description)}</p>
-      </section>
-      <section class="static-content">
-        <article class="static-section static-experience">
-          <h2>이 페이지가 답하는 질문</h2>
-          ${item.intro.map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join("\n          ")}
-        </article>
-        <article class="static-section">
-          <h2>확인에 사용한 공식 원문</h2>
-          <ul>
-            ${item.sources.map((entry) => `<li><a href="${escapeHtml(entry.url)}">${escapeHtml(entry.authority)} · ${escapeHtml(entry.title)}</a><br>${escapeHtml(entry.scope)}<br><small>원문 갱신: ${escapeHtml(entry.updated)} · 영농폐기물 집하장 지도 자료 대조일: ${checkedAt}</small></li>`).join("\n            ")}
+write(FINDER_ROUTE, page({
+  route: FINDER_ROUTE,
+  title: "전국 영농폐기물 공동집하장 주소 찾기 (시·군·읍면별) | 영농폐기물 집하장 지도",
+  description: "한국환경공단 2025년 공개자료의 영농폐기물 공동집하장 주소 9,553건을 시·도 → 시·군·구 → 읍·면·동 순서로 찾고, 주소 복사와 네이버·카카오 지도 검색을 바로 이용하세요.",
+  crumbs: [["홈", "/"], ["집하장 찾기", FINDER_ROUTE]],
+  jsonLd: [{
+    "@type": "WebApplication",
+    name: "영농폐기물 공동집하장 주소 찾기",
+    url: `${SITE_URL}${FINDER_ROUTE}`,
+    applicationCategory: "UtilitiesApplication",
+    operatingSystem: "Web",
+    inLanguage: "ko-KR",
+    isAccessibleForFree: true,
+    description: "한국환경공단 공개자료의 영농폐기물 공동집하장 주소를 지역별로 찾는 도구",
+    isBasedOn: SRC.data.url,
+    publisher: OPERATOR
+  }],
+  scripts: `<script type="application/json" id="finder-index">${JSON.stringify(finderIndex).replaceAll("</", "<\\/")}</script>
+  <script src="${FINDER_JS}" defer></script>`,
+  body: `
+    <div class="page-head">
+      <h1>영농폐기물 공동집하장 찾기</h1>
+      <p class="lead">지역을 차례로 누르거나 마을 이름으로 찾으면, 한국환경공단 공개자료에 실린 집하장 주소가 나옵니다.</p>
+    </div>
+    <form class="finder-search box" id="finder-form" action="${FINDER_ROUTE}" method="get" role="search">
+      <label for="finder-q">마을·읍면 이름이나 주소로 찾기</label>
+      <div class="search-row"><input id="finder-q" name="q" type="search" placeholder="예: 대화면, 고단1리" maxlength="40" autocomplete="off"><button type="submit">찾기</button></div>
+      <p class="search-help">띄어쓰기는 상관없고, ‘고단리’로 찾으면 고단1리·고단2리도 함께 나옵니다. 지역을 먼저 고르면 그 지역 안에서만 찾습니다.</p>
+      ${dataBadge}
+    </form>
+    <div class="finder-layout">
+      <div>
+        <section class="box" id="finder-steps" aria-labelledby="step-title">
+          <ol class="region-trail" id="trail" hidden></ol>
+          <div class="step-head"><h2 id="step-title" tabindex="-1">1단계 · 시·도를 고르세요</h2></div>
+          <p id="step-help" class="finder-note">자료에 주소가 있는 14개 시·도만 보입니다. 다른 지역에 집하장이 없다는 뜻은 아닙니다.</p>
+          <ul class="chips" id="choices">
+            ${provinces.map((p) => `<li><a class="chip" href="${provinceHref(p)}"><span>${p.short}</span><span class="count">${fmt(p.count)}건</span></a></li>`).join("\n            ")}
           </ul>
-          <p>자료 대조일은 링크와 핵심 범위를 다시 확인한 날입니다. 원문 기관의 데이터 갱신일이나 시설의 실제 변경일과 같은 뜻이 아닙니다.</p>
-        </article>
-        <article class="static-section">
-          <h2>현장에서 확인하는 순서</h2>
-          <ol>${item.steps.map((step) => `<li>${escapeHtml(step)}</li>`).join("")}</ol>
-          <p><a href="${escapeHtml(item.mapHref)}">이 기준을 적용해 지도 열기</a></p>
-        </article>
-        <article class="static-section">
-          <h2>범위와 한계</h2>
-          <ul>${item.limits.map((limit) => `<li>${escapeHtml(limit)}</li>`).join("")}</ul>
-          <p>시설 운영자와 현장 직원의 안내가 이 문서보다 우선합니다. 재난·응급 상황에는 지역 당국과 공식 긴급전화 안내를 따르세요.</p>
-        </article>
-        <article class="static-section">
-          <h2>업데이트와 정정</h2>
-          <p>이 문서는 ${checkedAt}에 위 원문을 다시 대조해 전면 작성했습니다. 링크 변경, 폐쇄, 운영시간 차이 또는 설명 오류를 발견하면 <a href="https://github.com/wlstj86231-cloud/sumimap/issues/new">공개 정정 창구</a>에 원문 URL과 차이를 남겨주세요. 공개 창구에는 전화번호, 위치 기록, 예약번호 같은 개인정보를 적지 마세요.</p>
-          <p><a href="/sources/#japan-sources">일본 자료 출처와 검수 방법</a> · <a href="/japan/editorial/">일본 자료 편집 원칙</a> · <a href="/privacy/">개인정보 처리방침</a></p>
-        </article>
-        <article class="static-section">
-          <h2>관련 가이드</h2>
-          <div class="static-link-grid">${related.map((entry) => `<div class="static-route-card"><strong>${escapeHtml(entry.label)}</strong><p>${escapeHtml(entry.description)}</p><a href="${entry.href}">읽기</a></div>`).join("")}</div>
-        </article>
-      </section>
-    </main>
-  </body>
-</html>`;
+          <p id="last-region" hidden></p>
+        </section>
+        <section id="results-box" aria-labelledby="results-title" hidden>
+          <h2 id="results-title" tabindex="-1">집하장 주소</h2>
+          <p class="status" id="status" role="status" aria-live="polite"></p>
+          <ol class="results" id="results"></ol>
+          <p class="more-row" id="more-row" hidden><button class="btn-line" id="more" type="button">더 보기</button></p>
+        </section>
+        <noscript><p class="notice">이 검색 화면은 자바스크립트가 필요합니다. 위 시·도를 누르면 시·군·읍면별 목록 페이지로 이동합니다.</p></noscript>
+      </div>
+      <aside class="finder-aside" aria-label="방문 전 확인">
+        <section class="notice visit-check" id="before-visit">
+          <h2>가기 전에 꼭 확인하세요</h2>
+          <p id="visit-local">지역을 고르면 어디에 물어보면 되는지 여기에 알려 드립니다.</p>
+          ${visitChecklist}
+          <p><a href="/guide/before-visit/">전화로 물어볼 말</a> · <a href="/guide/">배출 방법</a></p>
+        </section>
+      </aside>
+    </div>
+
+    <section class="box" id="about-data" aria-labelledby="data-title">
+      <h2 id="data-title">자료 설명과 한계</h2>
+      <p>주소는 <a href="${SRC.data.url}">공공데이터포털의 한국환경공단 「전국 영농폐기물 공동집하장 위치」</a>를 가공했습니다. 포털은 이 자료를 농가가 영농폐기물을 마을 단위로 임시 보관하는 중간 거점의 위치 정보라고 설명하며, 지방자치단체가 매년 제출한 정보를 모은다고 밝힙니다.</p>
+      <ul>
+        <li><strong>기준 파일:</strong> 2025년 8월 27일 기준 파일(${fmt(DATA.totalRows)}건)을 보관해 사용합니다. 2026-10-26에 포털을 다시 열었을 때는 2026년 9월 29일 수정 파일(전체 행 9,553)이 올라와 있었습니다. 새 파일 내용은 아직 이 사이트 자료와 한 줄씩 대조하지 않았으므로, 화면의 기준일은 2025년 8월 27일로 표시합니다.</li>
+        <li><strong>쓴 항목:</strong> 시·도, 시·군·구, 공동집하장 이름, 소재지 네 가지입니다. 운영 여부, 수거 요일, 받는 품목, 연락처, 좌표는 원자료에 없습니다.</li>
+        <li><strong>건수의 뜻:</strong> ${fmt(DATA.totalRows)}건은 주소 줄 수입니다. 완전히 같은 줄이 ${fmt(totalDuplicates)}건 더 들어 있고 이를 합치지 않았으므로 실제 집하장 수와 다릅니다.</li>
+        <li><strong>표시 방법:</strong> 이름이 빈 16건은 ‘이름 미등록’으로 보여 줍니다. 소재지에 지역명이 빠진 1건은 시·도와 시·군·구를 앞에 붙이고, 지역명이 두 번 적힌 3건은 한 번만 보여 줍니다. 원자료의 오탈자는 고치지 않았습니다.</li>
+        <li><strong>읍·면·동 단추:</strong> 주소 글자에 적힌 읍·면·동으로 묶었습니다. ${fmt(totalNoArea)}건은 주소에 읍·면이 없어 ‘${NO_AREA}’으로 모았습니다.</li>
+        <li><strong>지도 버튼:</strong> 좌표가 없어 주소 글자로 검색합니다. 괄호 속 설명을 빼고 ‘고단1리’는 ‘고단리’처럼 번호를 뺀 이름으로 검색하며, 결과가 집하장 입구와 다를 수 있습니다.</li>
+      </ul>
+      <p>공식 원문: <a href="${SRC.data.url}">공공데이터포털 자료 페이지</a> · <a href="${SRC.keco.url}">한국환경공단 영농폐기물 수거·처리사업</a>. 자료 대조일 ${PUBLISHED}. 현장 방문이나 지자체 전화 확인은 하지 않았습니다. 가공 과정은 <a href="/sources/#farm-data">자료 출처</a>에 공개하며, 원문과 다른 표시는 <a href="/contact/">정정 요청</a>으로 알려 주세요.</p>
+      <p><a href="/data/farm-waste-collection-sites-2025.tsv">가공한 주소 파일(TSV, 약 0.9MB) 내려받기</a></p>
+    </section>
+
+    <section class="box box-soft" aria-labelledby="next-title">
+      <h2 id="next-title">버리기 전에, 아직 쓸 만한 자재라면</h2>
+      <p>찢어지지 않은 자재나 쓰던 농기계는 가까운 농가에 필요할 수 있습니다. 같은 운영자(제이 미디어)가 만든 <a href="${boribay("/guides/farm-supplies-disposal-guide")}">보리장터 농자재 정리·배출 안내</a>에서 나눔과 재사용 전에 확인할 점을 볼 수 있습니다.</p>
+    </section>`
+}));
+
+// ---------------------------------------------------------------- /kr/ directory
+write("/kr/", page({
+  route: "/kr/",
+  title: "시·도별 영농폐기물 공동집하장 목록 | 영농폐기물 집하장 지도",
+  description: "14개 시·도의 영농폐기물 공동집하장 주소 건수와 시·군·구 수를 한눈에 보고, 시·군·읍면별 목록으로 들어가세요. 주소 자료를 읽을 때 주의할 점도 함께 정리했습니다.",
+  crumbs: [["홈", "/"], ["시·도별 목록", "/kr/"]],
+  jsonLd: [{
+    "@type": "CollectionPage",
+    name: "시·도별 영농폐기물 공동집하장 목록",
+    url: `${SITE_URL}/kr/`,
+    inLanguage: "ko-KR",
+    isBasedOn: SRC.data.url,
+    hasPart: provinces.filter(hasProvincePage).map((p) => ({ "@type": "WebPage", name: `${p.name} 영농폐기물 공동집하장`, url: `${SITE_URL}/kr/${p.slug}/` }))
+  }],
+  body: `
+    <div class="page-head">
+      <h1>시·도별 영농폐기물 공동집하장 목록</h1>
+      <p class="lead">시·도를 고르면 시·군·구와 읍·면·동별 주소 건수가 나옵니다. 주소를 바로 보려면 <a href="${FINDER_ROUTE}">집하장 찾기</a>를 이용하세요.</p>
+    </div>
+    <section class="box" aria-labelledby="list-title">
+      <h2 id="list-title">14개 시·도</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th scope="col">시·도</th><th scope="col">주소</th><th scope="col">시·군·구</th><th scope="col">가장 많은 곳</th></tr></thead>
+          <tbody>
+            ${provinces.map((p) => {
+              const top = [...p.cities].sort((a, b) => b.count - a.count)[0];
+              return `<tr><td><a href="${provinceHref(p)}">${p.name}</a></td><td>${fmt(p.count)}건</td><td>${p.cities.length}곳</td><td>${esc(top.name)} ${fmt(top.count)}건</td></tr>`;
+            }).join("\n            ")}
+          </tbody>
+        </table>
+      </div>
+      <p class="small">${missingProvinces}의 주소는 2025년 8월 27일 기준 파일에 없습니다. 이 지역에 집하장이 없다는 뜻은 아니므로 구청이나 시청에 확인하세요.</p>
+    </section>
+    ${provinces.filter((p) => !hasProvincePage(p)).map((p) => `<section class="box" id="${p.slug}" aria-labelledby="${p.slug}-title">
+      <h2 id="${p.slug}-title">${p.name} 집하장 주소 ${fmt(p.count)}건</h2>
+      <p>주소가 적어 따로 페이지를 만들지 않고 여기에 모두 적었습니다. 운영 여부는 해당 구청 환경 담당 부서에 확인하세요.</p>
+      ${p.cities.map((city) => `<h3>${esc(city.name)}</h3>${staticAddressList(city)}`).join("\n      ")}
+    </section>`).join("\n    ")}
+    <section class="box" aria-labelledby="read-title">
+      <h2 id="read-title">주소 자료를 읽을 때 알아 둘 점</h2>
+      <ol class="steps-list">
+        <li><strong>건수는 집하장 수가 아닙니다.</strong> 같은 주소가 두 번 실린 줄을 합치지 않았고, 자료 이후 새로 생기거나 없어진 곳은 반영되지 않습니다.</li>
+        <li><strong>주소에 읍·면이 빠진 곳이 있습니다.</strong> 전국 ${fmt(totalNoArea)}건은 “강릉시 고단1리”처럼 읍·면 없이 마을 이름부터 적혀 있습니다. 이런 지역은 마을(리) 이름으로 검색하는 편이 빠릅니다.</li>
+        <li><strong>지도 검색은 주소 글자 기준입니다.</strong> 원자료에 좌표가 없어 지도 결과가 실제 입구와 다를 수 있습니다.</li>
+        <li><strong>운영 여부는 따로 확인합니다.</strong> 수거 날짜와 받는 품목은 읍·면사무소나 시·군 환경 담당 부서가 압니다. → <a href="/guide/before-visit/">가기 전 확인할 5가지</a></li>
+      </ol>
+    </section>
+    ${sourcesBlock([SRC.data, SRC.keco], { heading: "공식 원문" })}`
+}));
+
+// ---------------------------------------------------------------- province pages
+const localGuides = {
+  "세종특별자치시": [{ ...SRC.sejong, note: "세종시가 직접 공개한 배출 방법, 수거보상금, 공동집하장 설치현황(38개소) 표가 있습니다." }],
+  "충청북도": [{ ...SRC.cheongju, note: "청주시의 배출 방법, 민간위탁 수거업체 관할 구역, 폐비닐 등급별 보상금 안내입니다." }],
+  "충청남도": [{ ...SRC.dangjin, note: "당진시의 농촌쓰레기 배출 방법과 폐비닐·농약병 수거 문의처 안내입니다." }],
+  "경상남도": [{ ...SRC.miryang, note: "밀양시의 폐비닐·농약빈병 배출 방법 안내입니다(2020년 3월 수정, 금액은 바뀌었을 수 있음)." }]
+};
+
+function staticAddressList(city) {
+  return `<ul class="addr-list">${city.rows.map((row) => {
+    const query = encodeURIComponent(mapQuery(row.address));
+    return `<li><span class="addr">${esc(row.address)}</span><span class="small">${esc(row.name)}</span><br><span class="links"><a href="https://map.naver.com/p/search/${query}">네이버 지도</a> · <a href="https://map.kakao.com/link/search/${query}">카카오맵</a></span></li>`;
+  }).join("")}</ul>`;
 }
 
-function relatedLinks(slug) {
-  const links = {
-    guide: [{ href: "/sources/#japan-sources", label: "공식 출처", description: "기관별 원문과 검수 날짜를 봅니다." }, { href: "/routes/", label: "상황별 가이드", description: "곤란한 상황에 맞는 확인 순서를 고릅니다." }, { href: "/cities/", label: "도시별 가이드", description: "도시별 지자체와 교통기관 원문을 봅니다." }],
-    routes: [{ href: "/routes/battery/", label: "충전", description: "대여·반납 가능 상태를 확인합니다." }, { href: "/routes/restroom/", label: "화장실", description: "공공시설과 개찰·층을 확인합니다." }, { href: "/routes/first-day/", label: "일본 첫날", description: "정부 생활 포털과 공식 창구를 저장합니다." }],
-    cities: [{ href: "/cities/tokyo/", label: "도쿄", description: "도 공식 통합지도와 역 구내도를 봅니다." }, { href: "/cities/osaka/", label: "오사카", description: "시 공중화장실과 지하 동선을 봅니다." }, { href: "/cities/sapporo/", label: "삿포로", description: "겨울 운영과 배리어프리 정보를 봅니다." }]
-  };
-  if (links[slug]) return links[slug];
-  if (slug.startsWith("cities/")) return [{ href: "/cities/", label: "다른 도시", description: "6개 도시의 공식 자료 범위를 비교합니다." }, { href: "/routes/station/", label: "역 동선", description: "운영사·개찰·층 확인 순서를 봅니다." }, { href: "/sources/#japan-sources", label: "전체 출처", description: "모든 공식 원문과 대조일을 봅니다." }];
-  return [{ href: "/routes/", label: "다른 상황", description: "상황에 맞는 확인 순서를 고릅니다." }, { href: "/cities/", label: "도시별 확인", description: "지자체와 교통기관 원문을 봅니다." }, { href: "/sources/#japan-sources", label: "전체 출처", description: "공식 원문과 검수 방법을 봅니다." }];
+function villageChips(p, city) {
+  const counts = new Map();
+  for (const row of city.rows) {
+    if (!row.village) continue;
+    const name = looseVillage(row.village);
+    counts.set(name, (counts.get(name) || 0) + 1);
+  }
+  const villages = [...counts].sort(([left], [right]) => left.localeCompare(right, "ko"));
+  if (!villages.length) return "";
+  return `<p class="small">주소에 읍·면이 거의 적혀 있지 않아 주소에 나오는 마을(리·동) 이름으로 묶었습니다. ‘고단1리’, ‘고단2리’는 ‘고단리’ 하나로 모았습니다. 이름을 누르면 그 마을 주소가 열립니다.</p>
+      <ul class="chips compact">${villages.map(([name, count]) => `<li><a class="chip" href="${esc(finderHref({ province: p.name, city: city.name, q: name }))}"><span>${esc(name)}</span><span class="count">${fmt(count)}건</span></a></li>`).join("")}</ul>`;
 }
 
-function escapeHtml(value) {
-  return String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#39;");
+for (const p of provinces.filter(hasProvincePage)) {
+  const route = `/kr/${p.slug}/`;
+  const sortedByCount = [...p.cities].sort((a, b) => b.count - a.count);
+  const top = sortedByCount.slice(0, 3);
+  const noArea = p.rows.filter((row) => row.area === NO_AREA).length;
+  const dup = duplicateExtra(p.rows);
+  const noName = unnamed(p.rows);
+  const listAddresses = p.count <= 60;
+  const areaTotal = p.cities.reduce((sum, city) => sum + city.areas.filter(([name]) => name !== NO_AREA).length, 0);
+  const notes = [
+    noArea ? `주소에 읍·면이 적히지 않은 줄이 ${fmt(noArea)}건 있습니다${p.cities.filter((city) => !useAreas(city) && city.count > 3).length ? ` (${p.cities.filter((city) => !useAreas(city) && city.count > 3).map((city) => city.name).join(", ")} 등). 이 지역은 마을(리) 이름으로 찾으세요` : ""}.` : "모든 주소에 읍·면·동이 적혀 있습니다.",
+    dup ? `완전히 같은 주소 줄이 ${fmt(dup)}건 더 들어 있어 실제 집하장 수는 ${fmt(p.count)}곳보다 적을 수 있습니다.` : "완전히 같은 줄이 반복된 경우는 없습니다. 그래도 건수가 운영 중인 집하장 수라는 뜻은 아닙니다.",
+    noName ? `이름 없이 주소만 있는 줄이 ${fmt(noName)}건입니다.` : ""
+  ].filter(Boolean);
+  const local = localGuides[p.name] || [];
+  write(route, page({
+    route,
+    title: `${p.name} 영농폐기물 공동집하장 주소 ${fmt(p.count)}건 - 시·군·읍면별 | ${SITE_NAME}`,
+    description: `${p.name} ${p.cities.length}개 시·군·구의 영농폐기물 공동집하장 주소 ${fmt(p.count)}건을 읍·면·동별로 나눠 봅니다. ${top.map((city) => `${city.name} ${fmt(city.count)}건`).join(", ")}. 한국환경공단 2025년 공개자료 기준.`,
+    crumbs: [["홈", "/"], ["시·도별 목록", "/kr/"], [p.name, route]],
+    jsonLd: [{
+      "@type": "CollectionPage",
+      name: `${p.name} 영농폐기물 공동집하장 주소`,
+      url: `${SITE_URL}${route}`,
+      inLanguage: "ko-KR",
+      isBasedOn: SRC.data.url,
+      about: { "@type": "AdministrativeArea", name: p.name },
+      dateModified: PUBLISHED
+    }],
+    body: `
+    <div class="page-head">
+      <h1>${p.name} 영농폐기물 공동집하장</h1>
+      <p class="lead">${p.name}에는 한국환경공단 2025년 공개자료 기준 ${p.cities.length}개 시·군·구에 집하장 주소 ${fmt(p.count)}건이 실려 있습니다. 시·군과 읍·면·동을 누르면 주소 목록이 열립니다.</p>
+      <p class="cta-row"><a class="btn" href="${esc(finderHref({ province: p.name }))}">${p.short} 집하장 주소 바로 찾기</a></p>
+    </div>
+    <ul class="stat-row" aria-label="${p.short} 자료 요약">
+      <li><b>${fmt(p.count)}건</b><span>주소 줄 수</span></li>
+      <li><b>${p.cities.length}곳</b><span>시·군·구</span></li>
+      <li><b>${fmt(areaTotal)}곳</b><span>주소에 적힌 읍·면·동</span></li>
+      <li><b>${esc(top[0].name)}</b><span>가장 많은 곳 ${fmt(top[0].count)}건</span></li>
+    </ul>
+    ${p.cities.map((city) => `<section class="city-block" aria-labelledby="c-${esc(city.name).replaceAll(" ", "-")}">
+      <h2 id="c-${esc(city.name).replaceAll(" ", "-")}">${esc(city.name)} <span class="small">${fmt(city.count)}건</span></h2>
+      ${useAreas(city)
+        ? `<ul class="chips">${city.areas.map(([name, count]) => `<li><a class="chip" href="${esc(finderHref({ province: p.name, city: city.name, area: name }))}"><span>${esc(name)}</span><span class="count">${fmt(count)}건</span></a></li>`).join("")}</ul>`
+        : city.count > 3 ? villageChips(p, city) : ""}
+      <p><a href="${esc(finderHref({ province: p.name, city: city.name }))}">${esc(city.name)} 주소 ${fmt(city.count)}건 모두 보기 →</a></p>
+      ${listAddresses ? staticAddressList(city) : ""}
+    </section>`).join("\n    ")}
+    <section class="box" aria-labelledby="note-title">
+      <h2 id="note-title">${p.short} 자료를 볼 때</h2>
+      <ul>${notes.map((note) => `<li>${esc(note)}</li>`).join("")}</ul>
+      <p>읍·면·동 단추는 주소 글자를 그대로 묶은 것이라 원자료의 오탈자가 보일 수 있습니다. 운영 요일과 받는 품목은 해당 시·군청 환경(자원순환) 담당 부서나 읍·면 행정복지센터에 확인하세요. → <a href="/guide/before-visit/">가기 전 확인할 5가지</a></p>
+    </section>
+    ${local.length ? `<section class="box box-soft" aria-labelledby="local-title">
+      <h2 id="local-title">${p.short} 시·군이 직접 공개한 안내</h2>
+      <ul>${local.map((item) => `<li><a href="${esc(item.url)}">${esc(item.org)} · ${esc(item.title)}</a><br><span class="small">${esc(item.note)} 자료 대조일 ${PUBLISHED}.</span></li>`).join("")}</ul>
+    </section>` : ""}
+    ${sourcesBlock([SRC.data, SRC.keco], { heading: "공식 원문" })}
+    <p><a href="/kr/">다른 시·도 목록 보기</a></p>`
+  }));
 }
 
-for (const item of pages) {
-  const directory = path.join(siteRoot, ...item.slug.split("/"));
-  fs.mkdirSync(directory, { recursive: true });
-  fs.writeFileSync(path.join(directory, "index.html"), render(item), "utf8");
+// ---------------------------------------------------------------- guides
+for (const guide of GUIDES) {
+  const isHub = guide.route === "/guide/";
+  const crumbs = isHub ? [["홈", "/"], ["배출 방법", "/guide/"]] : [["홈", "/"], ["배출 방법", "/guide/"], [guide.h1, guide.route]];
+  write(guide.route, page({
+    route: guide.route,
+    title: guide.title,
+    description: guide.description,
+    narrow: true,
+    ads: true,
+    crumbs,
+    jsonLd: [{
+      "@type": "Article",
+      headline: guide.h1,
+      description: guide.description,
+      url: `${SITE_URL}${guide.route}`,
+      inLanguage: "ko-KR",
+      datePublished: PUBLISHED,
+      dateModified: PUBLISHED,
+      author: OPERATOR,
+      publisher: OPERATOR,
+      citation: guide.sources.map((source) => source.url),
+      isPartOf: { "@type": "WebSite", name: SITE_NAME, url: `${SITE_URL}/` }
+    }],
+    body: `
+    <div class="page-head">
+      <h1>${esc(guide.h1)}</h1>
+      <p class="lead">${esc(guide.lead)}</p>
+      <p class="meta-line">작성·자료 대조: ${PUBLISHED} · 정리: 영농폐기물 집하장 지도 운영자(제이 미디어)</p>
+    </div>
+    ${guide.body}
+    ${sourcesBlock(guide.sources, { note: "지역 예시는 해당 시·군의 안내이며, 다른 지역의 기준은 다를 수 있습니다." })}
+    ${relatedGuides(guide.route)}`
+  }));
 }
 
-console.log(`Generated ${pages.length} source-backed core pages.`);
+// ---------------------------------------------------------------- trust pages
+const trust = (route, title, description, h1, lead, body, extra = {}) => write(route, page({
+  route,
+  title: `${title} | ${SITE_NAME}`,
+  description,
+  narrow: true,
+  crumbs: [["홈", "/"], [title, route]],
+  jsonLd: [{ "@type": extra.type || "WebPage", name: title, url: `${SITE_URL}${route}`, inLanguage: "ko-KR", dateModified: PUBLISHED, publisher: OPERATOR }],
+  body: `
+    <div class="page-head">
+      <h1>${esc(h1)}</h1>
+      <p class="lead">${esc(lead)}</p>
+    </div>
+${body}
+    <p class="small">최종 수정: ${PUBLISHED}</p>`
+}));
+
+trust("/about/", "서비스 소개", "영농폐기물 집하장 지도가 하는 일, 운영자(제이 미디어·보리장터 운영사), 주소 자료를 가공한 방법과 하지 않는 일을 설명합니다.", "가까운 집하장 주소를 빨리 찾도록 돕습니다", "영농폐기물 집하장 지도는 한국환경공단 공개자료에 실린 전국 공동집하장 주소를 지역별로 찾고, 품목별 배출 방법을 공식 안내로 정리한 서비스입니다.", `
+    <section class="box">
+      <h2>하는 일</h2>
+      <ul>
+        <li><a href="${FINDER_ROUTE}">집하장 찾기</a>: 시·도 → 시·군·구 → 읍·면·동 순서나 마을 이름으로 주소를 찾고, 복사하거나 지도에서 엽니다.</li>
+        <li><a href="/guide/">배출 방법</a>: 폐비닐, 농약 빈 용기, 남은 농약, 그 밖의 농자재를 어디에 어떻게 내놓는지 한국환경공단·농림축산식품부·지자체 안내로 정리합니다.</li>
+        <li><a href="/kr/">시·도별 목록</a>: 시·군·구와 읍·면·동별 주소 건수를 보여 줍니다.</li>
+      </ul>
+    </section>
+    <section class="box">
+      <h2>운영자</h2>
+      <p>운영: 제이 미디어(J MEDIA) · <a href="${boribay("/")}">보리장터(boribay.com)</a> 운영사. 자료의 가공·표시와 정정 책임은 영농폐기물 집하장 지도 운영자에게 있습니다. 사업자 정보와 고객센터는 <a href="${boribay("/about")}">보리장터 운영자 정보</a>에 공개되어 있습니다.</p>
+      <p>이 사이트에서 보리장터 안내로 연결할 때는 같은 운영자의 서비스라는 점을 밝히며, 독립된 외부 추천으로 표시하지 않습니다. 정부, 한국환경공단, 지방자치단체의 공식 서비스가 아닙니다.</p>
+    </section>
+    <section class="box">
+      <h2>주소 자료를 다룬 방법</h2>
+      <p><a href="${SRC.data.url}">공공데이터포털의 한국환경공단 자료</a> 2025년 8월 27일 기준 파일에서 시·도, 시·군·구, 이름, 소재지 네 항목만 썼습니다. 원자료의 줄을 고치거나 합치지 않았고, 원자료에 없는 운영 요일·좌표·연락처를 만들어 넣지 않습니다. 실제 집하장 방문이나 지자체 전화 조사는 하지 않았습니다. 자세한 내용은 <a href="/sources/">자료 출처</a>에 있습니다.</p>
+    </section>
+    <section class="box">
+      <h2>하지 않는 일</h2>
+      <ul>
+        <li>집하장의 현재 운영 여부, 수거 일정, 보상금 지급을 보장하지 않습니다.</li>
+        <li>회원가입, 위치 추적, 개인정보 수집을 하지 않습니다.</li>
+        <li>법률 판단이나 행정 처분에 대한 자문을 하지 않습니다.</li>
+      </ul>
+    </section>
+    <section class="box">
+      <h2>같은 운영자의 농촌 도구</h2>
+      <p>보리장터 거래 전후에 쓰는 도구를 함께 운영합니다: 농산물 거래사전(yomiwiki.com), 직거래 사기 점검(scamreader.com), 농가 손익 계산기(www.reportools.com), 거래 증빙 도우미(goatool.com), 농사 비교 월드컵(occultworldcup.com), 농업 정책자금 백과(policyfundpedia.com), 농기계 자산 수첩(megapureunasset.kr), 농기계 탁송 견적 비교(tripmarking.com).</p>
+      <p>주소나 설명이 틀렸다면 <a href="/contact/">문의·정정 요청</a>으로 알려 주세요.</p>
+    </section>`, { type: "AboutPage" });
+
+trust("/sources/", "자료 출처", "영농폐기물 집하장 지도가 사용한 한국환경공단 공동집하장 주소 자료의 가공 기록과, 배출 방법 안내에 쓴 공식 원문 목록과 대조일입니다.", "자료 출처와 가공 기록", "모든 주소와 배출 방법 설명은 아래 공식 원문에서 왔습니다. 원문 기관의 갱신일과 운영자가 다시 확인한 날(자료 대조일)을 구분해 적습니다.", `
+    <section class="box" id="farm-data">
+      <h2>공동집하장 주소 자료</h2>
+      <ul>
+        <li>원문: <a href="${SRC.data.url}">${esc(DATA.sourceTitle)}</a> (공공데이터포털, 제공기관 한국환경공단, 이용허락범위 제한 없음)</li>
+        <li>사용 중인 파일: 2025년 8월 27일 기준, ${fmt(DATA.totalRows)}행. 원본 CSV(CP949)의 시도·시군구·공동집하장명·소재지 열만 UTF-8 TSV로 바꿨고, 원본·변환본의 SHA-256 해시를 기록해 두고, 변환본 해시는 점검(<code>npm run check</code>) 때마다 다시 확인합니다.</li>
+        <li>포털 최신 표시(${PUBLISHED} 확인): 파일명 기준일·수정일 2026년 9월 29일, 전체 행 9,553, 업데이트 주기 연간, 차기 등록 예정일 2027년 10월 4일. 새 파일과의 전체 대조는 아직 하지 않았습니다.</li>
+        <li>화면 표시: 이름이 빈 16건은 ‘이름 미등록’, 소재지에 지역명이 빠진 1건은 시·도·시·군·구를 앞에 붙임, 지역명이 두 번 적힌 3건은 한 번만 표시. 완전히 같은 줄 ${fmt(totalDuplicates)}건은 합치지 않았습니다.</li>
+        <li>읍·면·동 묶음: 주소 글자에서 첫 읍·면·동을 읽었습니다. 의성군처럼 ‘면’ 없이 적은 이름은 적힌 그대로 쓰고, 같은 시·군에 ‘○○면’ 표기가 있으면 그쪽으로 합쳤습니다. 읍·면이 없는 ${fmt(totalNoArea)}건은 ‘${NO_AREA}’으로 모았습니다.</li>
+        <li>찾기 화면 자료: 위 TSV를 시·도별 JSON 파일로 나눠 필요한 지역만 내려받게 했습니다. 내용은 TSV와 같습니다. <a href="/data/farm-waste-collection-sites-2025.tsv">가공 TSV 내려받기</a></li>
+      </ul>
+      <p>재현 방법과 해시 값은 저장소의 <code>docs/data-sources/farm-waste-collection-2025.md</code>에 있습니다.</p>
+    </section>
+    <section class="box" id="guide-sources">
+      <h2>배출 방법 안내에 쓴 공식 원문</h2>
+      <ul class="source-list">
+        ${Object.values(SRC).map((source) => `<li><a href="${esc(source.url)}">${esc(source.org)} · ${esc(source.title)}</a><br><small>${esc(source.use)} · 자료 대조일 ${PUBLISHED}</small></li>`).join("\n        ")}
+      </ul>
+      <p class="small">한국환경공단 영농폐기물 수거·처리사업 페이지는 최종수정일 2025-03-11로 표시되며, 수거처리체계 그림 설명(보상금·수거비 포함)을 함께 확인했습니다. 폐기물관리법은 2026년 9월 18일 시행 법률을 기준으로 읽었습니다.</p>
+    </section>
+    <section class="box">
+      <h2>출처를 고르는 기준</h2>
+      <p>정부 부처, 한국환경공단, 지방자치단체, 국가법령정보센터 원문을 씁니다. 언론 기사나 블로그는 근거로 쓰지 않습니다. 지역마다 다른 기준은 어느 시·군의 안내인지 밝혀 예시로만 씁니다. 편집 기준은 <a href="/editorial/">편집 원칙</a>에 있습니다.</p>
+    </section>`, { type: "CollectionPage" });
+
+trust("/editorial/", "편집 원칙", "영농폐기물 집하장 지도가 주소 자료와 배출 방법 안내를 만들 때 지키는 원칙: 공식 원문 우선, 날짜 구분, 지역 차이 표시, 보장하지 않는 것.", "편집 원칙", "주소와 배출 방법은 농가가 실제로 짐을 싣고 움직이는 데 쓰입니다. 틀린 정보가 헛걸음이나 과태료로 이어지지 않도록 아래 원칙을 지킵니다.", `
+    <section class="box">
+      <h2>1. 공식 원문에 있는 것만 사실로 적습니다</h2>
+      <p>주소는 공공데이터포털의 한국환경공단 자료만 씁니다. 배출 방법, 보상금, 법 기준은 한국환경공단, 농림축산식품부, 지방자치단체, 국가법령정보센터 원문에서 확인한 내용만 적고, 각 페이지 아래에 원문 링크와 자료 대조일을 붙입니다.</p>
+    </section>
+    <section class="box">
+      <h2>2. 날짜를 섞지 않습니다</h2>
+      <p>원자료 기준일(2025년 8월 27일), 포털의 수정일, 운영자가 다시 확인한 날을 따로 적습니다. 대조일이 최근이어도 원자료가 최신이라는 뜻은 아닙니다.</p>
+    </section>
+    <section class="box">
+      <h2>3. 지역마다 다른 것은 지역 이름을 붙입니다</h2>
+      <p>폐비닐 보상금, 영양제 병이나 비료 포대 처리처럼 시·군마다 다른 기준은 “세종시 안내”, “청주시 안내”처럼 출처 지역을 밝혀 예시로만 씁니다. 다른 지역에 그대로 적용된다고 쓰지 않습니다.</p>
+    </section>
+    <section class="box">
+      <h2>4. 없는 정보를 만들지 않습니다</h2>
+      <p>원자료에 없는 운영 요일, 좌표, 연락처, 시설 사진, 이용 후기를 만들어 넣지 않습니다. 건수를 운영 중인 집하장 수로 바꿔 말하지 않습니다. 하지 않은 현장 조사나 전문가 감수를 했다고 쓰지 않습니다.</p>
+    </section>
+    <section class="box">
+      <h2>5. 보장하지 않는 것을 분명히 합니다</h2>
+      <p>집하장의 현재 운영, 수거 일정, 보상금 지급, 법 적용 여부는 해당 기관이 결정합니다. 이 사이트는 확인할 곳과 물어볼 내용을 안내할 뿐입니다.</p>
+    </section>
+    <section class="box">
+      <h2>6. 틀린 것은 고치고 남깁니다</h2>
+      <p>오류가 확인되면 고치고 페이지의 수정일을 바꿉니다. 원자료 자체의 오류는 제공기관에 알려야 하므로, 이 사이트에서는 원자료를 고치지 않고 표시 방법만 바꿉니다. 처리 기준은 <a href="/policy/">정정 정책</a>에 있습니다.</p>
+    </section>`);
+
+trust("/policy/", "정정 정책", "영농폐기물 집하장 지도의 주소 표시·배출 방법 설명에 대한 정정 요청을 어떻게 확인하고 반영하는지 안내합니다.", "정정 요청은 원문과 대조해 반영합니다", "주소가 다르거나 집하장이 없어졌거나 설명이 틀렸다면 알려 주세요. 확인 가능한 원문과 대조한 뒤 반영합니다.", `
+    <section class="box">
+      <h2>이런 내용을 받습니다</h2>
+      <ul>
+        <li>화면의 주소가 공공데이터포털 원문과 다른 경우</li>
+        <li>집하장이 옮겨졌거나 없어진 경우(지자체 공지 링크가 있으면 함께)</li>
+        <li>배출 방법·보상금 설명이 공식 안내와 다른 경우</li>
+        <li>끊어진 링크, 모바일 화면 오류, 읽기 어려운 문장</li>
+      </ul>
+    </section>
+    <section class="box">
+      <h2>반영 기준</h2>
+      <ul>
+        <li><strong>표시 오류</strong>(가공 과정에서 생긴 차이)는 확인되는 대로 고칩니다.</li>
+        <li><strong>원자료 자체의 오류</strong>(예: 오탈자, 없어진 집하장)는 원자료를 고치지 않고, 해당 내용과 함께 제공기관(한국환경공단·공공데이터포털)에 알리도록 안내합니다. 새 공개 파일이 나오면 다시 대조합니다.</li>
+        <li><strong>배출 방법 설명</strong>은 정부·공단·지자체 원문으로 확인되면 고치고 자료 대조일을 바꿉니다. 개인 경험담이나 블로그만으로는 바꾸지 않습니다.</li>
+      </ul>
+    </section>
+    <section class="box">
+      <h2>보내는 곳</h2>
+      <p><a href="/contact/">문의·정정 요청</a> 페이지를 이용하세요. 개인 연락처, 정확한 농가 주소, 신분증 같은 개인정보는 적지 마세요.</p>
+    </section>`);
+
+trust("/contact/", "문의·정정 요청", "영농폐기물 집하장 지도의 주소 오류, 없어진 집하장, 배출 방법 설명 오류를 알리는 방법과 적어 주면 좋은 내용을 안내합니다.", "문의·정정 요청", "주소가 다르거나 설명이 틀렸다면 아래 방법으로 알려 주세요. 집하장 운영이나 수거 일정 문의는 이 사이트가 아니라 읍·면사무소에서 답할 수 있습니다.", `
+    <section class="box">
+      <h2>알리는 방법</h2>
+      <ul>
+        <li><a href="https://github.com/wlstj86231-cloud/sumimap/issues/new">공개 정정 창구(GitHub)에 새 글 쓰기</a> — 계정 로그인이 필요하며, 쓴 내용은 인터넷에 공개됩니다.</li>
+        <li>GitHub를 쓰기 어렵다면 운영자(제이 미디어)의 <a href="${boribay("/about")}">보리장터 고객센터</a>로 알려 주세요.</li>
+      </ul>
+    </section>
+    <section class="box">
+      <h2>적어 주면 좋은 내용</h2>
+      <ol>
+        <li>문제가 있는 페이지 주소, 또는 시·도·시·군·마을 이름</li>
+        <li>화면에 보이는 주소나 문장</li>
+        <li>바른 내용과 확인한 곳(지자체 공지 링크, 원문 페이지 등)</li>
+      </ol>
+      <p>이름, 전화번호, 정확한 집 주소, 신분증, 계좌 같은 개인정보는 적지 마세요.</p>
+    </section>
+    <section class="box">
+      <h2>이 사이트가 답할 수 없는 것</h2>
+      <ul>
+        <li>집하장 운영 여부, 수거 날짜, 보상금 지급 → 읍·면 행정복지센터, 시·군청 환경(자원순환) 담당 부서</li>
+        <li>원자료 수정 → 공공데이터포털 자료 페이지의 제공기관(한국환경공단)</li>
+        <li>과태료 등 처분 → 처분한 기관</li>
+      </ul>
+      <p>처리 기준은 <a href="/policy/">정정 정책</a>, 개인정보는 <a href="/privacy/">개인정보 처리방침</a>을 보세요.</p>
+    </section>`, { type: "ContactPage" });
+
+trust("/privacy/", "개인정보 처리방침", "영농폐기물 집하장 지도는 회원가입과 개인정보 수집을 하지 않습니다. 기기에 저장되는 항목, 외부 지도 링크, 광고 쿠키, 공개 문의 창구에 대해 안내합니다.", "개인정보 처리방침", "영농폐기물 집하장 지도는 회원가입이 없고, 이름·연락처·위치를 서버에 모으지 않습니다.", `
+    <section class="box">
+      <h2>서버에 모으는 정보</h2>
+      <p>운영자 서버에 개인정보를 저장하는 기능이 없습니다. 검색어와 고른 지역은 브라우저 안에서만 처리하며 서버로 보내지 않습니다. 사이트를 전달하는 호스팅 사업자(Cloudflare)는 보안과 전송을 위해 IP 주소, 브라우저 정보, 요청 시각 같은 기술 기록을 일시적으로 처리할 수 있습니다.</p>
+    </section>
+    <section class="box">
+      <h2>기기에 저장되는 항목</h2>
+      <ul>
+        <li><code>sumimap:last-region</code>: 마지막으로 본 시·도·시·군·읍면 이름. 다음에 “지난번에 본 지역” 단추를 보여 주는 데만 씁니다.</li>
+        <li>서비스 워커 캐시: 화면 파일과 시·도별 주소 자료를 기기에 저장해 다시 열 때 빠르게 보여 줍니다.</li>
+      </ul>
+      <p>브라우저 설정에서 sumimap.com의 사이트 데이터를 지우면 모두 삭제됩니다.</p>
+    </section>
+    <section class="box">
+      <h2>주소 복사와 지도 링크</h2>
+      <p>‘주소 복사’는 기기의 클립보드에만 주소를 넣습니다. ‘네이버 지도’, ‘카카오맵’을 누르면 집하장 주소가 검색어로 담긴 해당 지도 서비스로 이동하며, 그 뒤의 처리는 각 회사의 개인정보처리방침을 따릅니다.</p>
+    </section>
+    <section class="box">
+      <h2>광고와 쿠키</h2>
+      <p>배출 방법 안내 페이지에는 Google 광고 코드가 들어갈 수 있습니다. Google 등 제3자 사업자는 광고 제공과 측정을 위해 쿠키를 쓰거나 이전 방문 기록을 바탕으로 맞춤 광고를 보여 줄 수 있습니다. 집하장 찾기, 시·도별 목록, 소개·정책 페이지에는 광고를 싣지 않습니다.</p>
+      <p><a href="https://policies.google.com/technologies/partner-sites?hl=ko">Google 파트너 사이트의 정보 사용 방식</a> · <a href="https://adssettings.google.com/?hl=ko">Google 광고 설정</a></p>
+    </section>
+    <section class="box">
+      <h2>공개 문의 창구</h2>
+      <p>정정 요청에 쓰는 GitHub Issues의 글과 계정 정보는 공개되며 GitHub의 정책에 따라 처리됩니다. 개인정보를 적지 마세요. <a href="https://docs.github.com/ko/site-policy/privacy-policies/github-general-privacy-statement">GitHub 개인정보처리방침</a></p>
+    </section>
+    <section class="box">
+      <h2>변경</h2>
+      <p>처리 방식이 바뀌면 이 페이지와 수정일을 함께 고칩니다. 운영: 제이 미디어(J MEDIA). 문의는 <a href="/contact/">문의·정정 요청</a>을 이용하세요.</p>
+    </section>`);
+
+trust("/terms/", "이용약관", "영농폐기물 집하장 지도의 정보 성격, 이용자가 직접 확인할 사항, 외부 서비스, 금지 행위, 책임 범위를 안내합니다.", "이용약관", "영농폐기물 집하장 지도를 이용할 때 알아 두어야 할 조건입니다. 이용하면 이 약관에 동의한 것으로 봅니다.", `
+    <section class="box">
+      <h2>1. 서비스의 성격</h2>
+      <p>이 서비스는 한국환경공단이 공공데이터포털에 공개한 영농폐기물 공동집하장 주소를 지역별로 찾기 쉽게 보여 주고, 공식 안내를 바탕으로 배출 방법을 정리한 참고 정보입니다. 정부, 한국환경공단, 지방자치단체의 공식 서비스가 아닙니다. 운영자는 제이 미디어(J MEDIA)입니다.</p>
+    </section>
+    <section class="box">
+      <h2>2. 이용자가 직접 확인할 사항</h2>
+      <p>공개자료는 2025년 8월 27일 기준 파일이며 운영 요일, 수거 일정, 받는 품목, 연락처가 들어 있지 않습니다. 집하장을 이용하기 전에 읍·면 행정복지센터나 시·군 담당 부서에 현재 운영 여부와 배출 기준을 확인해야 합니다. 지역 기준이 이 사이트의 설명과 다르면 지역 기준을 따르세요.</p>
+    </section>
+    <section class="box">
+      <h2>3. 책임의 범위</h2>
+      <p>운영자는 정보를 정확하게 유지하려고 노력하지만, 원자료의 오류, 자료 기준일 이후의 변경, 지도 검색 결과의 차이로 생긴 손해를 보장하지 않습니다. 보상금 지급, 과태료 등 행정 처분, 법 적용 여부는 해당 기관이 판단하며 이 사이트의 설명은 법률 자문이 아닙니다.</p>
+    </section>
+    <section class="box">
+      <h2>4. 외부 서비스</h2>
+      <p>네이버 지도, 카카오맵, 공공데이터포털, 정부·지자체 누리집, 보리장터 등 외부 링크는 각 사업자의 약관과 개인정보처리방침을 따릅니다. 지도 링크는 주소 글자로 검색한 결과를 보여 주며 집하장의 정확한 입구를 뜻하지 않습니다.</p>
+    </section>
+    <section class="box">
+      <h2>5. 금지 행위</h2>
+      <p>서비스에 과도한 자동 요청을 보내거나 보안을 우회하는 행위, 공개 문의 창구에 다른 사람의 개인정보·비방·광고를 올리는 행위를 금지합니다. 공공데이터 원문은 포털의 이용 조건(이용허락범위 제한 없음)에 따라 누구나 이용할 수 있으며, 이 사이트의 안내 문장과 구성은 운영자에게 저작권이 있습니다.</p>
+    </section>
+    <section class="box">
+      <h2>6. 변경</h2>
+      <p>서비스 내용과 약관은 바뀔 수 있으며, 바뀌면 이 페이지의 수정일을 고칩니다. 문의는 <a href="/contact/">문의·정정 요청</a>을 이용하세요.</p>
+    </section>`);
+
+// ---------------------------------------------------------------- 404
+write("/404.html", page({
+  route: "/404.html",
+  title: `페이지를 찾을 수 없습니다 | ${SITE_NAME}`,
+  description: "요청한 페이지를 찾을 수 없습니다.",
+  noindex: true,
+  narrow: true,
+  body: `
+    <div class="page-head">
+      <h1>페이지를 찾을 수 없습니다</h1>
+      <p class="lead">주소가 바뀌었거나 없어진 페이지입니다. 아래에서 다시 찾아보세요.</p>
+    </div>
+    <p class="cta-row"><a class="btn" href="${FINDER_ROUTE}">집하장 주소 찾기</a><a class="btn-line" href="/guide/">배출 방법 보기</a><a class="btn-line" href="/">처음으로</a></p>`
+}));
+
+console.log(`Generated ${written.length} pages (${provinces.filter(hasProvincePage).length} province pages, ${GUIDES.length} guides). Duplicate extra rows: ${totalDuplicates}, rows without 읍·면: ${totalNoArea}.`);

@@ -1,78 +1,56 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { loadRows, groupRegions, hasProvincePage } from "./lib/farm-data.mjs";
+import { GUIDES } from "./lib/guides.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const siteRoot = path.join(root, "site");
 const siteUrl = "https://sumimap.com";
-const lastmod = "2026-08-14";
-const farmFinderRoute = "/kr/farm-waste-collection/";
-const farmHubRoute = "/kr/";
-const farmFinderLastmod = "2026-10-15";
-const farmHubLastmod = "2026-09-24";
-const agricultureHomeLastmod = "2026-09-27";
-const updatedRoutes = new Set(["/", "/about/", "/sources/", "/editorial/", "/japan/", "/japan/about/", "/japan/editorial/"]);
-const evidenceUpdatedRoutes = new Set(["/about/", "/sources/", "/editorial/"]);
+const lastmod = "2026-10-26";
+const finderRoute = "/kr/farm-waste-collection/";
 
+const provinceRoutes = groupRegions(loadRows()).filter(hasProvincePage).map((province) => `/kr/${province.slug}/`);
+const guideRoutes = GUIDES.map((guide) => guide.route);
 const sitemapRoutes = [
   "/",
-  "/guide/",
-  "/routes/",
-  "/routes/battery/",
-  "/routes/restroom/",
-  "/routes/rain/",
-  "/routes/rest/",
-  "/routes/station/",
-  "/routes/first-day/",
-  "/routes/korean/",
-  "/cities/",
-  "/cities/tokyo/",
-  "/cities/osaka/",
-  "/cities/kyoto/",
-  "/cities/fukuoka/",
-  "/cities/sapporo/",
-  "/cities/nagoya/",
-  "/sources/",
+  finderRoute,
+  "/kr/",
+  ...provinceRoutes,
+  ...guideRoutes,
   "/about/",
+  "/sources/",
   "/editorial/",
   "/policy/",
-  "/privacy/",
-  "/terms/",
   "/contact/",
-  "/japan/",
-  "/japan/about/",
-  "/japan/editorial/",
-  farmHubRoute,
-  farmFinderRoute
+  "/privacy/",
+  "/terms/"
 ];
-
-const feedRoutes = sitemapRoutes.filter((route) =>
-  route === "/guide/" || route === "/routes/" || route.startsWith("/routes/") ||
-  route === "/cities/" || route.startsWith("/cities/") || route === "/sources/" || route === farmHubRoute || route === farmFinderRoute
-);
+const feedRoutes = [finderRoute, ...guideRoutes, "/kr/", ...provinceRoutes];
 
 for (const route of sitemapRoutes) {
   const file = route === "/" ? path.join(siteRoot, "index.html") : path.join(siteRoot, ...route.split("/").filter(Boolean), "index.html");
   if (!fs.existsSync(file)) throw new Error(`Missing allowlisted public page: ${route}`);
 }
 
+const priority = (route) => route === "/" ? "1.0" : route === finderRoute ? "0.9" : route.startsWith("/guide/") || route.startsWith("/kr/") ? "0.8" : "0.4";
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${sitemapRoutes.map((route, index) => `  <url><loc>${siteUrl}${route}</loc><lastmod>${route === farmFinderRoute ? farmFinderLastmod : route === farmHubRoute ? farmHubLastmod : route === "/about/" ? "2026-10-26" : evidenceUpdatedRoutes.has(route) ? "2026-10-15" : updatedRoutes.has(route) ? agricultureHomeLastmod : lastmod}</lastmod><changefreq>${index === 0 ? "weekly" : "monthly"}</changefreq><priority>${index === 0 ? "1.0" : route === farmFinderRoute ? "0.9" : "0.8"}</priority></url>`).join("\n")}
+${sitemapRoutes.map((route) => `  <url><loc>${siteUrl}${route}</loc><lastmod>${lastmod}</lastmod><changefreq>${route === "/" || route === finderRoute ? "weekly" : "monthly"}</changefreq><priority>${priority(route)}</priority></url>`).join("\n")}
 </urlset>
 `;
 
 const items = feedRoutes.map((route) => {
   const file = path.join(siteRoot, ...route.split("/").filter(Boolean), "index.html");
   const html = fs.readFileSync(file, "utf8");
-  const title = decodeHtml(match(html, /<title>([^<]+)<\/title>/i)).replace(/\s+-\s+영농폐기물 집하장 지도$/, "");
+  const title = decodeHtml(match(html, /<title>([^<]+)<\/title>/i)).replace(/\s+\|\s+영농폐기물 집하장 지도$/, "");
   const description = decodeHtml(match(html, /<meta\s+name="description"\s+content="([^"]+)"/i));
   const url = `${siteUrl}${route}`;
   return `    <item>
       <title>${xml(title)}</title>
       <link>${url}</link>
       <guid>${url}</guid>
-      <pubDate>${route === farmFinderRoute || route === farmHubRoute ? "Wed, 23 Sep 2026 15:00:00 GMT" : "Thu, 13 Aug 2026 15:00:00 GMT"}</pubDate>
+      <pubDate>Mon, 26 Oct 2026 00:00:00 GMT</pubDate>
       <description>${xml(description)}</description>
     </item>`;
 }).join("\n");
@@ -80,11 +58,11 @@ const items = feedRoutes.map((route) => {
 const feed = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
   <channel>
-    <title>영농폐기물 집하장 지도 - 농촌 공공정보와 이전 생활 가이드</title>
+    <title>영농폐기물 집하장 지도</title>
     <link>${siteUrl}/</link>
-    <description>한국 농촌 공공주소 자료와 이전 일본 생활 안내의 원문 확인 방법을 다루는 영농폐기물 집하장 지도 자료 피드.</description>
+    <description>영농폐기물 공동집하장 주소 찾기와 폐비닐·농약 빈 용기 등 종류별 배출 방법 안내.</description>
     <language>ko-KR</language>
-    <lastBuildDate>Wed, 14 Oct 2026 15:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Mon, 26 Oct 2026 00:00:00 GMT</lastBuildDate>
 ${items}
   </channel>
 </rss>

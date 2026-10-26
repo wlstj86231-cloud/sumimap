@@ -27,9 +27,29 @@ for (const file of htmlFiles) {
   }
 }
 
-const app = fs.readFileSync(path.join(site, "assets", "app.js"), "utf8");
+const retiredPrefixes = ["/japan/", "/routes/", "/cities/", "/spots/"];
+for (const file of htmlFiles) {
+  const relative = path.relative(site, file).replaceAll(path.sep, "/");
+  const html = fs.readFileSync(file, "utf8");
+  for (const match of html.matchAll(/href=["'](\/[^"'#?]*)/gi)) {
+    if (retiredPrefixes.some((prefix) => match[1].startsWith(prefix))) failures.push(`${relative}: links to retired route ${match[1]}`);
+  }
+  if (/스미맵|Sumimap(?!-)/.test(html.replace(/sumimap\.com|sumimap:last-region|wlstj86231-cloud\/sumimap/gi, ""))) failures.push(`${relative}: old brand name`);
+}
+
+const finderFile = fs.readdirSync(path.join(site, "assets")).find((name) => /^finder-\d+\.js$/.test(name));
+if (!finderFile) failures.push("assets: finder script missing");
+const finder = finderFile ? fs.readFileSync(path.join(site, "assets", finderFile), "utf8") : "";
 for (const token of ["/api/reports", "/api/feedback", "getTrustScore", "feedbackApiUrl", "reportApiUrl"]) {
-  if (app.includes(token)) failures.push(`app.js: retired runtime token ${token}`);
+  if (finder.includes(token)) failures.push(`${finderFile}: retired runtime token ${token}`);
+}
+const dataDir = path.join(site, "data", "farm-waste");
+const dataFiles = fs.existsSync(dataDir) ? walk(dataDir).filter((file) => file.endsWith(".json")) : [];
+const dataRows = dataFiles.reduce((sum, file) => sum + JSON.parse(fs.readFileSync(file, "utf8")).rows.length, 0);
+if (dataFiles.length !== 14 || dataRows !== 9553) failures.push(`finder data: expected 14 files / 9553 rows, got ${dataFiles.length} / ${dataRows}`);
+const sw = fs.readFileSync(path.join(site, "sw.js"), "utf8");
+for (const asset of [...sw.matchAll(/"(\/assets\/[^"]+)"/g)].map((match) => match[1])) {
+  if (!fs.existsSync(path.join(site, ...asset.split("?")[0].split("/").filter(Boolean)))) failures.push(`sw.js: precached asset missing ${asset}`);
 }
 
 const notFound = fs.readFileSync(path.join(site, "404.html"), "utf8");
@@ -44,7 +64,7 @@ JSON.parse(fs.readFileSync(path.join(site, "manifest.webmanifest"), "utf8"));
 const sitemap = fs.readFileSync(path.join(site, "sitemap.xml"), "utf8");
 const sitemapUrls = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]);
 if (sitemapUrls.length !== new Set(sitemapUrls).size) failures.push("sitemap.xml: duplicate URLs");
-if (sitemapUrls.some((url) => url.includes("/spots/") || url.includes("review-readiness"))) failures.push("sitemap.xml: retired URL included");
+if (sitemapUrls.some((url) => retiredPrefixes.some((prefix) => url.includes(prefix)) || url.includes("review-readiness"))) failures.push("sitemap.xml: retired URL included");
 
 if (failures.length) {
   console.error(`Static verification failed (${failures.length})`);

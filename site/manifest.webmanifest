@@ -1,12 +1,12 @@
 {
   "name": "영농폐기물 집하장 지도",
-  "short_name": "영농폐기물집하장지도",
-  "description": "영농폐기물 공동집하장 주소 검색과 농촌 공공자료 확인",
-  "start_url": "/",
+  "short_name": "집하장 지도",
+  "description": "가까운 영농폐기물 공동집하장 주소 찾기와 폐비닐·농약 빈 용기 배출 방법",
+  "start_url": "/kr/farm-waste-collection/",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#f7f4ed",
-  "theme_color": "#f7f4ed",
+  "background_color": "#f4f7f2",
+  "theme_color": "#1d6a41",
   "icons": [
     {
       "src": "/assets/icon.svg",

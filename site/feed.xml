@@ -1,143 +1,157 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
   <channel>
-    <title>영농폐기물 집하장 지도 - 농촌 공공정보와 이전 생활 가이드</title>
+    <title>영농폐기물 집하장 지도</title>
     <link>https://sumimap.com/</link>
-    <description>한국 농촌 공공주소 자료와 이전 일본 생활 안내의 원문 확인 방법을 다루는 영농폐기물 집하장 지도 자료 피드.</description>
+    <description>영농폐기물 공동집하장 주소 찾기와 폐비닐·농약 빈 용기 등 종류별 배출 방법 안내.</description>
     <language>ko-KR</language>
-    <lastBuildDate>Wed, 14 Oct 2026 15:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Mon, 26 Oct 2026 00:00:00 GMT</lastBuildDate>
     <item>
-      <title>일본 생활 지도 이용 가이드: 공식 원문과 현장 확인 순서</title>
-      <link>https://sumimap.com/guide/</link>
-      <guid>https://sumimap.com/guide/</guid>
-      <pubDate>Thu, 13 Aug 2026 15:00:00 GMT</pubDate>
-      <description>일본 생활 지도 핀의 의미, 공식 원문과 자료 대조일을 읽는 법, 화장실·충전·다국어 안내를 현장에서 재확인하는 순서를 설명합니다.</description>
-    </item>
-    <item>
-      <title>일본 생활 상황별 확인 순서</title>
-      <link>https://sumimap.com/routes/</link>
-      <guid>https://sumimap.com/routes/</guid>
-      <pubDate>Thu, 13 Aug 2026 15:00:00 GMT</pubDate>
-      <description>배터리 부족, 화장실 급함, 비·대기, 역 환승, 일본 첫날과 언어 안내 상황에서 공식 원문을 여는 순서를 고르는 허브입니다.</description>
-    </item>
-    <item>
-      <title>일본에서 배터리 부족할 때 공식 충전 위치 확인법</title>
-      <link>https://sumimap.com/routes/battery/</link>
-      <guid>https://sumimap.com/routes/battery/</guid>
-      <pubDate>Thu, 13 Aug 2026 15:00:00 GMT</pubDate>
-      <description>일본에서 휴대전화 배터리가 부족할 때 공식 보조배터리 설치 지도, 대여 상태, 요금, 결제와 반납 위치를 확인하는 순서입니다.</description>
-    </item>
-    <item>
-      <title>일본에서 화장실 급할 때 공식 시설 확인 순서</title>
-      <link>https://sumimap.com/routes/restroom/</link>
-      <guid>https://sumimap.com/routes/restroom/</guid>
-      <pubDate>Thu, 13 Aug 2026 15:00:00 GMT</pubDate>
-      <description>일본 대형역과 관광지에서 공중화장실, 개찰 안팎, 층, 운영시간과 대체 후보를 공식 자료로 확인하는 순서입니다.</description>
-    </item>
-    <item>
-      <title>일본에서 비·폭염을 피할 때 공식 정보 확인법</title>
-      <link>https://sumimap.com/routes/rain/</link>
-      <guid>https://sumimap.com/routes/rain/</guid>
-      <pubDate>Thu, 13 Aug 2026 15:00:00 GMT</pubDate>
-      <description>일본에서 비, 호우, 폭염을 만났을 때 기상청 경보와 공공 실내 동선을 확인하고 통행 공간과 휴게공간을 구분하는 방법입니다.</description>
-    </item>
-    <item>
-      <title>일본에서 잠깐 쉬기 전 확인할 공공 동선</title>
-      <link>https://sumimap.com/routes/rest/</link>
-      <guid>https://sumimap.com/routes/rest/</guid>
-      <pubDate>Thu, 13 Aug 2026 15:00:00 GMT</pubDate>
-      <description>일본 역과 관광지에서 통행 공간, 대기 공간, 실제 휴게공간을 구분하고 운영시간과 이용 규칙을 확인하는 방법입니다.</description>
-    </item>
-    <item>
-      <title>일본 대형역에서 출구·시설을 확인하는 순서</title>
-      <link>https://sumimap.com/routes/station/</link>
-      <guid>https://sumimap.com/routes/station/</guid>
-      <pubDate>Thu, 13 Aug 2026 15:00:00 GMT</pubDate>
-      <description>도쿄역, 난바역, 하카타역 같은 대형역에서 운영사, 개찰 안팎, 출구, 층과 배리어프리 동선을 공식 구내도로 확인합니다.</description>
-    </item>
-    <item>
-      <title>일본 도착 첫날 생활 정보 확인 순서</title>
-      <link>https://sumimap.com/routes/first-day/</link>
-      <guid>https://sumimap.com/routes/first-day/</guid>
-      <pubDate>Thu, 13 Aug 2026 15:00:00 GMT</pubDate>
-      <description>일본 도착 첫날 정부 생활 포털, 인증 관광안내소, 교통기관 원문을 이용해 통신·교통·상담과 기본 동선을 정리하는 방법입니다.</description>
-    </item>
-    <item>
-      <title>일본에서 한국어·다국어 공식 안내를 찾는 법</title>
-      <link>https://sumimap.com/routes/korean/</link>
-      <guid>https://sumimap.com/routes/korean/</guid>
-      <pubDate>Thu, 13 Aug 2026 15:00:00 GMT</pubDate>
-      <description>일본 정부 생활지원 포털, JNTO 인증 관광안내소와 도시별 외국인 상담에서 한국어 지원 범위와 시간을 확인하는 방법입니다.</description>
-    </item>
-    <item>
-      <title>일본 6개 도시 공식 시설 확인 가이드</title>
-      <link>https://sumimap.com/cities/</link>
-      <guid>https://sumimap.com/cities/</guid>
-      <pubDate>Thu, 13 Aug 2026 15:00:00 GMT</pubDate>
-      <description>도쿄·오사카·교토·후쿠오카·삿포로·나고야에서 지자체와 교통기관의 공식 시설 지도를 찾는 도시별 허브입니다.</description>
-    </item>
-    <item>
-      <title>도쿄 공식 생활시설 지도 읽기</title>
-      <link>https://sumimap.com/cities/tokyo/</link>
-      <guid>https://sumimap.com/cities/tokyo/</guid>
-      <pubDate>Thu, 13 Aug 2026 15:00:00 GMT</pubDate>
-      <description>도쿄도 공식 통합지도, JR동일본 역 안내와 외국인 상담 원문으로 화장실·Wi-Fi·출구·다국어 상담을 확인합니다.</description>
-    </item>
-    <item>
-      <title>오사카 공식 화장실·역 동선 확인 가이드</title>
-      <link>https://sumimap.com/cities/osaka/</link>
-      <guid>https://sumimap.com/cities/osaka/</guid>
-      <pubDate>Thu, 13 Aug 2026 15:00:00 GMT</pubDate>
-      <description>오사카시 공중화장실 지도, Osaka Metro 난바역 구내도와 한국어 생활 안내로 지하 동선과 공공시설을 확인합니다.</description>
-    </item>
-    <item>
-      <title>교토 공식 공중·관광 화장실 확인 가이드</title>
-      <link>https://sumimap.com/cities/kyoto/</link>
-      <guid>https://sumimap.com/cities/kyoto/</guid>
-      <pubDate>Thu, 13 Aug 2026 15:00:00 GMT</pubDate>
-      <description>교토시 공중화장실 지도와 관광화장실 제도, 외국 국적 주민 상담 원문으로 기온·교토역 주변 이용 조건을 확인합니다.</description>
-    </item>
-    <item>
-      <title>후쿠오카 하카타·텐진 공식 역 시설 가이드</title>
-      <link>https://sumimap.com/cities/fukuoka/</link>
-      <guid>https://sumimap.com/cities/fukuoka/</guid>
-      <pubDate>Thu, 13 Aug 2026 15:00:00 GMT</pubDate>
-      <description>후쿠오카시 지하철과 JR큐슈 하카타역 공식 안내, 외국인 생활 상담으로 출구·화장실·역 설비를 확인합니다.</description>
-    </item>
-    <item>
-      <title>삿포로 겨울철 화장실·배리어프리 확인 가이드</title>
-      <link>https://sumimap.com/cities/sapporo/</link>
-      <guid>https://sumimap.com/cities/sapporo/</guid>
-      <pubDate>Thu, 13 Aug 2026 15:00:00 GMT</pubDate>
-      <description>삿포로시 지하철 구내도, 배리어프리 타운맵과 공원 화장실 동절기 안내로 겨울 이용 제한과 대체 동선을 확인합니다.</description>
-    </item>
-    <item>
-      <title>나고야역 배리어프리·화장실 공식 가이드</title>
-      <link>https://sumimap.com/cities/nagoya/</link>
-      <guid>https://sumimap.com/cities/nagoya/</guid>
-      <pubDate>Thu, 13 Aug 2026 15:00:00 GMT</pubDate>
-      <description>나고야시 배리어프리 외출 내비와 교통국 화장실 안내, 한국어 생활 가이드로 환승 설비와 공공 창구를 확인합니다.</description>
-    </item>
-    <item>
-      <title>공식 출처와 검수 방법</title>
-      <link>https://sumimap.com/sources/</link>
-      <guid>https://sumimap.com/sources/</guid>
-      <pubDate>Thu, 13 Aug 2026 15:00:00 GMT</pubDate>
-      <description>영농폐기물 집하장 지도의 한국환경공단 공동집하장 주소자료와 처리 방법, 이전 일본 생활 지도에 사용한 공식 출처와 검수일.</description>
-    </item>
-    <item>
-      <title>농촌 공공주소 확인 방법</title>
-      <link>https://sumimap.com/kr/</link>
-      <guid>https://sumimap.com/kr/</guid>
-      <pubDate>Wed, 23 Sep 2026 15:00:00 GMT</pubDate>
-      <description>영농폐기물 공동집하장 같은 농촌 공공주소를 공식 원문과 대조하고, 실제 방문 전에 운영 여부와 수거 품목을 확인하는 방법.</description>
-    </item>
-    <item>
-      <title>전국 공동집하장 주소 검색 | 영농폐기물 집하장 지도</title>
+      <title>전국 영농폐기물 공동집하장 주소 찾기 (시·군·읍면별)</title>
       <link>https://sumimap.com/kr/farm-waste-collection/</link>
       <guid>https://sumimap.com/kr/farm-waste-collection/</guid>
-      <pubDate>Wed, 23 Sep 2026 15:00:00 GMT</pubDate>
-      <description>한국환경공단 2025년 공개자료에서 시도·시군구별 영농폐기물 공동집하장 주소를 찾고 방문 후보 3곳을 비교하세요. 운영 여부와 수거 품목은 지자체에 재확인해야 합니다.</description>
+      <pubDate>Mon, 26 Oct 2026 00:00:00 GMT</pubDate>
+      <description>한국환경공단 2025년 공개자료의 영농폐기물 공동집하장 주소 9,553건을 시·도 → 시·군·구 → 읍·면·동 순서로 찾고, 주소 복사와 네이버·카카오 지도 검색을 바로 이용하세요.</description>
+    </item>
+    <item>
+      <title>영농폐기물 종류별 배출 방법 한눈에 보기</title>
+      <link>https://sumimap.com/guide/</link>
+      <guid>https://sumimap.com/guide/</guid>
+      <pubDate>Mon, 26 Oct 2026 00:00:00 GMT</pubDate>
+      <description>폐비닐, 농약 빈 용기, 남은 농약, 영양제 병, 비료 포대, 차광막을 각각 어디에 어떻게 내놓는지 한국환경공단과 지자체 공식 안내로 정리했습니다.</description>
+    </item>
+    <item>
+      <title>영농 폐비닐 버리는 방법: 하우스·멀칭 구분과 집하장 배출</title>
+      <link>https://sumimap.com/guide/vinyl/</link>
+      <guid>https://sumimap.com/guide/vinyl/</guid>
+      <pubDate>Mon, 26 Oct 2026 00:00:00 GMT</pubDate>
+      <description>걷어 낸 하우스·멀칭 폐비닐을 흙과 잡초를 털어 종류·색깔별로 묶고 공동집하장에 내놓는 순서, 보상금과 하지 말아야 할 일을 공식 안내로 정리했습니다.</description>
+    </item>
+    <item>
+      <title>농약 빈 용기(빈병·봉지) 배출 방법과 수거비</title>
+      <link>https://sumimap.com/guide/pesticide-containers/</link>
+      <guid>https://sumimap.com/guide/pesticide-containers/</guid>
+      <pubDate>Mon, 26 Oct 2026 00:00:00 GMT</pubDate>
+      <description>농약 빈병과 봉지를 유리병·플라스틱병·봉지류로 나누는 방법, ‘농약’ 표기 확인, 뚜껑 분리, 1kg당 수거비를 한국환경공단과 지자체 안내로 정리했습니다.</description>
+    </item>
+    <item>
+      <title>남은 농약·유효기간 지난 농약 처리 방법</title>
+      <link>https://sumimap.com/guide/leftover-pesticide/</link>
+      <guid>https://sumimap.com/guide/leftover-pesticide/</guid>
+      <pubDate>Mon, 26 Oct 2026 00:00:00 GMT</pubDate>
+      <description>쓰고 남은 농약과 유효기간이 지난 농약은 빈 용기 수거함에 넣지 않습니다. 구입처 반납, 읍·면사무소 폐농약 수거, 보관 방법을 농림축산식품부와 지자체 안내로 정리했습니다.</description>
+    </item>
+    <item>
+      <title>영양제 병·비료 포대·차광막·부직포 버리는 법</title>
+      <link>https://sumimap.com/guide/other-farm-waste/</link>
+      <guid>https://sumimap.com/guide/other-farm-waste/</guid>
+      <pubDate>Mon, 26 Oct 2026 00:00:00 GMT</pubDate>
+      <description>공동집하장에서 받지 않거나 따로 나눠야 하는 영양제·유기농자재 병, 곤포사일리지 필름과 비료·사료 포대, 차광막·부직포·반사필름 처리 방법을 지자체 안내로 정리했습니다.</description>
+    </item>
+    <item>
+      <title>공동집하장 가기 전 확인할 5가지와 전화 문의 요령</title>
+      <link>https://sumimap.com/guide/before-visit/</link>
+      <guid>https://sumimap.com/guide/before-visit/</guid>
+      <pubDate>Mon, 26 Oct 2026 00:00:00 GMT</pubDate>
+      <description>공개자료에는 집하장 운영 요일·수거일·받는 품목·연락처가 없습니다. 읍·면사무소에 무엇을 어떻게 물어보면 되는지, 지도에서 주소를 찾을 때 주의할 점을 정리했습니다.</description>
+    </item>
+    <item>
+      <title>폐비닐·농자재를 밭에서 태우거나 묻으면: 폐기물관리법 기준</title>
+      <link>https://sumimap.com/guide/no-burning/</link>
+      <guid>https://sumimap.com/guide/no-burning/</guid>
+      <pubDate>Mon, 26 Oct 2026 00:00:00 GMT</pubDate>
+      <description>폐비닐과 농자재를 밭에서 태우거나 묻는 행위에 대한 폐기물관리법 제8조·제68조 기준과 과태료, 대신 이용할 수거 체계를 국가법령정보센터 원문으로 정리했습니다.</description>
+    </item>
+    <item>
+      <title>시·도별 영농폐기물 공동집하장 목록</title>
+      <link>https://sumimap.com/kr/</link>
+      <guid>https://sumimap.com/kr/</guid>
+      <pubDate>Mon, 26 Oct 2026 00:00:00 GMT</pubDate>
+      <description>14개 시·도의 영농폐기물 공동집하장 주소 건수와 시·군·구 수를 한눈에 보고, 시·군·읍면별 목록으로 들어가세요. 주소 자료를 읽을 때 주의할 점도 함께 정리했습니다.</description>
+    </item>
+    <item>
+      <title>강원특별자치도 영농폐기물 공동집하장 주소 1,175건 - 시·군·읍면별</title>
+      <link>https://sumimap.com/kr/gangwon/</link>
+      <guid>https://sumimap.com/kr/gangwon/</guid>
+      <pubDate>Mon, 26 Oct 2026 00:00:00 GMT</pubDate>
+      <description>강원특별자치도 18개 시·군·구의 영농폐기물 공동집하장 주소 1,175건을 읍·면·동별로 나눠 봅니다. 횡성군 213건, 평창군 154건, 정선군 116건. 한국환경공단 2025년 공개자료 기준.</description>
+    </item>
+    <item>
+      <title>경기도 영농폐기물 공동집하장 주소 536건 - 시·군·읍면별</title>
+      <link>https://sumimap.com/kr/gyeonggi/</link>
+      <guid>https://sumimap.com/kr/gyeonggi/</guid>
+      <pubDate>Mon, 26 Oct 2026 00:00:00 GMT</pubDate>
+      <description>경기도 14개 시·군·구의 영농폐기물 공동집하장 주소 536건을 읍·면·동별로 나눠 봅니다. 화성시 232건, 여주시 124건, 이천시 63건. 한국환경공단 2025년 공개자료 기준.</description>
+    </item>
+    <item>
+      <title>경상남도 영농폐기물 공동집하장 주소 1,076건 - 시·군·읍면별</title>
+      <link>https://sumimap.com/kr/gyeongnam/</link>
+      <guid>https://sumimap.com/kr/gyeongnam/</guid>
+      <pubDate>Mon, 26 Oct 2026 00:00:00 GMT</pubDate>
+      <description>경상남도 18개 시·군·구의 영농폐기물 공동집하장 주소 1,076건을 읍·면·동별로 나눠 봅니다. 남해군 190건, 창녕군 190건, 합천군 167건. 한국환경공단 2025년 공개자료 기준.</description>
+    </item>
+    <item>
+      <title>경상북도 영농폐기물 공동집하장 주소 2,608건 - 시·군·읍면별</title>
+      <link>https://sumimap.com/kr/gyeongbuk/</link>
+      <guid>https://sumimap.com/kr/gyeongbuk/</guid>
+      <pubDate>Mon, 26 Oct 2026 00:00:00 GMT</pubDate>
+      <description>경상북도 21개 시·군·구의 영농폐기물 공동집하장 주소 2,608건을 읍·면·동별로 나눠 봅니다. 의성군 431건, 안동시 358건, 상주시 271건. 한국환경공단 2025년 공개자료 기준.</description>
+    </item>
+    <item>
+      <title>대구광역시 영농폐기물 공동집하장 주소 200건 - 시·군·읍면별</title>
+      <link>https://sumimap.com/kr/daegu/</link>
+      <guid>https://sumimap.com/kr/daegu/</guid>
+      <pubDate>Mon, 26 Oct 2026 00:00:00 GMT</pubDate>
+      <description>대구광역시 2개 시·군·구의 영농폐기물 공동집하장 주소 200건을 읍·면·동별로 나눠 봅니다. 군위군 181건, 달성군 19건. 한국환경공단 2025년 공개자료 기준.</description>
+    </item>
+    <item>
+      <title>세종특별자치시 영농폐기물 공동집하장 주소 41건 - 시·군·읍면별</title>
+      <link>https://sumimap.com/kr/sejong/</link>
+      <guid>https://sumimap.com/kr/sejong/</guid>
+      <pubDate>Mon, 26 Oct 2026 00:00:00 GMT</pubDate>
+      <description>세종특별자치시 1개 시·군·구의 영농폐기물 공동집하장 주소 41건을 읍·면·동별로 나눠 봅니다. 세종특별자치시 41건. 한국환경공단 2025년 공개자료 기준.</description>
+    </item>
+    <item>
+      <title>인천광역시 영농폐기물 공동집하장 주소 24건 - 시·군·읍면별</title>
+      <link>https://sumimap.com/kr/incheon/</link>
+      <guid>https://sumimap.com/kr/incheon/</guid>
+      <pubDate>Mon, 26 Oct 2026 00:00:00 GMT</pubDate>
+      <description>인천광역시 4개 시·군·구의 영농폐기물 공동집하장 주소 24건을 읍·면·동별로 나눠 봅니다. 강화군 11건, 옹진군 10건, 중구 2건. 한국환경공단 2025년 공개자료 기준.</description>
+    </item>
+    <item>
+      <title>전라남도 영농폐기물 공동집하장 주소 1,445건 - 시·군·읍면별</title>
+      <link>https://sumimap.com/kr/jeonnam/</link>
+      <guid>https://sumimap.com/kr/jeonnam/</guid>
+      <pubDate>Mon, 26 Oct 2026 00:00:00 GMT</pubDate>
+      <description>전라남도 20개 시·군·구의 영농폐기물 공동집하장 주소 1,445건을 읍·면·동별로 나눠 봅니다. 해남군 344건, 고흥군 163건, 무안군 136건. 한국환경공단 2025년 공개자료 기준.</description>
+    </item>
+    <item>
+      <title>전북특별자치도 영농폐기물 공동집하장 주소 610건 - 시·군·읍면별</title>
+      <link>https://sumimap.com/kr/jeonbuk/</link>
+      <guid>https://sumimap.com/kr/jeonbuk/</guid>
+      <pubDate>Mon, 26 Oct 2026 00:00:00 GMT</pubDate>
+      <description>전북특별자치도 13개 시·군·구의 영농폐기물 공동집하장 주소 610건을 읍·면·동별로 나눠 봅니다. 순창군 144건, 무주군 85건, 남원시 65건. 한국환경공단 2025년 공개자료 기준.</description>
+    </item>
+    <item>
+      <title>제주특별자치도 영농폐기물 공동집하장 주소 144건 - 시·군·읍면별</title>
+      <link>https://sumimap.com/kr/jeju/</link>
+      <guid>https://sumimap.com/kr/jeju/</guid>
+      <pubDate>Mon, 26 Oct 2026 00:00:00 GMT</pubDate>
+      <description>제주특별자치도 2개 시·군·구의 영농폐기물 공동집하장 주소 144건을 읍·면·동별로 나눠 봅니다. 제주시 78건, 서귀포시 66건. 한국환경공단 2025년 공개자료 기준.</description>
+    </item>
+    <item>
+      <title>충청남도 영농폐기물 공동집하장 주소 519건 - 시·군·읍면별</title>
+      <link>https://sumimap.com/kr/chungnam/</link>
+      <guid>https://sumimap.com/kr/chungnam/</guid>
+      <pubDate>Mon, 26 Oct 2026 00:00:00 GMT</pubDate>
+      <description>충청남도 14개 시·군·구의 영농폐기물 공동집하장 주소 519건을 읍·면·동별로 나눠 봅니다. 태안군 78건, 당진시 58건, 청양군 51건. 한국환경공단 2025년 공개자료 기준.</description>
+    </item>
+    <item>
+      <title>충청북도 영농폐기물 공동집하장 주소 1,164건 - 시·군·읍면별</title>
+      <link>https://sumimap.com/kr/chungbuk/</link>
+      <guid>https://sumimap.com/kr/chungbuk/</guid>
+      <pubDate>Mon, 26 Oct 2026 00:00:00 GMT</pubDate>
+      <description>충청북도 14개 시·군·구의 영농폐기물 공동집하장 주소 1,164건을 읍·면·동별로 나눠 봅니다. 괴산군 222건, 제천시 163건, 충주시 157건. 한국환경공단 2025년 공개자료 기준.</description>
     </item>
   </channel>
 </rss>
