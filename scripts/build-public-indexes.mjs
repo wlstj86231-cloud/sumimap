@@ -65,7 +65,7 @@ ${sitemapRoutes.map((route, index) => `  <url><loc>${siteUrl}${route}</loc><last
 const items = feedRoutes.map((route) => {
   const file = path.join(siteRoot, ...route.split("/").filter(Boolean), "index.html");
   const html = fs.readFileSync(file, "utf8");
-  const title = decodeHtml(match(html, /<title>([^<]+)<\/title>/i)).replace(/\s+-\s+스미맵$/, "");
+  const title = decodeHtml(match(html, /<title>([^<]+)<\/title>/i)).replace(/\s+-\s+영농폐기물 집하장 지도$/, "");
   const description = decodeHtml(match(html, /<meta\s+name="description"\s+content="([^"]+)"/i));
   const url = `${siteUrl}${route}`;
   return `    <item>
@@ -80,9 +80,9 @@ const items = feedRoutes.map((route) => {
 const feed = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
   <channel>
-    <title>스미맵 농촌 공공정보와 이전 생활 가이드</title>
+    <title>영농폐기물 집하장 지도 - 농촌 공공정보와 이전 생활 가이드</title>
     <link>${siteUrl}/</link>
-    <description>한국 농촌 공공주소 자료와 이전 일본 생활 안내의 원문 확인 방법을 다루는 스미맵 자료 피드.</description>
+    <description>한국 농촌 공공주소 자료와 이전 일본 생활 안내의 원문 확인 방법을 다루는 영농폐기물 집하장 지도 자료 피드.</description>
     <language>ko-KR</language>
     <lastBuildDate>Wed, 14 Oct 2026 15:00:00 GMT</lastBuildDate>
 ${items}

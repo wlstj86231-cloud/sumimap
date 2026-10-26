@@ -111,9 +111,9 @@ function place(id, name, nameJa, area, areaJa, city, category, lat, lng, sourceK
 }
 
 const uiJa = {
-  "스미맵": "スミマップ",
+  "영농폐기물 집하장 지도": "営農廃棄物 集荷場マップ",
   "일본 생활 확인 지도": "日本生活 確認マップ",
-  "스미맵 - 일본 생활 확인 지도": "スミマップ - 日本生活 確認マップ",
+  "이전 일본 생활 확인 지도 | 영농폐기물 집하장 지도": "以前の日本生活 確認マップ | 営農廃棄物 集荷場マップ",
   "공식 원문과 현장 안내를 함께 확인하는 일본 생활 지도.": "公式情報と現地案内を一緒に確認する日本生活マップ。",
   "현재 위치로 이동": "現在地へ移動",
   "검색 열기": "検索を開く",
@@ -153,7 +153,7 @@ const uiJa = {
   "이 브라우저에만 저장되며 서버로 전송되지 않습니다.": "このブラウザだけに保存され、サーバーには送信されません。",
   "저장한 곳이 없습니다": "保存した場所はありません",
   "장소 상세에서 저장하기를 누르면 여기에 모입니다.": "詳細で保存するとここに表示されます。",
-  "스미맵 이용 기준": "スミマップの利用基準",
+  "일본 생활 지도 이용 기준": "日本生活マップの利用基準",
   "공식 자료의 범위와 현장 재확인 원칙을 먼저 읽어주세요.": "公式情報の範囲と現地再確認の原則を先にお読みください。",
   "자료 출처": "情報源",
   "도시 가이드": "都市ガイド",
@@ -358,16 +358,16 @@ function applyEntryParams() {
 function applyLanguage() {
   const japanese = state.language === "ja";
   document.documentElement.lang = japanese ? "ja" : "ko";
-  document.title = t("스미맵 - 일본 생활 확인 지도");
+  document.title = t("이전 일본 생활 확인 지도 | 영농폐기물 집하장 지도");
   const description = t("공식 원문과 현장 안내를 함께 확인하는 일본 생활 지도.");
   document.querySelector("meta[name='description']")?.setAttribute("content", description);
   document.querySelector("meta[property='og:title']")?.setAttribute("content", document.title);
   document.querySelector("meta[property='og:description']")?.setAttribute("content", description);
   document.querySelector("meta[name='twitter:title']")?.setAttribute("content", document.title);
   document.querySelector("meta[name='twitter:description']")?.setAttribute("content", description);
-  document.querySelector(".brand strong").textContent = t("스미맵");
+  document.querySelector(".brand strong").textContent = t("영농폐기물 집하장 지도");
   document.querySelector(".brand small").textContent = t("일본 생활 확인 지도");
-  document.querySelector(".brand-mark").textContent = japanese ? "す" : "스";
+  document.querySelector(".brand-mark").textContent = japanese ? "営" : "영";
   els.locate?.setAttribute("aria-label", t("현재 위치로 이동"));
   els.searchToggle?.setAttribute("aria-label", t(els.searchPanel?.hidden ? "검색 열기" : "검색 닫기"));
   els.language?.setAttribute("aria-label", t(japanese ? "한국어로 보기" : "일본어로 보기"));
@@ -498,7 +498,7 @@ function renderSaved() {
 function renderGuide() {
   return `
     <button class="sheet-grip" type="button" data-sheet-toggle aria-label="${escapeAttr(t("패널 닫기"))}"></button>
-    <div class="sheet-head" data-sheet-toggle><div><h2>${t("스미맵 이용 기준")}</h2><p>${t("공식 자료의 범위와 현장 재확인 원칙을 먼저 읽어주세요.")}</p></div><button class="sheet-mini-action" type="button" data-sheet-collapse>${t("지도 크게")}</button></div>
+    <div class="sheet-head" data-sheet-toggle><div><h2>${t("일본 생활 지도 이용 기준")}</h2><p>${t("공식 자료의 범위와 현장 재확인 원칙을 먼저 읽어주세요.")}</p></div><button class="sheet-mini-action" type="button" data-sheet-collapse>${t("지도 크게")}</button></div>
     <ul class="note-list">
       <li>${t("핀의 좌표는 지역 탐색을 시작하기 위한 기준점이며 개별 시설 위치 보증이 아닙니다.")}</li>
       <li>${t("신뢰도 점수·실시간 제보 수·검증되지 않은 최근 확인 표시는 사용하지 않습니다.")}</li>

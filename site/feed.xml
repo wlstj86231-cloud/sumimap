@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
   <channel>
-    <title>스미맵 농촌 공공정보와 이전 생활 가이드</title>
+    <title>영농폐기물 집하장 지도 - 농촌 공공정보와 이전 생활 가이드</title>
     <link>https://sumimap.com/</link>
-    <description>한국 농촌 공공주소 자료와 이전 일본 생활 안내의 원문 확인 방법을 다루는 스미맵 자료 피드.</description>
+    <description>한국 농촌 공공주소 자료와 이전 일본 생활 안내의 원문 확인 방법을 다루는 영농폐기물 집하장 지도 자료 피드.</description>
     <language>ko-KR</language>
     <lastBuildDate>Wed, 14 Oct 2026 15:00:00 GMT</lastBuildDate>
     <item>
-      <title>스미맵 이용 가이드: 공식 원문과 현장 확인 순서</title>
+      <title>일본 생활 지도 이용 가이드: 공식 원문과 현장 확인 순서</title>
       <link>https://sumimap.com/guide/</link>
       <guid>https://sumimap.com/guide/</guid>
       <pubDate>Thu, 13 Aug 2026 15:00:00 GMT</pubDate>
-      <description>스미맵 지도 핀의 의미, 공식 원문과 자료 대조일을 읽는 법, 화장실·충전·다국어 안내를 현장에서 재확인하는 순서를 설명합니다.</description>
+      <description>일본 생활 지도 핀의 의미, 공식 원문과 자료 대조일을 읽는 법, 화장실·충전·다국어 안내를 현장에서 재확인하는 순서를 설명합니다.</description>
     </item>
     <item>
       <title>일본 생활 상황별 확인 순서</title>
@@ -123,17 +123,17 @@
       <link>https://sumimap.com/sources/</link>
       <guid>https://sumimap.com/sources/</guid>
       <pubDate>Thu, 13 Aug 2026 15:00:00 GMT</pubDate>
-      <description>스미맵의 한국환경공단 공동집하장 주소자료와 처리 방법, 이전 일본 생활 지도에 사용한 공식 출처와 검수일.</description>
+      <description>영농폐기물 집하장 지도의 한국환경공단 공동집하장 주소자료와 처리 방법, 이전 일본 생활 지도에 사용한 공식 출처와 검수일.</description>
     </item>
     <item>
-      <title>농촌 공공주소 확인 지도</title>
+      <title>농촌 공공주소 확인 방법</title>
       <link>https://sumimap.com/kr/</link>
       <guid>https://sumimap.com/kr/</guid>
       <pubDate>Wed, 23 Sep 2026 15:00:00 GMT</pubDate>
       <description>영농폐기물 공동집하장 같은 농촌 공공주소를 공식 원문과 대조하고, 실제 방문 전에 운영 여부와 수거 품목을 확인하는 방법.</description>
     </item>
     <item>
-      <title>전국 영농폐기물 공동집하장 주소 찾기 | 스미맵</title>
+      <title>전국 공동집하장 주소 검색 | 영농폐기물 집하장 지도</title>
       <link>https://sumimap.com/kr/farm-waste-collection/</link>
       <guid>https://sumimap.com/kr/farm-waste-collection/</guid>
       <pubDate>Wed, 23 Sep 2026 15:00:00 GMT</pubDate>

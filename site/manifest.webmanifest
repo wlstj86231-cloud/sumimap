@@ -1,6 +1,6 @@
 {
-  "name": "스미맵",
-  "short_name": "스미맵",
+  "name": "영농폐기물 집하장 지도",
+  "short_name": "영농폐기물집하장지도",
   "description": "영농폐기물 공동집하장 주소 검색과 농촌 공공자료 확인",
   "start_url": "/",
   "scope": "/",
